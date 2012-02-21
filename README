@@ -1,5 +1,6 @@
-# Spyder
+Spyder
 Fecth the articles of specidied websites on Python language.
 
+Deps: lxml, mysql
 
 To be continue...
