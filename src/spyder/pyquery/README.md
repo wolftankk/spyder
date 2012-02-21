@@ -1,6 +1,7 @@
 # PyQuery
 
 URL: http://pypi.python.org/pypi/pyquery
+
 AUTHOR: Gael Pasgrimaud
 
 pyquery: a jquery-like library for python
