@@ -8,10 +8,20 @@
 # crawler: 爬虫线程器
 #  seed
 #  fetch
+#  headers
 #  docment(HTMLParse)
 
 import threading
+import _mysql as pmysql
+import MySQLdb
 
-class SpyderThread(threading.Thread):
-	def __init__(self):
-		threading.Thread.__init__(self);
+from config import DBCONFIG
+
+db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG[spyder])
+#db.query("SET NAMES UTF8") 
+#
+
+
+#class SpyderThread(threading.Thread):
+#	def __init__(self):
+#		threading.Thread.__init__(self);
