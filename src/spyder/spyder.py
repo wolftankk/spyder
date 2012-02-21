@@ -1,4 +1,5 @@
 #coding: utf-8
+#/usr/bin/env python
 
 # This file is main
 # 采集总流程
@@ -17,7 +18,7 @@ import MySQLdb
 
 from config import DBCONFIG
 
-db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG[spyder])
+db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG["dbname"])
 db.query("SET NAMES UTF8") 
 
 #class SpyderThread(threading.Thread):
