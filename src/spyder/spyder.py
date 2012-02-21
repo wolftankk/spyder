@@ -15,12 +15,54 @@
 import threading
 import _mysql as pmysql
 import MySQLdb
+import io, time
+import socket, SocketServer
 
 from config import DBCONFIG
+from pybits import ansicolor
 
+# config db and launcher mysql
 db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG["dbname"])
-db.query("SET NAMES UTF8") 
+db.query("SET NAMES UTF8")
+
+# config SocketServer and launcher
+#class SpyderUDPHandler(SocketServer.BaseRequestHandler):
+#	def handler(self):
+#		data = self.request.recv(1024)
+#		socket = self.request[1]
+#		print "%s wrote:" % self.client_address[0]
+#		print data
+#		socket.sendto(data.upper(), self.client_address)
+#server = SocketServer.UDPServer(("127.0.0.1", 9999), SpyderUDPHandler);
+#server.serve_forever()
 
 #class SpyderThread(threading.Thread):
 #	def __init__(self):
 #		threading.Thread.__init__(self);
+
+class Spyder(object):
+	def __init__(self):
+		self.db = db
+		self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		print (ansicolor.green("Spyder") + " start launching");
+		#self.sendto("Spyder start launching")
+		
+		#idle time
+		self.needIdleTime = 0
+		self.getSpiderList()
+
+	def getSpiderList(self):
+		if self.spiderList == None:
+			self.spiderList = [];
+
+	# communication with SocketServer
+	def sendto(self, data):
+		data = " ".join(data)
+		self.client.sendto(data + "\n", ("127.0.0.1", 9999))
+		received = self.client.recv(1024)
+
+		print received
+
+
+if __name__ == "__main__":
+	Spyder()
