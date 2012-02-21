@@ -18,9 +18,7 @@ import MySQLdb
 from config import DBCONFIG
 
 db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG[spyder])
-#db.query("SET NAMES UTF8") 
-#
-
+db.query("SET NAMES UTF8") 
 
 #class SpyderThread(threading.Thread):
 #	def __init__(self):
