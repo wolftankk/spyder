@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>美度ERP</title>
+		<meta name="description" content="" >
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<link rel="stylesheet" type="text/css" href="resources/css/ext-all.css" />
+		<link rel="stylesheet" type="text/css" href="resources/css/beet.css" />
+
+		<!-- let the stupid ie suport html5 -->
+		<!--[if lt IE 9]>
+		<script src="js/html5.js"></script>
+		<![endif]-->
+		<script type="text/javascript" src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/ext-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="js/beet/beet_processcontroler.js"></script>
+		<script type="text/javascript" src="js/beet/beet_connection.js"></script>
+		<script type="text/javascript" src="js/my/utf.js"></script>
+		<script type="text/javascript" src="js/my/xxtea.js"></script>
+
+		<script type="text/javascript" src="js/my/MyCardLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyCustomerLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyEmLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyPrivilegeLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyStockLib_intf.js"></script>
+
+
+		<script type="text/javascript" src="js/beet/beet_core.js"></script>
+		<script type="text/javascript" src="js/beet/beet_config.js"></script>
+		<script type="text/javascript" src="js/beet/beet_plugins.js"></script>
+		<script type="text/javascript" src="js/beet/plugins/beet_proxy.js"></script>
+
+		<script type="text/javascript" src="js/beet/beet_customer.js"></script>
+		<script type="text/javascript" src="js/beet/beet_customerAdvanceSearch.js"></script>
+		<script type="text/javascript" src="js/beet/beet_employee.js"></script>
+		<script type="text/javascript" src="js/beet/beet_card.js"></script>
+		<script type="text/javascript" src="js/beet/beet_warehouse.js"></script>
+		<script type="text/javascript" src="js/beet/beet_setting.js"></script>
+
+		<script type="text/javascript" src="js/beet/beet.js"></script>
+	</head>
+	<body>
+		<header id="header">
+		</header>
+		<section id="viewport">
+		</section>
+		<footer>
+			<script type="text/javascript">
+				var userId, sessionId;
+				Ext.onReady(function(){
+					Beet.navigationbar = Ext.create("Beet.apps.Menu.Panel");
+					Beet.workspace = Ext.create("Beet.apps.Viewport");
+					
+					var customerLoginServer = Beet.constants.customerLoginServer, sessionId;
+					var userId = Ext.util.Cookies.get("userId");
+					sessionId = Ext.util.Cookies.get("_sid");
+					if (!userId || !sessionId){
+						window.location = "index.html";
+					}
+
+					Beet.apps.Viewport.getCTTypeData();
+					if (Beet.cache.employee == undefined){
+						Beet.cache.employee = {}
+					}
+					if (Beet.cache.employee.departmentList == undefined){
+						getDepartmentList();
+					}
+					if (Beet.cache.employee.branchesList == undefined){
+						getSubbrachesList();
+					}
+				});
+	
+			</script>
+		</footer>	
+	</body>
+</html>

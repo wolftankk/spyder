@@ -1,0 +1,81 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>美度ERP</title>
+		<meta name="description" content="" >
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+		<link rel="stylesheet" type="text/css" href="resources/css/ext-all.css" />
+		<link rel="stylesheet" type="text/css" href="resources/css/beet.css" />
+		<!-- let the stupid ie suport html5 -->
+		<!--[if lt IE 9]>
+		<script src="js/html5.js"></script>
+		<![endif]-->
+
+		<!-- load yahoo and my js -->
+		<script type="text/javascript" src="js/bootstrap.js"></script>
+		<script type="text/javascript" src="js/ext-lang-zh_CN.js"></script>
+		<script type="text/javascript" src="js/beet/beet_connection.js"></script>
+		<script type="text/javascript" src="js/beet/beet_processcontroler.js"></script>
+		<script type="text/javascript" src="js/my/utf.js"></script>
+		<script type="text/javascript" src="js/my/xxtea.js"></script>
+
+		<script type="text/javascript" src="js/my/MyCardLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyCustomerLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyEmLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyPrivilegeLib_intf.js"></script>
+		<script type="text/javascript" src="js/my/MyStockLib_intf.js"></script>
+
+		<script type="text/javascript" src="js/beet/beet_core.js"></script>
+		<script type="text/javascript" src="js/beet/beet_config.js"></script>
+		<script type="text/javascript" src="js/beet/beet_login.js"></script>
+	</head>
+	<body>
+		<!-- loading ... -->
+		<div id="loading-mask"></div>
+		<div id="loading">
+			<div class="loading-indicator">
+				<img alt="" src="resources/themes/images/default/shared/large-loading.gif" width="32" height="32"/>
+			</div>
+			<span id="loading-msg">正在加载中，请稍后⋯⋯⋯⋯</span>
+			<div id="loading-progress">
+
+			</div>
+		</div>
+
+		<div id="viewport">
+			<script type="text/javascript">
+				document.getElementById("loading-msg").innerHTML = "正在加载核心库...";
+			</script>
+			<script type="text/javascript">
+				document.getElementById("loading-msg").innerHTML = "正在加载用户界面素材...";
+				document.getElementById("loading-msg").innerHTML = "正在启动中...";
+			</script>
+		</div>
+
+		<footer>
+			<script type="text/javascript">
+				//创建一个自己的namespace object
+				Ext.onReady(function(){
+					Ext.defer(function(){
+						Ext.QuickTips.init();
+						Ext.Msg.minWidth=300;
+
+						Ext.create("Beet.apps.Login.LoginDialog").show();
+
+						var hideLoading = function(){
+							Ext.get("loading").remove();
+							Ext.fly("loading-mask").animate({
+								opacity: 0,
+								remove: true
+							})
+						}
+
+						Ext.defer(hideLoading, 250);
+					},500);
+				});
+			</script>
+		</footer>
+	</body>
+</html>
