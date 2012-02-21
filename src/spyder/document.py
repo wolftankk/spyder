@@ -1,7 +1,8 @@
 #coding=utf-8
 
 from lmth.lmth1 import Url
-import pyquery
+from pyquery import PyQuery as pq
+d = pq("<html></html>")
 
 if __name__ == "__main__":
 	#news list
@@ -10,8 +11,10 @@ if __name__ == "__main__":
 	for k in list:
 		#print k
 		date = k.elem("em")
-		url = k.elem("a").attr("a[@href, @#]")
-		print date, url
+		url = k.elem("a")	
+
+		#last content
+		print(d(str(date)).text()), url.attr("a[@href]"), d(str(url)).text()
 
 	#new page test
 	#url = "http://www.265g.com/chanye/industry/184336.html"
