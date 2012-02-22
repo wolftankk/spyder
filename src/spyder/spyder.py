@@ -49,11 +49,14 @@ class Spyder(object):
 		
 		#idle time
 		self.needIdleTime = 0
+		self.spiderList = None
 		self.getSpiderList()
 
 	def getSpiderList(self):
 		if self.spiderList == None:
 			self.spiderList = [];
+		sql = "select * FROM spyder.seeds";
+		query = self.db.query(sql);
 
 	# communication with SocketServer
 	def sendto(self, data):

@@ -2,7 +2,7 @@
 
 from lmth.lmth1 import Url
 from pyquery import PyQuery as pq
-d = pq("<html></html>")
+d = pq("<html></html>"); # like jQuery $
 
 if __name__ == "__main__":
 	#news list
