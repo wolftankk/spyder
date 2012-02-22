@@ -87,29 +87,30 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 						method: "post",
 						params: {
 							username: usr,
-							passwd: passwd	
+							passwd: hex_md5(passwd)	
 						},
 						success: function(uid){
-							if (uid && uid != -1){
-								window.location = "main.html"
-							}else{
-								Ext.Msg.alert("警告", "用户名或密码错误, 请重新输入! ");
-							}
+							//if (uid && uid != -1){
+							//	window.location = "main.html"
+							//}else{
+							//	Ext.Msg.alert("警告", "用户名或密码错误, 请重新输入! ");
+							//}
 						},
 						failure: function(){
-							if (Ext.isObject(error)){
-								if (error['message']!='')
-								{
-									Ext.Msg.alert("警告",error['message']);
-								}
-								else if (error['statusText']=='communications failure'){
-									Ext.Msg.alert("警告", "无法链接到服务器: 网络通讯错误!");
-								}else {
-									Ext.Msg.alert("警告", "错误信息: "+error['statusText']);
-								}										
-							}else {
-								Ext.Msg.alert("警告", "无法链接到服务器: "+error);
-							}
+							console.log(arguments)
+							//if (Ext.isObject(error)){
+							//	if (error['message']!='')
+							//	{
+							//		Ext.Msg.alert("警告",error['message']);
+							//	}
+							//	else if (error['statusText']=='communications failure'){
+							//		Ext.Msg.alert("警告", "无法链接到服务器: 网络通讯错误!");
+							//	}else {
+							//		Ext.Msg.alert("警告", "错误信息: "+error['statusText']);
+							//	}										
+							//}else {
+							//	Ext.Msg.alert("警告", "无法链接到服务器: "+error);
+							//}
 						}
 					})
 				}
