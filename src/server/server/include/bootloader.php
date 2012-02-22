@@ -2,6 +2,7 @@
 require_once "common.inc";
 
 function bootloader(){
+	setAllowHeader();
 	$result = path_init();
 	if (!$result){
 		call_404_page();
@@ -28,6 +29,13 @@ function path_init(){
 function call_404_page(){
 	header("HTTP/1.0 404 Not Found");
 	exit;
+}
+
+function setAllowHeader(){
+	//for cross-domain
+	header("Access-Control-Allow-Methods:POST, GET, OPTIONS");
+	header("Access-Control-Allow-Origin:*");
+	header("Access-Control-Max-Age:1728000");
 }
 
 /**
