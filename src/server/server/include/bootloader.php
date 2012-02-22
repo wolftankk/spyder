@@ -14,7 +14,7 @@ function path_init(){
 		get_normal_path(trim($_GET['do'], '/'));
 	}else{
 		if (count($_GET) == 0){
-			call_404_page();
+			echo "Spyder Server is working OK";
 		}else{
 			if (!empty($_SERVER["QUERY_STRING"])){
 				//header("Location: http://".$_SERVER['HTTP_HOST']."/".$_SERVER["QUERY_STRING"]);
@@ -86,14 +86,29 @@ function query_string($index=null){
 }
 
 /*
- * 加载module页面
+ * load Module
  */
 function get_normal_path($path){
 	$modules = scandir(MODULES_PATH);
-	list($t) = arg();//获取查询的数据
-	list($type, $typeid) = explode("=", $t);//将参数分割为 type, typeid
+	list($t) = arg();
+	list($method, $action) = explode(".", $t);//get method and action from url
+
+	if (empty($action)){
+		call_404_page();
+		return;
+	}
+
+	//check session id
+	if ($method == "user" && ($action == "login" || $action == "logout")){
+		//continue;
+	}else{
+		$sid = session_id();
+		if (!$_COOKIE["sid"] || ($_COOKIE["sid"] && ($_COOKIE["sid"] != $sid))){
+			//fail, please login again
+		}
+	}
 	
-	$module = $type.".php";
+	$module = $method.".php";
 	if (in_array($module, $modules)){
 		$loadfile = MODULES_PATH.$module;
 		if (is_file($loadfile)){
@@ -103,9 +118,9 @@ function get_normal_path($path){
 			}catch (Exception $e){
 				echo $e->getMessage();
 			}
-			$func = "module_".$type."_init";//call hook
+			$func = "module_".$method."_init";//call hook
 			if (function_exists($func)){
-				@call_user_func($func, $typeid);
+				@call_user_func($func, $action);
 				return;
 			}
 		}

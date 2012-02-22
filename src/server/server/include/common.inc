@@ -2,7 +2,6 @@
 require_once("config.inc");
 session_start();
 require_once SITE_ROOT.'include/basics.php';
-require_once SITE_ROOT.'include/user.class.php';
 
 $timestamp = time();
 $TIME_START = getMicrotime();
