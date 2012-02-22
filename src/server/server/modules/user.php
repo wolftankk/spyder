@@ -3,7 +3,7 @@ Class User{
 	private $uid;
 	
 	public function __construct($action){
-
+		print_r($_POST);
 	}
 }
 

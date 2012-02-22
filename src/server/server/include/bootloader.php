@@ -12,6 +12,7 @@ function bootloader(){
 function path_init(){
 	if (!empty($_GET['do'])){
 		get_normal_path(trim($_GET['do'], '/'));
+		return true;
 	}else{
 		if (count($_GET) == 0){
 			echo "Spyder Server is working OK";
@@ -121,10 +122,10 @@ function get_normal_path($path){
 			$func = "module_".$method."_init";//call hook
 			if (function_exists($func)){
 				@call_user_func($func, $action);
-				return;
 			}
 		}
+	}else{
+		call_404_page();
 	}
-	call_404_page();
 }
 ?>
