@@ -21,6 +21,7 @@ import socket, SocketServer
 from config import DBCONFIG
 from pybits import ansicolor
 
+from seed import Seed
 
 
 # config db and launcher mysql
@@ -57,7 +58,7 @@ class Spyder(object):
 
 	def getSpiderList(self):
 		if self.spiderList == None:
-			self.spiderList = [];
+			self.spiderList = {};
 		sql = "select * FROM spyder.seeds";
 		query = self.db.query(sql);
 		r = self.db.store_result();
@@ -71,10 +72,11 @@ class Spyder(object):
 		#                              show table.column when it set 2
 		data = r.fetch_row(0, 1);
 		for x in range(0, len(data)):
-			seed = data[x]
-			self.spiderList[seed["sid"]] = seed
-			#self.spiderList[seed["sid"]]["seed"] = Seed(seed["rule"]);
-
+			seedInfo = data[x]
+			sid = int(seedInfo["sid"]);
+			self.spiderList[sid] = Seed(seedInfo)
+			print self.spiderList[sid]
+			
 	# communication with SocketServer
 	def sendto(self, data):
 		data = " ".join(data)
