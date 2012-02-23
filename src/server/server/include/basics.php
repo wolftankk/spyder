@@ -182,4 +182,14 @@ function clearCache(){
 	
 }
 
+function send_ajax_response($data){
+	header("Content-type: application/json");
+	$data = array(
+		"version" => "1.0",
+		"data" => $data
+	);
+
+	echo json_encode($data);
+}
+
 ?>

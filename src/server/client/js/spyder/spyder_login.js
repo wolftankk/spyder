@@ -89,28 +89,21 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 							username: usr,
 							passwd: hex_md5(passwd)	
 						},
-						success: function(uid){
-							//if (uid && uid != -1){
-							//	window.location = "main.html"
-							//}else{
-							//	Ext.Msg.alert("警告", "用户名或密码错误, 请重新输入! ");
-							//}
+						success: function(response){
+							var responseText = response.responseText;
+							responseText = Ext.JSON.decode(responseText);
+							if (responseText.data){
+								var data = responseText.data;
+								if (data["result"] == "success"){
+									var useinfo = data["data"],
+										uid = useinfo["uid"],
+										permissions = useinfo["permissions"];
+								}else{
+									Ext.Msg.alert("登陆失败", "登陆失败");
+								}
+							}
 						},
 						failure: function(){
-							console.log(arguments)
-							//if (Ext.isObject(error)){
-							//	if (error['message']!='')
-							//	{
-							//		Ext.Msg.alert("警告",error['message']);
-							//	}
-							//	else if (error['statusText']=='communications failure'){
-							//		Ext.Msg.alert("警告", "无法链接到服务器: 网络通讯错误!");
-							//	}else {
-							//		Ext.Msg.alert("警告", "错误信息: "+error['statusText']);
-							//	}										
-							//}else {
-							//	Ext.Msg.alert("警告", "无法链接到服务器: "+error);
-							//}
 						}
 					})
 				}

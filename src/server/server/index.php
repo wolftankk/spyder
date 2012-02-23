@@ -4,7 +4,9 @@
  * Configure Spyder directory
  */
 
-
+/*
+ * cross domain
+ */
 header("Access-Control-Allow-Headers: x-requested-with");
 header("Access-Control-Allow-Methods:POST, GET, OPTIONS");
 header("Access-Control-Allow-Origin:*");
