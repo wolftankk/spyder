@@ -98,6 +98,10 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 									var useinfo = data["data"],
 										uid = useinfo["uid"],
 										permissions = useinfo["permissions"];
+									Ext.util.Cookies.set("uname", usr);
+									Ext.util.Cookies.set("uid", uid);
+									Ext.util.Cookies.set("upermissions", permissions);
+									window.location = "main.html"
 								}else{
 									Ext.Msg.alert("登陆失败", "登陆失败");
 								}

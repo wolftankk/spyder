@@ -107,6 +107,8 @@ function get_normal_path($path){
 		$sid = session_id();
 		if (!$_COOKIE["sid"] || ($_COOKIE["sid"] && ($_COOKIE["sid"] != $sid))){
 			//fail, please login again
+			send_ajax_response(array("result"=>"relogin"));
+			return;
 		}
 	}
 	
