@@ -126,11 +126,13 @@ class BaseRule(object):
 	def __init__(self, rule):
 		pass
 
+class RuleEmpty(Exception): pass
+
 class Rule(object):
 	def __init__(self, rule):
-		pass
+		rule = phpserialize.unserialize(rule)
 
-r""""
+r"""
 Rule
 ~~~~
 
@@ -158,5 +160,4 @@ Article rule:
 	downloadMedia?
 	dateParten
 
-""""
-
+"""
