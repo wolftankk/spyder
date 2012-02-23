@@ -21,6 +21,8 @@ import socket, SocketServer
 from config import DBCONFIG
 from pybits import ansicolor
 
+
+
 # config db and launcher mysql
 db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG["dbname"])
 db.query("SET NAMES UTF8")
@@ -40,6 +42,7 @@ db.query("SET NAMES UTF8")
 #	def __init__(self):
 #		threading.Thread.__init__(self);
 
+
 class Spyder(object):
 	def __init__(self):
 		self.db = db
@@ -57,6 +60,20 @@ class Spyder(object):
 			self.spiderList = [];
 		sql = "select * FROM spyder.seeds";
 		query = self.db.query(sql);
+		r = self.db.store_result();
+		if r.num_rows() == 0:
+			print (ansicolor.red("Spyder") + " have no Spider-Data");
+
+		# return all data
+		# fetch_row(display_rows, display_columns)
+		# display_columns: default: 1, show unlimit when it set 0
+		# display_columns: default: 0, only show column name when it set 1
+		#                              show table.column when it set 2
+		data = r.fetch_row(0, 1);
+		for x in range(0, len(data)):
+			seed = data[x]
+			self.spiderList[seed["sid"]] = seed
+			#self.spiderList[seed["sid"]]["seed"] = Seed(seed["rule"]);
 
 	# communication with SocketServer
 	def sendto(self, data):

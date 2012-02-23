@@ -1,20 +1,27 @@
 #coding=utf-8
 
-from lmth.lmth1 import Url
+#from lmth.lmth1 import Url
 from pyquery import PyQuery as pq
-d = pq("<html></html>"); # like jQuery $
+
+class Document(object):
+	def __init__(self, doc):
+		self.doc = doc
+		try:
+			self.query = pq(doc);
+		except e:
+			print e
 
 if __name__ == "__main__":
 	#news list
 	url = "http://www.265g.com/chanye/industry/"
-	list = Url(url, "gbk").elems("div[class=cont_list]")[-1].elems("li")
-	for k in list:
-		#print k
-		date = k.elem("em")
-		url = k.elem("a")	
+	#list = Url(url, "gbk").elems("div[class=cont_list]")[-1].elems("li")
+	#for k in list:
+	#	#print k
+	#	date = k.elem("em")
+	#	url = k.elem("a")	
 
-		#last content
-		print(d(str(date)).text()), url.attr("a[@href]"), d(str(url)).text()
+	#	#last content
+	#	print(d(str(date)).text()), url.attr("a[@href]"), d(str(url)).text()
 
 	#new page test
 	#url = "http://www.265g.com/chanye/industry/184336.html"

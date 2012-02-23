@@ -2,11 +2,11 @@
 
 from lib import ansicolor
 
-# 分析以及生产seed
+#paser rule
 class Seed(object):
-	def __init__(self):
-		print 1
+	def __init__(self, rule):
+		print rule
 
 
 
-if __name__ == "__main__":
+#if __name__ == "__main__":
