@@ -1,6 +1,8 @@
 #coding: utf-8
 
 from pybits import ansicolor
+import re
+import phpserialize
 
 class SeedEmpty(Exception): pass
 
@@ -132,11 +134,19 @@ r""""
 Rule
 ~~~~
 
-List rule:
- 	┌ urlparten
+`List rule`:
+	type RSS, html, ATOM, AJAX
+	┌ urlparten, Exp: http://www.265g.com/chanye/hot/4985-(%d).html
 	├ titleparten
 	├ article parten
 	└ date parten
+
+1. 静态页面类
+ 这些有着标准的列表页面和格式, 只需要匹配就可以
+
+2. Ajax加载型
+http://www.4gamer.net/script/search/index.php?mode=article&DATE=20120201
+需要使用ajax模式提交一些数据才可以 page=(1-4)
 
 Article rule:
 	titleparten
@@ -144,6 +154,7 @@ Article rule:
 	authorparten
 	contenparten
 	filterpartens
+	pagepartens
 	downloadMedia?
 	dateParten
 
