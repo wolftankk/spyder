@@ -1,17 +1,6 @@
 #coding: utf-8
 #/usr/bin/env python
 
-# This file is main
-# 采集总流程
-# 控制器读取sql配置,然后启动线程, 抓取文章,以及素材
-# 进入文章分析
-# spyder: 总控制器
-# crawler: 爬虫线程器
-#  seed
-#  fetch
-#  headers
-#  docment(HTMLParse)
-
 import threading
 import _mysql as pmysql
 import MySQLdb
@@ -75,7 +64,10 @@ class Spyder(object):
 			seedInfo = data[x]
 			sid = int(seedInfo["sid"]);
 			self.spiderList[sid] = Seed(seedInfo)
-			print self.spiderList[sid]
+
+	# force: true/false
+	def refreshList(self, force):
+		self.spiderList = None
 			
 	# communication with SocketServer
 	def sendto(self, data):

@@ -1,6 +1,5 @@
 #coding=utf-8
 
-from lmth.lmth1 import Url
 from pyquery import PyQuery as pq
 from pybits import ansicolor
 import re
@@ -12,6 +11,9 @@ class Document(object):
 			self.query = pq(doc);
 		except e:
 			print e
+
+
+
 
 if __name__ == "__main__":
 	#news list

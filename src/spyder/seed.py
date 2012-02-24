@@ -125,6 +125,7 @@ class Seed(object):
 		self._finishtime = int(value)
 
 
+class RuleUrlInvalid(Exception): pass
 
 r'''
 Exp: http://www.265g.com/chanye/hot/4985-1.html
@@ -166,7 +167,6 @@ class RuleList(object):
 		self.urlprefix = rule["urlprefix"]
 		self.type = "default"
 	
-		#list url format: (%d).html or ([(%d-1)*25]) 公式如何处理?
 		self.urlformat = rule["urlformat"]
 		self.step = rule["step"]
 		self.startpage = rule["startpage"]
@@ -179,25 +179,71 @@ class RuleList(object):
 		self.titleparten = rule["titleparten"]
 		self.articaleurl = rule["articaleurl"]
 
+	def getListParent(self):
+		#exp: div[class=cont_list]ul
+		#exp: div[id=xx]ol
+		#exp: div[id=class]div
+		return self.listparent
+
+	def getEntryItem(self):
+		#exp: <li></li>
+		return self.entryparent
+
+	def getFormatedUrls(self):
+		urls = [];
+		#self.urlformat cannot empty
+
+		if self.type == "ajax":
+			r"""
+			intsall cookiejar
+			"""
+		else:
+			if self.urlformat == None or self.urlformat == "":
+				raise RuleUrlInvalid
+
+			if self.startpage == None:
+				self.startpage = 1
+
+			if self.maxpage == None:
+				self.maxpage = 1
+
+			if self.step == None:
+				self.step = 1
+
+			for i in range(self.startpage, self.maxpage+1):
+				#set step
+				url = self.urlformat % (i)
+				urls.append(url)
+
+		self._urls = urls
+		return urls
+
 r'''
 preurl
 articleparent
 
-
 titleparten
 tags
 authorparten
-
 context
-
 page
-
 '''
-		
 class RuleArticle(object):
 	def __init__(self, rule):
 		self.rule = rule
 
+		self.pageparent = rule["pageparent"]#page
+		self.wrapparent = rule["articleparent"]#文章位置
+		self.contextparent = rule["contextparent"]
+		self.contextfilters = rule["filters"]
+
+		self.tagsparent = rule["tagparent"]
+		self.titlepartent = rule["titleparten"]
+		self.authorpartent = rule["authorpartent"]
+
+		self.prefixUrl = ""
+
+	
 
 class Rule(object):
 	def __init__(self, rule):
