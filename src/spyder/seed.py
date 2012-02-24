@@ -53,6 +53,9 @@ class Seed(object):
 
 		if seedData["charset"] != "" or seedData != None:
 			self.charset = seedData["charset"]
+		
+		if seedData["url"] != None:
+			self.prefixurl = seedData["url"]
 
 		#rule
 		if seedData["rule"] != "":
@@ -122,15 +125,101 @@ class Seed(object):
 		self._finishtime = int(value)
 
 
-class BaseRule(object):
-	def __init__(self, rule):
-		pass
 
-class RuleEmpty(Exception): pass
+r'''
+Exp: http://www.265g.com/chanye/hot/4985-1.html
+
+1. get list 
+1)
+urlprefix: http://www.265g.com/chanye/hot/
+urlformat: 4985-(%d).html
+maxpages: 10
+firsepage: 1 0
+
+2)
+urlprefix: http://www.4gamer.net/script/search/index.php?mode=article&TS016
+type: ajax
+extraparams: PAGE:(%d), TAGS: xxx
+
+2. get article list
+$list = array(
+	preurl => "http://www.265g.com/chanye/hot/",
+	type => "default", //type: default, ajax(post),
+	extraparams => ""
+
+	urlformat => "4985-(%d).html",
+	startpage => 1
+	step = 1,
+	maxpage => 10,
+	
+	listparent=> "", //exp: <ul id="xxx"></ul>
+	entryparent => "", //exp <li></li>
+	
+	dateparent => "",
+	titleparten => "",
+	articaleurl => ""
+)
+'''
+class RuleList(object):
+	def __init__(self, rule):
+		self.originRule = rule
+		self.urlprefix = rule["urlprefix"]
+		self.type = "default"
+	
+		#list url format: (%d).html or ([(%d-1)*25]) 公式如何处理?
+		self.urlformat = rule["urlformat"]
+		self.step = rule["step"]
+		self.startpage = rule["startpage"]
+		self.maxpage = rule["maxpage"]
+
+		self.listparent = rule["listparent"]
+		self.entryparent = rule["entryparent"]
+
+		self.dateparent = rule["dateparent"]
+		self.titleparten = rule["titleparten"]
+		self.articaleurl = rule["articaleurl"]
+
+r'''
+preurl
+articleparent
+
+
+titleparten
+tags
+authorparten
+
+context
+
+page
+
+'''
+		
+class RuleArticle(object):
+	def __init__(self, rule):
+		self.rule = rule
+
 
 class Rule(object):
 	def __init__(self, rule):
+		self.list = None
+		self.article = None
+
 		rule = phpserialize.unserialize(rule)
+		if (rule["list"] != None):
+			list = rule["list"]
+			self.list = RuleList(list)
+
+		if (rule["article"] != None):
+			article = rule["list"]
+			self.article = RuleArticle(article)
+
+	def getListRule(self):
+		return self.list
+
+	def getArticleRule(self):
+		return self.article
+
+
 
 r"""
 Rule
@@ -161,3 +250,4 @@ Article rule:
 	dateParten
 
 """
+
