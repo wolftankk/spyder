@@ -32,8 +32,6 @@ db.query("SET NAMES UTF8")
 #	def __init__(self):
 #		threading.Thread.__init__(self);
 
-def now():
-	return int(time.time())
 
 class Spyder(object):
 	def __init__(self):
@@ -46,7 +44,6 @@ class Spyder(object):
 		self.needIdleTime = 0
 		self.spiderList = None
 		self.getSpiderList()
-		self.queue = {}
 
 	def getSpiderList(self):
 		if self.spiderList == None:
@@ -68,16 +65,6 @@ class Spyder(object):
 			sid = int(seedInfo["sid"]);
 			self.spiderList[sid] = Seed(seedInfo)
 
-
-	def run(self):
-		if self.spiderList == None:
-			self.getSpiderList()
-
-		for sid in self.spiderList:
-			seed = self.spiderList[sid]
-			if self.queue[sid] == None:
-				print seed
-
 	# force: true/false
 	def refreshList(self, force):
 		self.spiderList = None
@@ -90,5 +77,6 @@ class Spyder(object):
 
 		print received
 
+
 if __name__ == "__main__":
-	Spyder().run()
+	Spyder()
