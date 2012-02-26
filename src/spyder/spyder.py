@@ -75,20 +75,23 @@ class Spyder(object):
 
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
-			if self.queue[sid] == None:
-				print seed
+			#frequency  = seed.frequency
+			#finishtime = seed.finishtime
+			#starttime  = seed.starttime
+			#if self.queue[sid] == None:
+			#	print 1
 
 	# force: true/false
 	def refreshList(self, force):
 		self.spiderList = None
 			
 	# communication with SocketServer
-	def sendto(self, data):
-		data = " ".join(data)
-		self.client.sendto(data + "\n", ("127.0.0.1", 9999))
-		received = self.client.recv(1024)
+	#def sendto(self, data):
+	#	data = " ".join(data)
+	#	self.client.sendto(data + "\n", ("127.0.0.1", 9999))
+	#	received = self.client.recv(1024)
 
-		print received
+	#	print received
 
 if __name__ == "__main__":
 	Spyder().run()

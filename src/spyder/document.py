@@ -70,7 +70,7 @@ if __name__ == "__main__":
 					if re.match(r"javascript", href) == None:
 						_pages.append(href)
 		#find title
-		#print article("h3").text().strip()
+		print article("h3").text().strip()
 		#find tags
 		#find author
 

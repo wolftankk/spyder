@@ -2,7 +2,7 @@
 <html>
 	<head>
 		<meta charset="utf-8">
-		<title>美度ERP</title>
+		<title>Spyder管理</title>
 		<meta name="description" content="" >
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
@@ -28,25 +28,14 @@
 			<script type="text/javascript">
 				var userId, sessionId;
 				Ext.onReady(function(){
-					//Beet.navigationbar = Ext.create("Beet.apps.Menu.Panel");
-					//Beet.workspace = Ext.create("Beet.apps.Viewport");
-					//
-					//var customerLoginServer = Beet.constants.customerLoginServer, sessionId;
-					//var userId = Ext.util.Cookies.get("userId");
-					//sessionId = Ext.util.Cookies.get("_sid");
+
+					Ext.create("Spyder.apps.HeaderPanel");
+					Ext.create("Spyder.apps.Viewport");
+
+					//var userId = Ext.util.Cookies.get("userId"),
+					//sessionId = Ext.util.Cookies.get("sid");
 					//if (!userId || !sessionId){
 					//	window.location = "index.html";
-					//}
-
-					//Beet.apps.Viewport.getCTTypeData();
-					//if (Beet.cache.employee == undefined){
-					//	Beet.cache.employee = {}
-					//}
-					//if (Beet.cache.employee.departmentList == undefined){
-					//	getDepartmentList();
-					//}
-					//if (Beet.cache.employee.branchesList == undefined){
-					//	getSubbrachesList();
 					//}
 				});
 	
