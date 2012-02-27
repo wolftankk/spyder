@@ -46,6 +46,10 @@ Class User{
 				//}else{
 					session_regenerate_id(true);
 					setcookie("sid", session_id(), 0, "/");
+					$_SESSION[session_id()] = array(
+						uid => $uid,
+						permissions => $permissions
+					);
 					$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
 					send_ajax_response(array("result"=>"success", "data"=>array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id())));
 				//}	
@@ -57,6 +61,7 @@ Class User{
 	}
 
 	public function Logout(){
+		$_SESSION[session_id()] = null;//remove
 		session_regenerate_id(true);
 		setcookie("sid", 0, -99999, "/");
 		send_ajax_response(array("result"=>"success", "data"=>array("success"=>true)));

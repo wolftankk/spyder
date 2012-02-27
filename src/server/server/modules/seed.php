@@ -24,6 +24,13 @@ class Seed{
 	public function GetSeedList(){
 
 	}
+
+	/*
+	 * 批量启用/禁用种子采集
+	 */
+	public function ToggleSeed(){
+
+	}
 }
 
 module_seed_init($action){
