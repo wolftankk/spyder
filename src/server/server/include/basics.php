@@ -192,4 +192,13 @@ function send_ajax_response($data){
 	echo json_encode($data);
 }
 
+function getCurrentPermissions(){
+	$sid = session_id();
+	if ($_SESSION[$sid] == null || empty($_SESSION[$sid]) || ($_SESSION[$sid] && $_SESSION[$sid]["permissions"] == null && $_SESSION[$sid]["permissions"] == 0)){
+		return 0;
+	}else{
+		return $_SESSION[$sid]["permissions"];
+	}
+}
+
 ?>

@@ -4,7 +4,7 @@ registerMenu("seeds", "seedAdmin", {
 	title: "种子管理",
 	layout: "anchor",
 	frame: true,
-	width: 400,
+	width: 200,
 	defaults: {
 		scale: "large",
 		rowspan: 3	
@@ -248,5 +248,167 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 		me.form = form
 		me.add(form)
 		me.doLayout();
+	}
+});
+
+
+
+registerMenu("seeds", "seedAdmin", {
+	xtype: "buttongroup",
+	title: "种子分类管理",
+	layout: "anchor",
+	frame: true,
+	width: 200,
+	defaults: {
+		scale: "large",
+		rowspan: 3	
+	},
+	items: [
+		{
+			xtype: "button",
+			text: "添加种子分类",
+			handler: function(){
+				var item = Spyder.cache.menus["addSeedCategory"];
+				if (!item){
+					Spyder.workspace.addPanel("addSeed", "添加种子分类", {
+						items: [
+								Ext.create("Spyder.apps.seeds.AddSeedCategory")
+						]	
+					})
+				}
+			}
+		},
+		//{
+		//	xtype: "button",
+		//	text: "种子列表",
+		//	tooltip: "包含编辑,删除, 当前状态等功能",
+		//	handler: function(){
+		//	}
+		//}
+	]
+});
+
+function getSeedCategoryList(){
+
+}
+
+Ext.define("Spyder.apps.seeds.AddSeedCategory", {
+	extend: "Ext.panel.Panel",
+	layout: "anchor",
+	height: Spyder.constants.VIEWPORT_HEIGHT - 5,
+	width: "100%",
+	autoScroll: true,
+	autoHeight: true,
+	border: 0,
+	bodyStyle: "background-color: #dfe8f5",
+	defaults: {
+		bodyStyle: "background-color: #dfe8f5",
+		border: 0	
+	},
+	initComponent: function(){
+		var me = this;
+		me.callParent()
+
+		me.createMainPanel();
+		me.doLayout();
+	},
+	createMainPanel: function(){
+		var me = this,
+			config = {
+				autoHeight: true,
+				autoScroll: true,
+				cls: "iScroll",
+				height: "100%",
+				width: 300,
+				anchor: "fit",
+				border: false,
+				bodyBorder: false,
+				plain: true,
+				bodyPadding: "10",
+				items: [
+					{
+						layout: {
+							type:"table",
+							columns: 1,
+							tableAttrs: {
+								cellspacing: 10,
+								style: {
+									width: "100%"
+								}
+							}
+						},
+						border: false,
+						bodyStyle: "background-color: #dfe8f5",
+						defaults: {
+							bodyStyle: "background-color: #dfe8f5",
+							width: "95%" 
+						},
+						defaultType: "textfield",
+						fieldDefaults: {
+							msgTarget: "side",
+							labelAlign: "TOP",
+							labelWidth: 60
+						},
+						items: [
+							{
+								fieldLabel: "名称",
+								allowBlank: false,
+								name: "name"
+							},
+							{
+								fieldLabel: "所属父类",
+								name: "parentid"
+							}
+						],
+						buttons: [
+							{
+								xtype: "button",
+								text: "提交",
+								disabled: true,
+								formBind: true,
+								handler: function(){
+									var form = me.form.getForm(),
+											results = me.form.getValues();
+
+									if (results["parentid"] == ""){
+										results["parentid"] = -1
+									}
+									Ext.Ajax.request({
+										url: Spyder_server+"/seed.AddSeedCategory",
+										method: "post",
+										params: results,
+										success: function(response){
+											//var responseText = response.responseText;
+											//responseText = Ext.JSON.decode(responseText);
+											//if (responseText.data){
+											//	var data = responseText.data;
+											//	if (data["result"] == "success"){
+											//		if (data["data"]["cid"] > 0){
+											//			Ext.Msg.alert("添加成功", "添加分类成功");
+											//		}
+											//	}
+											//}
+										},
+										failure: function(){
+
+										}
+									});
+								}
+							},
+							{
+								xtype: "button",
+								text: "重置",
+								handler: function(){
+									me.form.getForm().reset()
+								}
+							}
+						]
+					}
+				]
+			};
+
+		var form = Ext.widget("form", config);
+		me.form = form;
+		me.add(form);
 	}
 })
