@@ -6,7 +6,10 @@ Spyder = {
 		WORKSPACE_HEIGHT: Ext.core.Element.getViewHeight(),
 		VIEWPORT_HEIGHT: Ext.core.Element.getViewHeight() - 137
 	},
-	cache : {},
+	cache : {
+		menus = {},
+		containers = {}	
+	},
 	menus : {
 		seeds: {
 			title: "种子",
@@ -169,7 +172,6 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 	width: "100%",
 	cls: "beet-navigationbar",
 	useQuickTips: true,
-	//设置两个私有属性, 为了与ext不冲突 使用 b_xxx 命名
 	b_collapseDirection : 'top',
 	b_collapsed: false,
 	b_collapsedCls: 'collapsed',
@@ -560,37 +562,36 @@ Ext.define("Spyder.apps.Viewport", {
 				remove: function(container, item,opts){
 					var name = item.b_name;
 					if (!!name){
-						//if (Beet.apps.Menu.Tabs[name]){
-						//	Beet.apps.Menu.Tabs[name] = null;
-						//	//remove
-						//	Beet.cache.containerList[name] = null;
-						//}
+						if (Spyder.cache.menus[name]){
+							Spyder.cache.menus[name] = null;
+							Spyder.cache.containers[name] = null;
+						}
 					}
 				},
 				add: function(component, item){
-					//SetTimeout(function(){
-					//	var name = item.b_name;
-					//	if (!!name){
-					//		var items = item.items;
-					//		var realPanel = items.getAt(0);
-					//		if (realPanel){
-					//			realPanel.setWidth(Beet.constants.WORKSPACE_WIDTH);
-					//			realPanel.setHeight(Beet.constants.VIEWPORT_HEIGHT - 1);
-					//			Beet.cache.containerList[name] = realPanel;
+					SetTimeout(function(){
+						var name = item.b_name;
+						if (!!name){
+							var items = item.items;
+							var realPanel = items.getAt(0);
+							if (realPanel){
+								realPanel.setWidth(Beet.constants.WORKSPACE_WIDTH);
+								realPanel.setHeight(Beet.constants.VIEWPORT_HEIGHT - 1);
+								Spyder.cache.containers[name] = realPanel;
 
-					//			//force reset width & height
-					//			realPanel.addListener({
-					//				resize: function(f, adjWidth, adjHeight, opts){
-					//					f.setAutoScroll(false);
-					//					f.setWidth(adjWidth);
-					//					f.setHeight(adjHeight);
-					//					f.doLayout();
-					//					f.setAutoScroll(true)
-					//				}
-					//			})
-					//		}
-					//	}
-					//}, 100);
+								//force reset width & height
+								realPanel.addListener({
+									resize: function(f, adjWidth, adjHeight, opts){
+										f.setAutoScroll(false);
+										f.setWidth(adjWidth);
+										f.setHeight(adjHeight);
+										f.doLayout();
+										f.setAutoScroll(true)
+									}
+								})
+							}
+						}
+					}, 100);
 				}
 			}
 		})
@@ -607,33 +608,33 @@ Ext.define("Spyder.apps.Viewport", {
 		}
 
 		//update children
-		//for (var childName in Beet.cache.containerList){
-		//	var child = Beet.cache.containerList[childName];
-		//	if (child && child.setHeight && child.setWidth){
-		//		child.setHeight(Beet.constants.VIEWPORT_HEIGHT - 1);
-		//		child.setWidth(Beet.constants.WORKSPACE_WIDTH);
-		//	}
-		//}
+		for (var childName in Spyder.cache.constants){
+			var child = Spyder.cache.containers[childName];
+			if (child && child.setHeight && child.setWidth){
+				child.setHeight(Spyder.constants.VIEWPORT_HEIGHT - 1);
+				child.setWidth(Spyder.constants.WORKSPACE_WIDTH);
+			}
+		}
 	},
 	removePanel: function(name){
-		//var item = Beet.apps.Menu.Tabs[name];
-		//Beet.workspace.workspace.getTabBar().closeTab(item.tab);
-		//if (item){
-		//	this.workspace.remove(item, true);
-		//	item.close();
-		//}
-		//this.workspace.doLayout();
+		var me = this, item = Spyder.cache.menus[name];
+		me.workspace.getTabBar().closeTab(item.tab);
+		if (item){
+			me.workspace.remove(item, true);
+			item.close();
+		}
+		me.workspace.doLayout();
 	},
 	addPanel: function(name, title, config){
-		//var item = this.workspace.add(Ext.apply({
-		//	inTab: true, 
-		//	title: title,
-		//	tabTip: title
-		//}, config));
-		//this.workspace.doLayout();
-		//////设置一个私有的name名称, 为了能直接摧毁
-		//item.b_name = name;
-		//Beet.apps.Menu.Tabs[name] = item;
-		//this.workspace.setActiveTab(item);
+		var me = this, item = me.workspace.add(Ext.apply({
+			inTab: true, 
+			title: title,
+			tabTip: title
+		}, config));
+		me.workspace.doLayout();
+		//设置一个私有的name名称, 为了能直接摧毁
+		item.b_name = name;
+		Spyder.cache.menus[name] = item;
+		me.workspace.setActiveTab(item);
 	}
 });
