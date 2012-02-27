@@ -569,14 +569,14 @@ Ext.define("Spyder.apps.Viewport", {
 					}
 				},
 				add: function(component, item){
-					SetTimeout(function(){
+					setTimeout(function(){
 						var name = item.b_name;
 						if (!!name){
 							var items = item.items;
 							var realPanel = items.getAt(0);
 							if (realPanel){
-								realPanel.setWidth(Beet.constants.WORKSPACE_WIDTH);
-								realPanel.setHeight(Beet.constants.VIEWPORT_HEIGHT - 1);
+								realPanel.setWidth(Spyder.constants.WORKSPACE_WIDTH);
+								realPanel.setHeight(Spyder.constants.VIEWPORT_HEIGHT - 1);
 								Spyder.cache.containers[name] = realPanel;
 
 								//force reset width & height
