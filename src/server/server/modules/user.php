@@ -21,6 +21,7 @@ Class User{
 	 */
 	public function Login(){
 		global $db;
+		//get data from $_POST
 		$user = post_string("username");
 		$passwd = post_string("passwd");
 
@@ -29,6 +30,7 @@ Class User{
 		$data = $db->get_one($sql);
 		if (!is_array($data) || sizeof($data) == 0){
 			send_ajax_response(array("result"=>"failure", "errors" => "用户不存在"));
+			exit();
 		}elseif ($data && $data["uid"] && $data["passwd"]){
 			$uid = $data["uid"];
 			$spasswd = $data["passwd"];
@@ -44,16 +46,48 @@ Class User{
 				//}else{
 					session_regenerate_id(true);
 					setcookie("sid", session_id(), 0, "/");
+					$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
 					send_ajax_response(array("result"=>"success", "data"=>array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id())));
 				//}	
 			}else{
 				send_ajax_response(array("result"=>"failure", "errors"=>"密码错误"));
+				exit();
 			}
 		}
 	}
 
 	public function Logout(){
-		echo 1;
+		session_regenerate_id(true);
+		setcookie("sid", 0, -99999, "/");
+		send_ajax_response(array("result"=>"success", "data"=>array("success"=>true)));
+	}
+
+	public function GetUserInfo($uid = null){
+		$_tmp = null;
+		if ($uid && isset($uid)){
+			$_tmp = $uid;	
+		}elseif (post_string("uid")){
+			$_tmp = $uid;	
+		}
+		$uid = $_tmp;
+
+		if (!isset($uid) && empty($uid)){
+			send_ajax_response(array("result"=>"failure", "errors"=>"uid can not null"));
+			exit();
+		}
+
+		//select uid data
+		global $db;
+		$uid = mysql_escape_string($uid);
+		$sql = "SELECT uname, email, permissions, createtime, lastlogintime FROM spyder.users WHERE uid = $uid";
+		$data = $db->get_one($sql);
+		if (!is_array($data) || sizeof($data) == 0){
+			send_ajax_response(array("result"=>"failure", "errors" => "用户不存在"));
+			exit();
+		}elseif ($data && $data["uname"]){
+			$data["uid"] = $uid;
+			send_ajax_response(array("result"=>"success", "data"=>$data));
+		}
 	}
 }
 
