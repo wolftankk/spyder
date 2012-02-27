@@ -24,6 +24,10 @@ class Article{
 	private function _AddArticle(){
 
 	}
+
+	public function PublicArticleToSite(){
+
+	}
 }
 
 function module_article_init($action){
