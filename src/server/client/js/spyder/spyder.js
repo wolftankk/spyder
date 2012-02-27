@@ -6,8 +6,21 @@ Spyder = {
 		WORKSPACE_HEIGHT: Ext.core.Element.getViewHeight(),
 		VIEWPORT_HEIGHT: Ext.core.Element.getViewHeight() - 137
 	},
-	cache : {}
+	cache : {},
+	menus : {
+		seeds: {
+			title: "种子"
+		},
+		articles:{
+			title: "文章"
+		},
+		websites:{
+			title: "网站"
+		}
+	}
 }
+
+
 
 if (!String.prototype.replaceAll){
 	String.prototype.replaceAll = function(reg, str){
@@ -57,21 +70,9 @@ Ext.define("Spyder.apps.HeaderPanel", {
 		
 		//将所有的子panel加入到此列表中
 		Spyder.cache.containerList = {};
-		//if (Beet.cache.MenuItems){
-		//	Beet.apps.Menu.Items = [];
-		//	for (var item in Beet.cache.MenuItems){
-		//		Beet.apps.Menu.Items.push(Ext.apply({
-		//			tabConfig: {
-		//				minWidth: 100	
-		//			}
-		//		},Beet.cache.MenuItems[item]));
-		//	}
-
-		//	delete Beet.cache.MenuItems;
-		//}
 
 		me.configurePanel = new Ext.tab.Panel(me.getCPanelConfig());
-		
+
 		//当框体变动的时候 进行自动调整大小
 		Ext.EventManager.onWindowResize(me.fireResize, me);
 		this.callParent(arguments);
@@ -81,8 +82,39 @@ Ext.define("Spyder.apps.HeaderPanel", {
 			configurePanel: me.configurePanel	
 		}))
 		me.doLayout();
+
+		setTimeout(function(){
+			var items = me.configurePanel.items.items;
+			if (items && items.length > 0){
+				for (var c = 0; c < items.length; ++c){
+					var item = items[c], _key = item["_key"];
+					if (Spyder.menus[_key]){
+						Spyder.menus[_key].panel = item.add({
+							xtype: "container",
+							layout: "hbox",
+							defaultType: "buttongroup",
+							defaults: {
+								height: 100,
+								width: 250
+							}
+						})
+					}
+				}
+			}
+		}, 100)
 	},
 	getCPanelConfig: function(){
+		var items = [];
+		for (var type in Spyder.menus){
+			items.push({
+				title: Spyder.menus[type].title,
+				_key: type,
+				tabConfig: {
+					minWidth: 100
+				}
+			})
+		}
+
 		var config = {
 			border: 1,
 			width: '100%',
@@ -96,8 +128,11 @@ Ext.define("Spyder.apps.HeaderPanel", {
 			minTabWidth: 100,
 			bodyStyle: "background-color: #dfe8f5",
 			defaults: {
-				bodyStyle: "background-color: #dfe8f5"
-			}
+				bodyStyle: "background-color: #dfe8f5",
+				border: 0,
+				plain: true
+			},
+			items: items
 		}
 
 		return config;
@@ -142,14 +177,24 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 
 		me.callParent();
 
+		Ext.defer(function(){
+			Ext.EventManager.on(me.configurePanel.getTabBar().body, "click", me.onTabBarClick, me);
+		}, 1);
+		me.b_collapseDirection = me.b_collapseDirection || Ext.Component.DIRECTION_TOP;
+
+
 		me.add({
 			xtype: "splitbutton",
 			text: "Spyder"
 		});
+		me.add("-");
+		me.add(me.navigationToolbar);
 		me.add("->");
-		me.doLayout()
+		var logoutButton = new Ext.toolbar.Toolbar(me.getLogoutButtonConfig());
+		me.add(logoutButton);
 
-		//me.logoutButton = new Ext.toolbar.Toolbar(me.getLogoutButtonConfig());
+		me.doLayout();
+
 		//me.helpButton = new Ext.toolbar.Toolbar(me.getHelpButtonConfig());
 		//me.toggleButton = new Ext.toolbar.Toolbar(me.getToggleButtonConfig());
 		//me.username = new Ext.toolbar.TextItem({
@@ -175,11 +220,6 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 		//	}
 		//];
 		
-		
-		//Ext.defer(function(){
-		//	Ext.EventManager.on(me.configurePanel.getTabBar().body, "click", me.onTabBarClick, me);
-		//}, 1);
-		//me.b_collapseDirection = me.b_collapseDirection || Ext.Component.DIRECTION_TOP;
 		//me.updateUsername();
 	},
 	afterLayout: function(){
@@ -219,7 +259,6 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 					text: "退出",
 					tooltip: "安全退出Spyder系统",
 					handler: function(){
-						//var customerLoginServer = Beet.constants.customerLoginServer;
 						//customerLoginServer.Logout({
 						//	success: function(){
 						//		Ext.util.Cookies.clear("userName");
@@ -239,32 +278,32 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 	},
 	//右边区域
 	getHelpButtonConfig: function(){
-		var me = this, config;
-		config = {
-			layout: "fit",
-			items: [
-				{
-					xtype: "tool",
-					type: "restore",
-					handler: function(){
-						if (document.body.webkitRequestFullScreen){
-							document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
-						}else{
-							document.body.mozRequestFullScreen()
-						}
-						//refresh
-						setTimeout(function(){
-							location.reload();
-						}, 500);
+		//var me = this, config;
+		//config = {
+		//	layout: "fit",
+		//	items: [
+		//		{
+		//			xtype: "tool",
+		//			type: "restore",
+		//			handler: function(){
+		//				if (document.body.webkitRequestFullScreen){
+		//					document.body.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+		//				}else{
+		//					document.body.mozRequestFullScreen()
+		//				}
+		//				//refresh
+		//				setTimeout(function(){
+		//					location.reload();
+		//				}, 500);
 
-						//document.addEventListener("fullscreenchange", function(){
-						//	console.log(1)
-						//}, false)
-					},
-					tooltip: "切换至全屏模式"
-				}
-			]
-		}
+		//				//document.addEventListener("fullscreenchange", function(){
+		//				//	console.log(1)
+		//				//}, false)
+		//			},
+		//			tooltip: "切换至全屏模式"
+		//		}
+		//	]
+		//}
 		return config;
 	},
 	getToggleButtonConfig: function(){
