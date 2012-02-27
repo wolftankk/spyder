@@ -61,6 +61,26 @@ function arg($index=null, $path=null){
 	}
 }
 
+function post_string($index=null){
+	$tmp = $_POST;
+	$args = array();
+	foreach ($tmp as $k => $v){
+		if (empty($v)){
+			$args[$k] = true;
+		}else{
+			$args[$k] = $v;
+		}
+	}
+
+	if (!isset($index)){
+		return $args;
+	}
+	
+	if (isset($args[$index])){
+		return $args[$index];
+	}
+}
+
 /**
  * 获得查询字符串数据
  * @param Int $index

@@ -1,10 +1,13 @@
 <?php
 Class User{
 	private $uid;
-	
+
+	//需要验证这种方法的安全性
 	public function __construct($action){
-		if ($action == "Login"){
-			$this->Login($_POST["username"], $_POST["passwd"]);
+		if (method_exists($this, $action)){
+			call_user_func(array($this, $action));
+		}else{
+				send_ajax_response(array("result"=>"failure", "errors"=>"User.$action method has not existed."));
 		}
 	}
 
@@ -16,8 +19,11 @@ Class User{
 	 * default passwd: admin
 	 *
 	 */
-	function Login($user, $passwd){
+	public function Login(){
 		global $db;
+		$user = post_string("username");
+		$passwd = post_string("passwd");
+
 		$user = mysql_escape_string($user);
 		$sql = "SELECT uid, passwd, permissions, salt FROM spyder.users WHERE uname = '$user'";
 		$data = $db->get_one($sql);
@@ -44,6 +50,10 @@ Class User{
 				send_ajax_response(array("result"=>"failure", "errors"=>"密码错误"));
 			}
 		}
+	}
+
+	public function Logout(){
+		echo 1;
 	}
 }
 
