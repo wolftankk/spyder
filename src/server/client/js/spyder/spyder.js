@@ -51,10 +51,21 @@ Ext.Ajax.addListener("requestcomplete", function(conn, response, opts, eopts){
 /**
  *
  */
-function registerMenu(type, title, data){
-
+function registerMenu(type, data){
+	if (!Spyder.menus[type]){
+		throw new Error("This `" + type + "` has not registed")
+	}
+	if (!data){
+		throw new Error("This `data` must be defined");
+	}
+	setTimeout(function(){
+		var panel = Spyder.menus[type].panel;
+		if (!!panel){
+			panel.add(data);
+			panel.doLayout();	
+		}
+	}, 500)
 }
-
 
 Ext.define("Spyder.apps.HeaderPanel", {
 	extend: "Ext.panel.Panel",
