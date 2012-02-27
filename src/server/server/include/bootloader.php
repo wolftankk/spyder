@@ -101,7 +101,7 @@ function get_normal_path($path){
 	}
 
 	//check session id
-	if ($method == "user" && ($action == "login" || $action == "logout")){
+	if ($method == "user" && ($action == "Login" || $action == "Logout")){
 		//continue;
 	}else{
 		$sid = session_id();
