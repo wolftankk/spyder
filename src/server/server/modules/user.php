@@ -3,8 +3,8 @@ Class User{
 	private $uid;
 	
 	public function __construct($action){
-		if ($action == "login"){
-			$this->login($_POST["username"], $_POST["passwd"]);
+		if ($action == "Login"){
+			$this->Login($_POST["username"], $_POST["passwd"]);
 		}
 	}
 
@@ -16,7 +16,7 @@ Class User{
 	 * default passwd: admin
 	 *
 	 */
-	function login($user, $passwd){
+	function Login($user, $passwd){
 		global $db;
 		$user = mysql_escape_string($user);
 		$sql = "SELECT uid, passwd, permissions, salt FROM spyder.users WHERE uname = '$user'";
@@ -31,7 +31,6 @@ Class User{
 			
 			//firset check user name
 			$passwd = sha1($passwd . "{$data["salt"]}");
-
 			if ($passwd == $spasswd){
 				//无效用户
 				//if ($permissions & 16384){
@@ -39,7 +38,7 @@ Class User{
 				//}else{
 					session_regenerate_id(true);
 					setcookie("sid", session_id(), 0, "/");
-					send_ajax_response(array("result"=>"success", "data"=>array("uid"=>$uid, "permissions"=>$permissions)));
+					send_ajax_response(array("result"=>"success", "data"=>array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id())));
 				//}	
 			}else{
 				send_ajax_response(array("result"=>"failure", "errors"=>"密码错误"));

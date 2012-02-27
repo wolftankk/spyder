@@ -83,7 +83,7 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 					var usr = result["username"], passwd = result["password"];	
 
 					Ext.Ajax.request({
-						url: Spyder_server+"/user.login",
+						url: Spyder_server+"/user.Login",
 						method: "post",
 						params: {
 							username: usr,
@@ -97,10 +97,12 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 								if (data["result"] == "success"){
 									var useinfo = data["data"],
 										uid = useinfo["uid"],
+										sid = useinfo["sid"],
 										permissions = useinfo["permissions"];
 									Ext.util.Cookies.set("uname", usr);
 									Ext.util.Cookies.set("uid", uid);
 									Ext.util.Cookies.set("upermissions", permissions);
+									Ext.util.Cookies.set("sid", sid);
 									window.location = "main.html"
 								}else{
 									Ext.Msg.alert("登陆失败", "登陆失败");

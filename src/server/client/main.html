@@ -28,17 +28,14 @@
 			<script type="text/javascript">
 				var userId, sessionId;
 				Ext.onReady(function(){
-
 					Ext.create("Spyder.apps.HeaderPanel");
 					Ext.create("Spyder.apps.Viewport");
-
-					//var userId = Ext.util.Cookies.get("userId"),
-					//sessionId = Ext.util.Cookies.get("sid");
-					//if (!userId || !sessionId){
-					//	window.location = "index.html";
-					//}
+					var userId = Ext.util.Cookies.get("uid"),
+					sessionId = Ext.util.Cookies.get("sid");
+					if (!userId || !sessionId){
+						window.location = "index.html";
+					}
 				});
-	
 			</script>
 		</footer>	
 	</body>
