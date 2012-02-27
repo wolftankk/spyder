@@ -7,8 +7,8 @@ Spyder = {
 		VIEWPORT_HEIGHT: Ext.core.Element.getViewHeight() - 137
 	},
 	cache : {
-		menus = {},
-		containers = {}	
+		menus : {},
+		containers : {}	
 	},
 	menus : {
 		seeds: {
