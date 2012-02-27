@@ -9,18 +9,19 @@ Spyder = {
 	cache : {},
 	menus : {
 		seeds: {
-			title: "种子"
+			title: "种子",
+			menus: {}
 		},
 		articles:{
-			title: "文章"
+			title: "文章",
+			menus: {}
 		},
 		websites:{
-			title: "网站"
+			title: "网站",
+			menus: {}
 		}
 	}
 }
-
-
 
 if (!String.prototype.replaceAll){
 	String.prototype.replaceAll = function(reg, str){
@@ -48,19 +49,20 @@ Ext.Ajax.addListener("requestcomplete", function(conn, response, opts, eopts){
 	}
 });
 
-/**
- *
- */
-function registerMenu(type, data){
+function registerMenu(type, title, data){
 	if (!Spyder.menus[type]){
 		throw new Error("This `" + type + "` has not registed")
 	}
 	if (!data){
 		throw new Error("This `data` must be defined");
 	}
+	if (Spyder.menus[type].menus[title]){
+		throw new Error(title+" has registed");
+	}
 	setTimeout(function(){
 		var panel = Spyder.menus[type].panel;
 		if (!!panel){
+			Spyder.menus[type].menus[title] = data
 			panel.add(data);
 			panel.doLayout();	
 		}
@@ -86,7 +88,7 @@ Ext.define("Spyder.apps.HeaderPanel", {
 
 		//当框体变动的时候 进行自动调整大小
 		Ext.EventManager.onWindowResize(me.fireResize, me);
-		this.callParent(arguments);
+		me.callParent(arguments);
 		
 		me.add(me.configurePanel);
 		me.addDocked(Ext.create("Spyder.apps.HeaderToolbar", {
@@ -123,7 +125,7 @@ Ext.define("Spyder.apps.HeaderPanel", {
 				tabConfig: {
 					minWidth: 100
 				}
-			})
+			});
 		}
 
 		var config = {
