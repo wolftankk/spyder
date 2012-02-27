@@ -10,6 +10,7 @@ Spyder = {
 		menus : {},
 		containers : {}	
 	},
+	templates: {},
 	menus : {
 		seeds: {
 			title: "种子",
