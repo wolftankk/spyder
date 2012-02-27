@@ -89,6 +89,18 @@ Class User{
 			send_ajax_response(array("result"=>"success", "data"=>$data));
 		}
 	}
+
+	public function AddUser(){
+		global $db;
+	}
+
+	public function EditUser(){
+
+	}
+
+	public function DeleteUser(){
+
+	}
 }
 
 function module_user_init($action){
