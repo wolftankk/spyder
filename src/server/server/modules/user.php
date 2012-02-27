@@ -99,10 +99,12 @@ Class User{
 		global $db;
 	}
 
+	//check permission
 	public function EditUser(){
 
 	}
 
+	//need check permission
 	public function DeleteUser(){
 
 	}
