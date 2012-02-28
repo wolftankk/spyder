@@ -202,13 +202,15 @@ function send_ajax_response($type, $data){
 	echo json_encode($result);
 }
 
-function getCurrentPermissions(){
-	$sid = session_id();
-	if ($_SESSION[$sid] == null || empty($_SESSION[$sid]) || ($_SESSION[$sid] && $_SESSION[$sid]["permissions"] == null && $_SESSION[$sid]["permissions"] == 0)){
-		return 0;
-	}else{
-		return $_SESSION[$sid]["permissions"];
+function checkArgs($argName){
+	$arg = post_string($argName);
+	if ($arg == null || empty($arg)){
+		send_ajax_response("error", $argName . " cannot be empty");
+		exit();
 	}
+}
+
+function getCurrentPermissions($sid){
 }
 
 ?>

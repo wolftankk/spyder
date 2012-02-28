@@ -6,7 +6,7 @@ class Seed{
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
-				send_ajax_response("error", "seed.$action method has not existed.");
+			send_ajax_response("error", "seed.$action method has not existed.");
 		}
 	}
 
@@ -15,7 +15,7 @@ class Seed{
 	 * @params: seedJSON
 	 */
 	public function AddSeed(){
-
+		checkArgs("seedJSON");
 	}
 
 	/**
@@ -24,7 +24,8 @@ class Seed{
 	 * @params: seedJSON
 	 */
 	public function EditSeed(){
-
+		checkArgs("sid");
+		checkArgs("seedJSON");
 	}
 
 	/**
@@ -32,7 +33,7 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeed(){
-
+		checkArgs("sid");
 	}
 
 	/**
@@ -42,7 +43,9 @@ class Seed{
 	 * @params: AWhere
 	 */
 	public function GetSeedList(){
-
+		checkArgs("start");
+		checkArgs("limit");
+		checkArgs("AWhere");
 	}
 
 	/**
@@ -51,8 +54,7 @@ class Seed{
 	 */
 	public function AddSeedCategory(){
 		//$permissions = getCurrentPermissions();
-		//need args
-
+		checkArgs("seedCategoryJSON");
 		$data = JSON_decode(post_string("seedCategoryJSON"));
 		$name = $data->name;
 		$parentId = $data->parentid;
@@ -79,7 +81,10 @@ class Seed{
 	 * @params: seedCategoryJSON
 	 */
 	public function EditSeedCategory(){
-	
+		checkArgs("sid");
+		checkArgs("seedCategoryJSON");
+		$sid = post_string("sid");
+		$data = post_string("seedCategoryJSON");
 	}
 
 	/**
@@ -87,7 +92,7 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeedCategory(){
-
+		checkArgs("sid");
 	}
 
 	public function GetSeedCategoryList(){
