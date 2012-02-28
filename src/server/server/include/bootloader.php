@@ -1,6 +1,10 @@
 <?php
 require_once "common.inc";
 
+//load Memcache session service
+$M = new Memcache();
+$M->connect("127.0.0.1", 11211);
+
 function bootloader(){
 	setAllowHeader();
 	$result = path_init();
@@ -131,6 +135,7 @@ function get_normal_path($path){
 	}
 	$_method = $data->method;
 
+
 	if ($_method != $t){
 		send_ajax_response("error", "请求的方法不存在");
 		exit();
@@ -142,17 +147,23 @@ function get_normal_path($path){
 		}
 	}
 
+	global $M;
+	$_sid = null;
 	//check session id
 	if ($method == "user" && ($action == "Login")){
 		//continue;
 	}else{
-		$sid = session_id();
-		if (!$_COOKIE["sid"] || ($_COOKIE["sid"] && ($_COOKIE["sid"] != $sid))){
+		$_sid = $_COOKIE["sid"] ? $_COOKIE["sid"] : $data->id;
+		if (!$_sid || ($_sid && !$M->get($_sid))){
 			send_ajax_response("error", "Session $sid could not be found");
 			exit();
+		}elseif ($M->get($_sid)){
+			//refresh expire
+			$data = $M->get($_sid);
+			$M->replace($_sid, $data, false, 6000);
 		}
 	}
-	
+
 	$module = $method.".php";
 	if (in_array($module, $modules)){
 		$loadfile = MODULES_PATH.$module;
@@ -165,7 +176,7 @@ function get_normal_path($path){
 			}
 			$func = "module_".$method."_init";//call hook
 			if (function_exists($func)){
-				@call_user_func($func, $action);
+				@call_user_func($func, $action, $_sid);
 			}
 		}
 	}else{

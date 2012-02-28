@@ -370,9 +370,17 @@ Ext.define("Spyder.apps.seeds.AddSeedCategory", {
 									var form = me.form.getForm(),
 											results = me.form.getValues();
 
-									if (results["parentid"] == ""){
-										results["parentid"] = -1
-									}
+									//if (results["parentid"] == ""){
+									//	results["parentid"] = -1
+									//}
+
+									Spyder.constants.seedServer.AddSeedCategory(Ext.JSON.encode(results), {
+										success: function(){
+											
+										},
+										failure: function(){
+										}
+									})
 								}
 							},
 							{

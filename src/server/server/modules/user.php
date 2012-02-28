@@ -1,9 +1,10 @@
 <?php
 Class User{
-	private $uid;
+	private $sid;
 
 	//需要验证这种方法的安全性
-	public function __construct($action){
+	public function __construct($action, $sid){
+		$this->sid = $sid;
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
@@ -17,7 +18,7 @@ Class User{
 	 * @params: passwd
 	 */
 	public function Login(){
-		global $db;
+		global $db, $M;
 		//get data from $_POST
 		$user = post_string("username");
 		$passwd = post_string("passwd");
@@ -42,13 +43,12 @@ Class User{
 				//	send_ajax_response(array("result"=>"failure", "errors"=>"此用户无权登陆系统"));
 				//}else{
 					session_regenerate_id(true);
-					setcookie("sid", session_id(), 0, "/");
-					$_SESSION[session_id()] = array(
-						uid => $uid,
-						permissions => $permissions
-					);
-					$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
-					send_ajax_response("success", array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id()));
+					$sid = session_id();
+					setcookie("sid", $sid, 0, "/");
+					if ($M->add($sid, serialize(array("uid"=>$uid, "permissions"=>$permissions)), false, 6000)){
+						$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
+						send_ajax_response("success", array("uid"=>$uid, "permissions"=>$permissions, "sid"=>$sid));
+					}
 				//}	
 			}else{
 				send_ajax_response("error", "密码错误");
@@ -61,8 +61,8 @@ Class User{
 	 * @api: user.Logout
 	 */
 	public function Logout(){
-		$_SESSION[session_id()] = null;//remove
-		session_regenerate_id(true);
+		global $M;
+		$M->delete($this->sid);
 		setcookie("sid", 0, -99999, "/");
 		send_ajax_response("success", true);
 	}
@@ -125,7 +125,7 @@ Class User{
 	}
 }
 
-function module_user_init($action){
-	new User($action);
+function module_user_init($action, $sid){
+	new User($action, $sid);
 }
 ?>

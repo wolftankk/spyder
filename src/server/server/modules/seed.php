@@ -48,11 +48,11 @@ class Seed{
 	 * @params: seedCategoryJSON
 	 */
 	public function AddSeedCategory(){
-		$permissions = getCurrentPermissions();
+		//$permissions = getCurrentPermissions();
 		//need args
-		$name = trim(post_string("name"));
-		$parentId = trim(post_string("parentid"));
 
+		print_r(post_string("seedCategoryJSON"));
+		exit();
 		if ($name == null || empty($name)){
 			send_ajax_response(array("result"=>"failure", "errors" => "AddSeedCategory must need `name`"));
 			exit();
