@@ -373,26 +373,6 @@ Ext.define("Spyder.apps.seeds.AddSeedCategory", {
 									if (results["parentid"] == ""){
 										results["parentid"] = -1
 									}
-									//Ext.Ajax.request({
-									//	url: Spyder_server+"/seed.AddSeedCategory",
-									//	method: "post",
-									//	params: results,
-									//	success: function(response){
-									//		//var responseText = response.responseText;
-									//		//responseText = Ext.JSON.decode(responseText);
-									//		//if (responseText.data){
-									//		//	var data = responseText.data;
-									//		//	if (data["result"] == "success"){
-									//		//		if (data["data"]["cid"] > 0){
-									//		//			Ext.Msg.alert("添加成功", "添加分类成功");
-									//		//		}
-									//		//	}
-									//		//}
-									//	},
-									//	failure: function(){
-
-									//	}
-									//});
 								}
 							},
 							{

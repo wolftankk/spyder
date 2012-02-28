@@ -82,6 +82,14 @@ Ext.define("Spyder.apps.Login.LoginFormPanel", {
 					var result = form.getValues();
 					var usr = result["username"], passwd = result["password"];	
 
+					Spyder.constants.userServer.Login(usr, hex_md5(passwd), {
+						success: function(data){
+							console.log(data)	
+						},
+						failure: function(error){
+							console.log(error)
+						}
+					})
 					//Ext.Ajax.request({
 					//	url: Spyder_server+"/user.Login",
 					//	method: "post",

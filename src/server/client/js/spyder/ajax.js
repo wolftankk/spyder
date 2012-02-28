@@ -126,12 +126,12 @@
 					this.handleReadyState(o, callback);
 					
 					//preprocess
-					var sid = Ext.util.Cookies.get("sid");
-					if (sid || sid!=""){
-						var postData = Ext.JSON.decode(postData);
-						postData["id"] = sid;
-						postData = Ext.JSON.encode(postData);
-					}
+					//var sid = Ext.util.Cookies.get("sid");
+					//if (sid || sid!=""){
+					//	var postData = Ext.JSON.decode(postData);
+					//	postData["id"] = sid;
+					//	postData = Ext.JSON.encode(postData);
+					//}
 					o.conn.send(postData);
 
 					//fire start event
