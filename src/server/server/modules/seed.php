@@ -8,22 +8,45 @@ class Seed{
 		}
 	}
 
+	/**
+	 * @api: seed.AddSeed
+	 * @params: seedJSON
+	 */
 	public function AddSeed(){
 
 	}
 
+	/**
+	 * @api: seed.EditSeed
+	 * @params: sid
+	 * @params: seedJSON
+	 */
 	public function EditSeed(){
 
 	}
 
+	/**
+	 * @api: seed.DeleteSeed
+	 * @params: sid
+	 */
 	public function DeleteSeed(){
 
 	}
 
+	/**
+	 * @api: seed.GetSeedList
+	 * @params: start 
+	 * @params: limit
+	 * @params: AWhere
+	 */
 	public function GetSeedList(){
 
 	}
 
+	/**
+	 * @api: seed.AddSeedCategory
+	 * @params: seedCategoryJSON
+	 */
 	public function AddSeedCategory(){
 		$permissions = getCurrentPermissions();
 		//need args
@@ -45,21 +68,30 @@ class Seed{
 		send_ajax_response(array("result"=>"success", "data" =>array("cid" => $cid)));
 	}
 
+	/**
+	 * @api: seed.EditSeedCategory
+	 * @params: sid
+	 * @params: seedCategoryJSON
+	 */
 	public function EditSeedCategory(){
 	
 	}
 
+	/**
+	 * @api: seed.DeleteSeedCategory
+	 * @params: sid
+	 */
 	public function DeleteSeedCategory(){
 
 	}
 
-	//tree?
 	public function GetSeedCategoryList(){
 
 	}
 
-	/*
-	 * 批量启用/禁用种子采集
+	/**
+	 * @api: seed.ToggleSeed
+	 * @params: seedJSON
 	 */
 	public function ToggleSeed(){
 

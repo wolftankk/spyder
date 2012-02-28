@@ -12,12 +12,9 @@ Class User{
 	}
 
 	/**
-	 * user.login
-	 * User login spyder system
-	 *
-	 * default user: admin
-	 * default passwd: admin
-	 *
+	 * @api: user.Login
+	 * @params: username
+	 * @params: passwd
 	 */
 	public function Login(){
 		global $db;
@@ -60,6 +57,9 @@ Class User{
 		}
 	}
 
+	/**
+	 * @api: user.Logout
+	 */
 	public function Logout(){
 		$_SESSION[session_id()] = null;//remove
 		session_regenerate_id(true);
@@ -67,6 +67,10 @@ Class User{
 		send_ajax_response("success", true);
 	}
 
+	/**
+	 * @api: user.GetUserInfo
+	 * @params: uid
+	 */
 	public function GetUserInfo($uid = null){
 		$_tmp = null;
 		if ($uid && isset($uid)){
@@ -95,16 +99,27 @@ Class User{
 		}
 	}
 
+	/**
+	 * @api: user.AddUser
+	 * @params: userJSON
+	 */
 	public function AddUser(){
 		global $db;
 	}
 
-	//check permission
+	/**
+	 * @api: user.EditUser
+	 * @params: uid
+	 * @params: userJSON
+	 */
 	public function EditUser(){
 
 	}
 
-	//need check permission
+	/**
+	 * @api: user.DeleteUser
+	 * @params: uid
+	 */
 	public function DeleteUser(){
 
 	}
