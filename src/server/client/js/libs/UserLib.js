@@ -21,12 +21,12 @@ SpyderUserSvc.prototype.Login = function(username, passwd, __callback){
 				if (__result.error){
 					if ((typeof this.callback == "object") && this.callback.failure){
 						this.callback.failure(__result.error);
+					}
+				}else{
+					if ((typeof this.callback == "object") && this.callback.success){
+						this.callback.success(__result.result);
 					}else{
-						if ((typeof this.callback == "object") && this.callback.success){
-							this.callback.success(__result.result);
-						}else{
-							this.callback(__result.result);
-						}
+						this.callback(__result.result);
 					}
 				}
 			},
