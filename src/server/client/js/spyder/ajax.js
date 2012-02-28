@@ -126,10 +126,10 @@
 					this.handleReadyState(o, callback);
 					
 					//preprocess
-					_sid = Ext.util.Cookies.get("_sid");
-					if (_sid || _sid!=""){
+					var sid = Ext.util.Cookies.get("sid");
+					if (sid || sid!=""){
 						var postData = Ext.JSON.decode(postData);
-						postData["id"] = _sid;
+						postData["id"] = sid;
 						postData = Ext.JSON.encode(postData);
 					}
 					o.conn.send(postData);
@@ -181,7 +181,7 @@
 			if (MetaData == undefined){
 				return responeObject;
 			}
-			//
+
 			var keys = []
 			for (var c = 0; c < MetaData.length; ++c){
 				var _d = MetaData[c];
@@ -229,14 +229,6 @@
 				if (callback && callback.success){
 					var resp = Ext.JSON.decode(responeObject.responseText);
 
-					if (Ext.util.Cookies.get("firstRun")==null || Ext.util.Cookies.get("firstRun")){
-						var _sid = Ext.util.Cookies.get("_sid");
-						if (!resp["error"] || resp["error"] != ""){
-							_sid = resp["id"];
-							Ext.util.Cookies.set("_sid", _sid);
-						}
-					}
-					
 					if (resp.error){
 						var checkSession = new RegExp(/Session (.+)? could not be found/g);
 						if (checkSession.test(resp.error.message)){
@@ -255,8 +247,7 @@
 								msg: resp.error.message,
 								buttons: Ext.MessageBox.OK,
 								fn: function(btn){
-									//Ext.util.Cookies.clear();
-									//window.location = "index.html";
+									Ext.Error.raise(resp.error)
 								}
 							})
 						}
