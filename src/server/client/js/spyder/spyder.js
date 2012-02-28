@@ -255,19 +255,18 @@ Ext.define("Spyder.apps.HeaderToolbar", {
 					text: "退出",
 					tooltip: "安全退出Spyder系统",
 					handler: function(){
-						//Ext.Ajax.request({
-						//	url: Spyder_server+"/user.Logout",
-						//	method: "post",
-						//	success: function(response){
-						//		Ext.util.Cookies.clear("uname");
-						//		Ext.util.Cookies.clear("uis");
-						//		Ext.util.Cookies.clear("upermissions");
-						//		Ext.util.Cookies.clear("sid");
-						//		window.location = "index.html";	
-						//	},
-						//	failure: function(){
-						//	}
-						//});
+						Spyder.constants.userServer.Logout({
+							success: function(succ){
+								Ext.util.Cookies.clear("uname");
+								Ext.util.Cookies.clear("uis");
+								Ext.util.Cookies.clear("upermissions");
+								Ext.util.Cookies.clear("sid");
+								window.location = "index.html";	
+							},
+							failure: function(error){
+								Ext.Error.raise(error);
+							}
+						})
 					}
 				}
 			]

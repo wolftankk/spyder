@@ -244,7 +244,7 @@
 						}else{
 							Ext.MessageBox.show({
 								title: "错误",
-								msg: resp.error,
+								msg: resp.error.message,
 								buttons: Ext.MessageBox.OK,
 							})
 						}

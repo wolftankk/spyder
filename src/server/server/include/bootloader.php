@@ -130,13 +130,13 @@ function get_normal_path($path){
 		}
 	}
 	$_method = $data->method;
-	$_params = $data->params;
 
 	if ($_method != $t){
 		send_ajax_response("error", "请求的方法不存在");
 		exit();
 	}
-	if (is_object($_params)){
+	if ($data->params && is_object($data->params)){
+		$_params = $data->params;
 		foreach ($_params as $k => $v){
 			$_POST[$k] = $v;
 		}
