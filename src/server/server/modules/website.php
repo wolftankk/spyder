@@ -3,7 +3,7 @@ class Website{
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
-				send_ajax_response(array("result"=>"failure", "errors"=>"Website.$action method has not existed."));
+			send_ajax_response("error", "Website.$action method has not existed.");
 		}
 
 		public function AddWebsite(){

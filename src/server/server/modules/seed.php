@@ -4,7 +4,7 @@ class Seed{
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
-				send_ajax_response(array("result"=>"failure", "errors"=>"Seed.$action method has not existed."));
+				send_ajax_response("error", "seed.$action method has not existed.");
 		}
 	}
 
