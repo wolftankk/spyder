@@ -1,8 +1,8 @@
 <?php
 class Seed{
-	private $sid;
+	private $sessionId;
 	public function __construct($action, $sid){
-		$this->sid = $sid;
+		$this->sessionId = $sid;
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
@@ -33,6 +33,14 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeed(){
+		checkArgs("sid");
+	}
+
+	/**
+	 * @api: seed.TestSeed
+	 * @params: sid
+	 */
+	public function TestSeed(){
 		checkArgs("sid");
 	}
 
@@ -81,9 +89,9 @@ class Seed{
 	 * @params: seedCategoryJSON
 	 */
 	public function EditSeedCategory(){
-		checkArgs("sid");
+		checkArgs("cid");
 		checkArgs("seedCategoryJSON");
-		$sid = post_string("sid");
+		$sid = post_string("cid");
 		$data = post_string("seedCategoryJSON");
 	}
 
@@ -92,7 +100,7 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeedCategory(){
-		checkArgs("sid");
+		checkArgs("cid");
 	}
 
 	public function GetSeedCategoryList(){
