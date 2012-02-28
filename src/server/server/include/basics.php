@@ -202,11 +202,20 @@ function send_ajax_response($type, $data){
 	echo json_encode($result);
 }
 
-function checkArg($argName){
-	$arg = post_string($argName);
+function checkArg($argName, $obj = null){
+	if ($obj){
+		if (is_object($obj)){
+			$obj = get_object_vars($obj);
+		}
+		$arg = $obj[$argName];
+	}else{
+		$arg = post_string($argName);
+	}
 	if ($arg == null || empty($arg)){
 		send_ajax_response("error", $argName . " cannot be empty");
 		exit();
+	}else{
+		return trim($obj[$argName]);
 	}
 }
 

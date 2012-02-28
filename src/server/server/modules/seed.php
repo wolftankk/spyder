@@ -16,6 +16,9 @@ class Seed{
 	 */
 	public function AddSeed(){
 		checkArgs("seedJSON");
+		$data = json_decode(post_string("seedJSON"));
+		$sname = checkArg("sname", $data);
+		echo $sname;
 	}
 
 	/**

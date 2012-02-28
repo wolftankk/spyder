@@ -102,7 +102,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 						},
 						{
 							fieldLabel: "所属类别",
-							allowBlank: false,
+							//allowBlank: false,
 							name: "cid"
 						},
 						{
@@ -133,6 +133,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 						{
 							xtype: "checkboxfield",
 							fieldLabel: "启用",
+							inputValue: true,
 							name: "enabled"
 						},
 						{
@@ -215,20 +216,27 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 									allowBlank: false
 								},
 								{
-									fieldLabel: "tags正则"
+									fieldLabel: "tags正则",
+									name: "article[tagparent]"
 								},
 								{
 									fieldLabel: "作者正则",
+									name: "article[authorparent]"
 								},
 								{
-									fieldLabel: "文章正文正则"
+									fieldLabel: "文章正文正则",
+									name: "article[contextparent]",
+									allowBlank: false
 								},
 								{
-									fieldLabel: "文章页面正则"
-								},
+									fieldLabel: "文章页数正则",
+									name: "article[pageparent]",
+									allowBlank: false
+								}
+								/*批量过滤正则
 								{
 									fieldLabel: "文章过滤正则"//array
-								}
+								}*/
 							]
 						},
 						{
@@ -236,7 +244,19 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							text: "submit",
 							handler: function(){
 								var form = me.form.getForm();
-								console.log(form.getValues())
+								Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
+									success: function(){
+									},
+									failure: function(){
+									}
+								})
+							}
+						},
+						{
+							xtype: "button",
+							text: "重置",
+							handler: function(){
+								me.form.getForm().reset();
 							}
 						}
 					]
