@@ -29,7 +29,7 @@ Class User{
 		$sql = "SELECT uid, passwd, permissions, salt FROM spyder.users WHERE uname = '$user'";
 		$data = $db->get_one($sql);
 		if (!is_array($data) || sizeof($data) == 0){
-			send_ajax_response(array("result"=>"failure", "errors" => "用户不存在"));
+			send_ajax_response("error", "用户不存在");
 			exit();
 		}elseif ($data && $data["uid"] && $data["passwd"]){
 			$uid = $data["uid"];
@@ -51,10 +51,10 @@ Class User{
 						permissions => $permissions
 					);
 					$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
-					send_ajax_response(array("result"=>"success", "data"=>array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id())));
+					send_ajax_response("success", array("uid"=>$uid, "permissions"=>$permissions, "sid"=>session_id()));
 				//}	
 			}else{
-				send_ajax_response(array("result"=>"failure", "errors"=>"密码错误"));
+				send_ajax_response("error", "密码错误");
 				exit();
 			}
 		}
@@ -64,7 +64,7 @@ Class User{
 		$_SESSION[session_id()] = null;//remove
 		session_regenerate_id(true);
 		setcookie("sid", 0, -99999, "/");
-		send_ajax_response(array("result"=>"success", "data"=>array("success"=>true)));
+		send_ajax_response("success", true);
 	}
 
 	public function GetUserInfo($uid = null){
@@ -77,7 +77,7 @@ Class User{
 		$uid = $_tmp;
 
 		if (!isset($uid) && empty($uid)){
-			send_ajax_response(array("result"=>"failure", "errors"=>"uid can not null"));
+			send_ajax_response("error", "uid can not null");
 			exit();
 		}
 
@@ -87,11 +87,11 @@ Class User{
 		$sql = "SELECT uname, email, permissions, createtime, lastlogintime FROM spyder.users WHERE uid = $uid";
 		$data = $db->get_one($sql);
 		if (!is_array($data) || sizeof($data) == 0){
-			send_ajax_response(array("result"=>"failure", "errors" => "用户不存在"));
+			send_ajax_response("errors",  "用户不存在");
 			exit();
 		}elseif ($data && $data["uname"]){
 			$data["uid"] = $uid;
-			send_ajax_response(array("result"=>"success", "data"=>$data));
+			send_ajax_response("success", $data);
 		}
 	}
 

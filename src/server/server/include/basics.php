@@ -182,14 +182,24 @@ function clearCache(){
 	
 }
 
-function send_ajax_response($data){
+function send_ajax_response($type, $data){
 	header("Content-type: application/json");
-	$data = array(
-		"version" => "1.0",
-		"data" => $data
-	);
 
-	echo json_encode($data);
+	$result = array(
+		"id" => session_id(),
+		"version" => "1.0"
+	);
+	
+	if ($type == "error"){
+		$result["error"] = $data;
+	}elseif ($type == "success"){
+		if ($data && is_array($data)){
+			$data = json_encode($data);
+		}
+		$result["result"] = $data;
+	}
+
+	echo json_encode($result);
 }
 
 function getCurrentPermissions(){

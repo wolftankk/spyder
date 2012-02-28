@@ -120,13 +120,35 @@ function get_normal_path($path){
 		return;
 	}
 
+	$data = $_POST["data"];
+	if ($data && is_string($data)){
+		try{
+			$data = json_decode($data);
+		}catch (Exception $e){
+			send_ajax_response("error", $e->getMessage());
+			exit();
+		}
+	}
+	$_method = $data->method;
+	$_params = $data->params;
+
+	if ($_method != $t){
+		send_ajax_response("error", "请求的方法不存在");
+		exit();
+	}
+	if (is_object($_params)){
+		foreach ($_params as $k => $v){
+			$_POST[$k] = $v;
+		}
+	}
+
 	//check session id
 	if ($method == "user" && ($action == "Login")){
 		//continue;
 	}else{
 		$sid = session_id();
 		if (!$_COOKIE["sid"] || ($_COOKIE["sid"] && ($_COOKIE["sid"] != $sid))){
-			send_ajax_response(array("result"=>"relogin"));
+			send_ajax_response("error", "Session $sid could not be found");
 			exit();
 		}
 	}

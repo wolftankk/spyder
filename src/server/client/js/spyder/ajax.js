@@ -132,7 +132,7 @@
 					//	postData["id"] = sid;
 					//	postData = Ext.JSON.encode(postData);
 					//}
-					o.conn.send(postData);
+					o.conn.send("data="+postData);
 
 					//fire start event
 
@@ -244,15 +244,12 @@
 						}else{
 							Ext.MessageBox.show({
 								title: "错误",
-								msg: resp.error.message,
+								msg: resp.error,
 								buttons: Ext.MessageBox.OK,
-								fn: function(btn){
-									Ext.Error.raise(resp.error)
-								}
 							})
 						}
 					}
-
+				
 					responeObject = this.restoreResponeObject(responeObject);
 									
 					if (!callback.scope){
