@@ -202,11 +202,18 @@ function send_ajax_response($type, $data){
 	echo json_encode($result);
 }
 
-function checkArgs($argName){
+function checkArg($argName){
 	$arg = post_string($argName);
 	if ($arg == null || empty($arg)){
 		send_ajax_response("error", $argName . " cannot be empty");
 		exit();
+	}
+}
+
+function checkArgs(){
+	$args = func_get_args();
+	for ($c = 0; $c < count($args); $c++){
+		checkArg($args[$c]);	
 	}
 }
 

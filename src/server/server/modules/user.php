@@ -19,6 +19,9 @@ Class User{
 	 */
 	public function Login(){
 		global $db, $M;
+		
+		checkArgs("username", "passwd");
+
 		//get data from $_POST
 		$user = post_string("username");
 		$passwd = post_string("passwd");
