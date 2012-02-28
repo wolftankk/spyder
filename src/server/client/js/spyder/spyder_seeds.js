@@ -272,7 +272,7 @@ registerMenu("seeds", "seedAdmin", {
 				if (!item){
 					Spyder.workspace.addPanel("addSeed", "添加种子分类", {
 						items: [
-								Ext.create("Spyder.apps.seeds.AddSeedCategory")
+							Ext.create("Spyder.apps.seeds.AddSeedCategory")
 						]	
 					})
 				}
@@ -370,15 +370,14 @@ Ext.define("Spyder.apps.seeds.AddSeedCategory", {
 									var form = me.form.getForm(),
 											results = me.form.getValues();
 
-									//if (results["parentid"] == ""){
-									//	results["parentid"] = -1
-									//}
-
 									Spyder.constants.seedServer.AddSeedCategory(Ext.JSON.encode(results), {
-										success: function(){
-											
+										success: function(cid){
+											if (cid > 0){
+												Ext.Msg.alert("成功", "添加成功");
+											}
 										},
-										failure: function(){
+										failure: function(error){
+											Ext.Error.raise(error);
 										}
 									})
 								}

@@ -1,6 +1,8 @@
 <?php
 class Seed{
-	public function __construct($action){
+	private $sid;
+	public function __construct($action, $sid){
+		$this->sid = $sid;
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
@@ -51,8 +53,10 @@ class Seed{
 		//$permissions = getCurrentPermissions();
 		//need args
 
-		print_r(post_string("seedCategoryJSON"));
-		exit();
+		$data = JSON_decode(post_string("seedCategoryJSON"));
+		$name = $data->name;
+		$parentId = $data->parentid;
+
 		if ($name == null || empty($name)){
 			send_ajax_response(array("result"=>"failure", "errors" => "AddSeedCategory must need `name`"));
 			exit();
@@ -61,11 +65,12 @@ class Seed{
 		if ($parentId == null || empty($parentId) || strlen($parentId) == 0){
 			$parentId = -1;
 		}
+
 		$name = mysql_escape_string($name);
 		global $db;
-		$db-query("INSERT INTO spyder.seed_category SET pid = '$parentId', cname = '$name'");
+		$db->query("INSERT INTO spyder.seed_category (pid, cname) VALUES ('$parentId','$name')");
 		$cid = $db->insert_id();
-		send_ajax_response(array("result"=>"success", "data" =>array("cid" => $cid)));
+		send_ajax_response("success", $cid);
 	}
 
 	/**
@@ -98,7 +103,7 @@ class Seed{
 	}
 }
 
-function module_seed_init($action){
-	new Seed($action);
+function module_seed_init($action, $sid){
+	new Seed($action, $sid);
 }
 ?>
