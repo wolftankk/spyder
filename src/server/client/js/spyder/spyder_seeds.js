@@ -244,11 +244,14 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							text: "submit",
 							handler: function(){
 								var form = me.form.getForm();
-								console.log(form.getValues());
 								Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
-									success: function(){
+									success: function(sid){
+										if (sid){
+											Ext.Msg.alert("添加成功", "添加种子成功");
+										}
 									},
-									failure: function(){
+									failure: function(error){
+										Ext.Error.raise(error);
 									}
 								})
 							}

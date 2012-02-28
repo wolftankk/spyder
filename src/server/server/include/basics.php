@@ -197,6 +197,8 @@ function send_ajax_response($type, $data){
 			$data = json_encode($data);
 		}
 		$result["result"] = $data;
+	}else{
+		$result["error"] = array("message" => "意外错误!");
 	}
 
 	echo json_encode($result);

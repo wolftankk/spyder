@@ -18,7 +18,9 @@ class Seed{
 		checkArgs("seedJSON");
 		
 		//json_decode 有问题
-		$data = json_decode(post_string("seedJSON"));
+		$data = post_string("seedJSON");
+		$data = json_decode($data);
+
 		$sname = checkArg("sname", $data);
 		$url = checkArg("url", $data);
 		$charset = checkArg("charset", $data);
@@ -28,6 +30,7 @@ class Seed{
 		$enabled = checkArg("enabled", $data);
 
 		$data = get_object_vars($data);
+
 		//0 undefined category
 		$cid = $data["cid"] ? $data["cid"] : 0;
 		$list = array(
@@ -63,7 +66,7 @@ class Seed{
 		$permissions = $userInfo["permissions"];
 
 		global $db;
-		$sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, enabled, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$enabled', '" . serialize($rule) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
+		$sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, enabled, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$enabled', '" . mysql_escape_string(serialize($rule)) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
 		$db->query($sql);
 		$sid = $db->insert_id();
 		send_ajax_response("success", $sid);

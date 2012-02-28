@@ -57,7 +57,7 @@ class Crow{
 				if ($debug){
 					$this->halt('MySQL Query Error', $sql);
 				}else{
-					send_ajax_response(array("result"=>"failure", "errors"=>"Syntax Error"));
+					send_ajax_response("error", "SQL Error: ".$this->error());
 					exit();
 					//call_404_page();
 				}
