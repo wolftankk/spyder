@@ -244,6 +244,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							text: "submit",
 							handler: function(){
 								var form = me.form.getForm();
+								console.log(form.getValues());
 								Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
 									success: function(){
 									},

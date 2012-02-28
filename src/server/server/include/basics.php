@@ -226,7 +226,12 @@ function checkArgs(){
 	}
 }
 
-function getCurrentPermissions($sid){
+function getCurrentSessionData($sid){
+	global $M;
+	$data = $M->get($sid);
+	if ($data){
+		return unserialize($data);
+	}
 }
 
 ?>

@@ -16,9 +16,57 @@ class Seed{
 	 */
 	public function AddSeed(){
 		checkArgs("seedJSON");
+		
+		//json_decode 有问题
 		$data = json_decode(post_string("seedJSON"));
 		$sname = checkArg("sname", $data);
-		echo $sname;
+		$url = checkArg("url", $data);
+		$charset = checkArg("charset", $data);
+		$frequency = checkArg("frequency", $data);
+		$timeout = checkArg("timeout", $data);
+		$tries = checkArg("tries", $data);
+		$enabled = checkArg("enabled", $data);
+
+		$data = get_object_vars($data);
+		//0 undefined category
+		$cid = $data["cid"] ? $data["cid"] : 0;
+		$list = array(
+			"urlformat" => $data["list[urlformat]"],
+			"startpage" => $data["list[startpage]"],
+			"maxpage" => $data["list[maxpage]"],
+			"step" => $data["list[step]"],
+			"listparent" => $data["list[listparent]"],
+			"entryparent" => $data["list[entryparent]"],
+			"articleparent" => $data["list[articleparent]"],
+			"titleparent" => $data["list[titleparent]"],
+			"dateparent" => $data["list[dateparent]"]
+		); 
+		$article = array(
+			"articleparent" => $data["article[articleparent]"],
+			"titleparent"   => $data["article[titleparent]"],
+			"tagsparent"    => $data["article[tagparten]"],
+			"authorparent"  => $data["article[authorparent]"],
+			"contextparent" => $data["article[contextparent]"],
+			"pageparent"    => $data["article[pageparent]"]
+		);
+
+		$rule = array(
+			"list" => $list,
+			"article" => $article
+		);
+
+		$createdTime = time();
+
+		//get uid
+		$userInfo = getCurrentSessionData($this->sessionId);
+		$uid = $userInfo["uid"];
+		$permissions = $userInfo["permissions"];
+
+		global $db;
+		$sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, enabled, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$enabled', '" . serialize($rule) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
+		$db->query($sql);
+		$sid = $db->insert_id();
+		send_ajax_response("success", $sid);
 	}
 
 	/**
