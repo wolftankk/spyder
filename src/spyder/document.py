@@ -152,17 +152,27 @@ class Fetch(object):
 
 	def read(self):
 		if self.site:
+			doc = self.site.read()
 			try:
-				doc = self.site.read().decode(self.charset);
+				doc = doc.decode(self.charset);
 				return doc
 			except UnicodeDecodeError:
-				print self.url
+				#读取里面的metadata
+				content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
+				result = re.match(r'text\/html;\s+?charset=(.+)?', content)
+				if result:
+					charset = result.group(1)
+					try:
+						doc = doc.decode(charset)
+						return doc
+					except UnicodeDecodeError:
+						return doc.decode(charset, "ignore")
 		else:
 			return None
 		
 		
 if __name__ == "__main__":
-	Fetch("http://www.265g.com/news/201105/132396.html", "gbk")
+	Fetch("http://www.265g.com/news/201105/132396.html", "gbk").read()
 	r"""
 	#news list
 	import urllib
