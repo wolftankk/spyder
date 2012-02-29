@@ -80,6 +80,52 @@ class Document(object):
 		self.articleRule = seed.rule.getArticleRule();
 
 		self.content = ""
+		self.pages   = []
+
+		self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
+
+		self.parse(self.firstPage, True)
+
+		print self.content
+
+	def parse(self, doc, first=False):
+		doc = pq(doc);
+		article = doc.find(self.articleRule.getWrapParent())
+
+		def getContent():
+			self.content = self.content + article(self.articleRule.getContentParent()).html()
+		if first:
+			#need parse pages, title, tags
+
+			####title
+			title = getElementData(article, self.articleRule.getTitleParent()).strip();
+
+			#pages
+			self.parsePage(article)
+
+			#get content
+			getContent();
+
+			for purl in self.pages:
+				self.parse(purl)
+
+		#context
+		#_context = article("div[class='contF']").remove("script").remove('p[align="right"]')
+		getContent();
+
+
+	def parsePage(self, doc):
+		pages = doc.find(self.articleRule.getPageParent())
+		if len(pages):
+			for p in pages:
+				p = pq(p)
+				url = p.attr("href")
+				linkText = p.text().strip()
+				if re.match(r"[0-9]+?", linkText):
+					#filter javascript
+					if re.match(r"javascript", url) == None:
+						url = urlparse.urljoin(self.url, url)
+						self.pages.append(url)
 
 
 class Fetch(object):

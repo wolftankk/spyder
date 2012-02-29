@@ -280,15 +280,24 @@ class RuleArticle(object):
 
 		self.pageparent = rule["pageparent"] #page
 		self.wrapparent = rule["articleparent"]#文章位置
-		self.contextparent = rule["contextparent"]
+		self.contentparent = rule["contextparent"]
 		#self.contextfilters = rule["filters"]
 
 		self.tagsparent = rule["tagsparent"]
-		self.titlepartent = rule["titleparent"]
+		self.titleparent = rule["titleparent"]
 		self.authorpartent = rule["authorparent"]
 
+	def getWrapParent(self):
+		return self.wrapparent
 
+	def getTitleParent(self):
+		return self.titleparent
 
+	def getPageParent(self):
+		return self.pageparent
+
+	def getContentParent(self):
+		return self.contentparent
 
 r"""
 Rule
