@@ -42,6 +42,7 @@ class Grab(object):
 		if len(self.items.items()):
 			for url in self.items:
 				self.items[url]["article"] = Document(url, seed)
+				print self.items[url]["article"] 
 				
 	
 	def parseDoc(self, doc):
@@ -94,12 +95,15 @@ class Document(object):
 		article = doc.find(self.articleRule.getWrapParent())
 
 		def getContent():
-			self.content = self.content + article(self.articleRule.getContentParent()).html()
+			content = article(self.articleRule.getContentParent()).html()
+			if content:
+				self.content = self.content +  content
+
 		if first:
 			#need parse pages, title, tags
 
 			####title
-			self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent()).strip();
+			self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent())
 
 			#pages
 			self.parsePage(article)
@@ -148,12 +152,17 @@ class Fetch(object):
 
 	def read(self):
 		if self.site:
-			return self.site.read().decode(self.charset);
+			try:
+				doc = self.site.read().decode(self.charset);
+				return doc
+			except UnicodeDecodeError:
+				print self.url
 		else:
 			return None
 		
 		
 if __name__ == "__main__":
+	Fetch("http://www.265g.com/news/201105/132396.html", "gbk")
 	r"""
 	#news list
 	import urllib

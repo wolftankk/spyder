@@ -84,7 +84,6 @@ class Spyder(object):
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
 			docData = Grab(seed);
-			print docData
 		#	#frequency  = seed.frequency
 		#	#finishtime = seed.finishtime
 		#	#starttime  = seed.starttime
