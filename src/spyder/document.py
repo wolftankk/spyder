@@ -41,9 +41,7 @@ class Grab(object):
 		
 		if len(self.items.items()):
 			for url in self.items:
-				#self.items[url]["article"] = {};
-				Document(url, seed)
-				break
+				self.items[url]["article"] = Document(url, seed)
 				
 	
 	def parseDoc(self, doc):
@@ -81,12 +79,15 @@ class Document(object):
 
 		self.content = ""
 		self.pages   = []
+		self.contentData = {}
 
 		self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
 
 		self.parse(self.firstPage, True)
+		self.contentData["content"] = self.content
 
-		print self.content
+	def getContentData(self):
+		return self.contentData
 
 	def parse(self, doc, first=False):
 		doc = pq(doc);
@@ -98,11 +99,11 @@ class Document(object):
 			#need parse pages, title, tags
 
 			####title
-			title = getElementData(article, self.articleRule.getTitleParent()).strip();
+			self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent()).strip();
 
 			#pages
 			self.parsePage(article)
-
+			
 			#get content
 			getContent();
 
