@@ -11,6 +11,7 @@ from config import DBCONFIG
 from pybits import ansicolor
 
 from seed import Seed
+from document import Grab 
 
 
 # config db and launcher mysql
@@ -66,6 +67,7 @@ class Spyder(object):
 		for x in range(0, len(data)):
 			seedInfo = data[x]
 			sid = int(seedInfo["sid"]);
+			#init seed and format
 			self.spiderList[sid] = Seed(seedInfo)
 
 
@@ -75,11 +77,12 @@ class Spyder(object):
 
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
-			#frequency  = seed.frequency
-			#finishtime = seed.finishtime
-			#starttime  = seed.starttime
-			#if self.queue[sid] == None:
-			#	print 1
+			docData = Grab(seed);
+		#	#frequency  = seed.frequency
+		#	#finishtime = seed.finishtime
+		#	#starttime  = seed.starttime
+		#	#if self.queue[sid] == None:
+		#	#	print 1
 
 	# force: true/false
 	def refreshList(self, force):

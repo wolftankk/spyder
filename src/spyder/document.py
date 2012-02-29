@@ -2,25 +2,105 @@
 
 from pyquery import PyQuery as pq
 from pybits import ansicolor
-import re
+import re, urllib2, urlparse
 
-class Document(object):
-	def __init__(self, doc):
-		self.doc = doc
+r"""
+ getElementData(doc, "a", text)
+	=> pq(doc.find("a").text())
+
+	@href => getAttr
+	#text => method
+
+"""
+def getElementData(obj, token):
+	#parse token
+	p = re.compile("(\w+?)\[([@|#])?(\w+)?\]");
+	m = p.match(token);
+	if m:
+		tag, flag, val = m.groups() 
+		d = pq(obj.find(tag))
+		if flag == "@":
+			return d.attr(val);
+		elif flag == "#":
+			#目前没找其他方法....
+			return eval("d."+val+"()");
+
+#Grab List
+class Grab(object):
+	def __init__(self, seed):
+		rule = seed.rule;
+		self.listRule = rule.getListRule();
+		self.listRule.setPrefixUrl(seed.prefixurl);
+		self.prefixurl = seed.prefixurl;
+		listUrls = self.listRule.getFormatedUrls();
+		for url in listUrls:
+			doc = Fetch(url, seed.charset, seed.timeout).read()
+			if doc:
+				self.parseDoc(doc)
+	
+	def parseDoc(self, doc):
+		doc = pq(doc);
+		list = doc.find(self.listRule.getListParent());
+		self.items = []
+		if list:
+			def entry(i, e):
+				#link
+				url = self.listRule.getItemLink()
+				link = getElementData(e, url)
+				link = urlparse.urljoin(self.prefixurl, link);
+
+				#title
+				title = getElementData(e, self.listRule.getItemTitle());
+
+				#date
+				dateparent = self.listRule.getItemDate();
+				date = None
+				if dateparent:
+					date = getElementData(e, self.listRule.getItemDate());
+
+
+				self.items.append({
+					"url" : link,
+					"title" : title,
+					"date" : date
+				})
+
+			list(self.listRule.getEntryItem()).map(entry)
+			print self.items
+
+
+class Fetch(object):
+	def __init__(self, url, charset, timeout = 300):
+		self.url = url;
+		self.charset = charset;
+		self.timeout = timeout;
+		self.site = None
+
+		self.openSite();
+		
+	def openSite(self):
+		self.request = urllib2.Request(self.url);
+		self.request.add_header("User-Agent", "Mozilla/5.0");
 		try:
-			self.query = pq(doc);
-		except e:
-			print e
+			self.site = urllib2.urlopen(self.request, timeout = self.timeout)
+		except urllib2.HTTPError, e:
+			print (self.url, e)
 
-
-
-
+	def read(self):
+		if self.site:
+			return self.site.read().decode(self.charset);
+		else:
+			return None
+		
+		
 if __name__ == "__main__":
+	r"""
 	#news list
 	import urllib
 	url = "http://www.265g.com/chanye/industry/"
-	site = urllib.urlopen(url)
-	doc = site.read().decode("gbk")
+	site = Fetch(url, "gbk")
+	doc = site.read()
+
 	d = pq(doc)
 
 	#listparent
@@ -90,4 +170,4 @@ if __name__ == "__main__":
 				article = doc.find("div[class='box02 mar_t0 mar_b5']")
 				context = context + getContext(article);
 		print context
-
+	"""

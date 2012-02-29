@@ -1,7 +1,7 @@
 #coding: utf-8
 
 from pybits import ansicolor
-import re
+import re, string, urlparse
 import phpserialize
 
 class SeedEmpty(Exception): pass
@@ -125,7 +125,26 @@ class Seed(object):
 		self._finishtime = int(value)
 
 
-class RuleUrlInvalid(Exception): pass
+class Rule(object):
+	def __init__(self, rule):
+		self.list = None
+		self.article = None
+
+		rule = phpserialize.unserialize(rule)
+		if (rule["list"] != None):
+			list = rule["list"]
+			self.list = RuleList(list)
+
+		#if (rule["article"] != None):
+		#	article = rule["list"]
+		#	self.article = RuleArticle(article)
+
+	def getListRule(self):
+		return self.list
+
+	def getArticleRule(self):
+		return self.article
+
 
 r'''
 Exp: http://www.265g.com/chanye/hot/4985-1.html
@@ -164,20 +183,30 @@ $list = array(
 class RuleList(object):
 	def __init__(self, rule):
 		self.originRule = rule
-		self.urlprefix = rule["urlprefix"]
 		self.type = "default"
 	
+		#url 批量格式
 		self.urlformat = rule["urlformat"]
 		self.step = rule["step"]
+		#起始页数
 		self.startpage = rule["startpage"]
+		#结束页数
 		self.maxpage = rule["maxpage"]
 
+		#获取list元素
 		self.listparent = rule["listparent"]
+		#获取list=>item元素
 		self.entryparent = rule["entryparent"]
 
+		#获取日期元素
 		self.dateparent = rule["dateparent"]
-		self.titleparten = rule["titleparten"]
-		self.articaleurl = rule["articaleurl"]
+		#获取标题元素
+		self.titleparent = rule["titleparent"]
+		#获取link元素
+		self.linkparent = rule["articleparent"]
+
+	def setPrefixUrl(self, url):
+		self.prefixurl = url
 
 	def getListParent(self):
 		#exp: div[class=cont_list]ul
@@ -189,10 +218,24 @@ class RuleList(object):
 		#exp: <li></li>
 		return self.entryparent
 
-	def getFormatedUrls(self):
-		urls = [];
-		#self.urlformat cannot empty
+	def getItemLink(self):
+		if self.linkparent == None:
+			self.linkparent = "a[@href]";
+		
+		return self.linkparent
 
+	def getItemTitle(self):
+		if self.titleparent == None:
+			self.titleparent = "a[#text]"
+
+		return self.titleparent
+
+	def getItemDate(self):
+		return self.dateparent
+
+
+	def getFormatedUrls(self):
+		listUrls = [];
 		if self.type == "ajax":
 			r"""
 			intsall cookiejar
@@ -210,13 +253,16 @@ class RuleList(object):
 			if self.step == None:
 				self.step = 1
 
+			self.startpage = int(self.startpage)
+			self.maxpage   = int(self.maxpage)
+			urlformat = string.Template(self.urlformat);
 			for i in range(self.startpage, self.maxpage+1):
 				#set step
-				url = self.urlformat % (i)
-				urls.append(url)
+				url = urlformat.substitute(page=i);
+				url = urlparse.urljoin(self.prefixurl, url);
+				listUrls.append(url)
 
-		self._urls = urls
-		return urls
+		return listUrls
 
 r'''
 preurl
@@ -245,25 +291,6 @@ class RuleArticle(object):
 
 	
 
-class Rule(object):
-	def __init__(self, rule):
-		self.list = None
-		self.article = None
-
-		rule = phpserialize.unserialize(rule)
-		if (rule["list"] != None):
-			list = rule["list"]
-			self.list = RuleList(list)
-
-		if (rule["article"] != None):
-			article = rule["list"]
-			self.article = RuleArticle(article)
-
-	def getListRule(self):
-		return self.list
-
-	def getArticleRule(self):
-		return self.article
 
 
 
