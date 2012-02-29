@@ -135,9 +135,9 @@ class Rule(object):
 			list = rule["list"]
 			self.list = RuleList(list)
 
-		#if (rule["article"] != None):
-		#	article = rule["list"]
-		#	self.article = RuleArticle(article)
+		if (rule["article"] != None):
+			article = rule["article"]
+			self.article = RuleArticle(article)
 
 	def getListRule(self):
 		return self.list
@@ -278,18 +278,14 @@ class RuleArticle(object):
 	def __init__(self, rule):
 		self.rule = rule
 
-		self.pageparent = rule["pageparent"]#page
+		self.pageparent = rule["pageparent"] #page
 		self.wrapparent = rule["articleparent"]#文章位置
 		self.contextparent = rule["contextparent"]
-		self.contextfilters = rule["filters"]
+		#self.contextfilters = rule["filters"]
 
-		self.tagsparent = rule["tagparent"]
-		self.titlepartent = rule["titleparten"]
-		self.authorpartent = rule["authorpartent"]
-
-		self.prefixUrl = ""
-
-	
+		self.tagsparent = rule["tagsparent"]
+		self.titlepartent = rule["titleparent"]
+		self.authorpartent = rule["authorparent"]
 
 
 

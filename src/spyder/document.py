@@ -33,15 +33,22 @@ class Grab(object):
 		self.listRule.setPrefixUrl(seed.prefixurl);
 		self.prefixurl = seed.prefixurl;
 		listUrls = self.listRule.getFormatedUrls();
+		self.items = {}
 		for url in listUrls:
 			doc = Fetch(url, seed.charset, seed.timeout).read()
 			if doc:
 				self.parseDoc(doc)
+		
+		if len(self.items.items()):
+			for url in self.items:
+				#self.items[url]["article"] = {};
+				Document(url, seed)
+				break
+				
 	
 	def parseDoc(self, doc):
 		doc = pq(doc);
 		list = doc.find(self.listRule.getListParent());
-		self.items = []
 		if list:
 			def entry(i, e):
 				#link
@@ -59,14 +66,20 @@ class Grab(object):
 					date = getElementData(e, self.listRule.getItemDate());
 
 
-				self.items.append({
+				self.items[link] = {
 					"url" : link,
 					"title" : title,
 					"date" : date
-				})
+				}
 
 			list(self.listRule.getEntryItem()).map(entry)
-			print self.items
+
+class Document(object):
+	def __init__(self, url, seed):
+		self.url = url;
+		self.articleRule = seed.rule.getArticleRule();
+
+		self.content = ""
 
 
 class Fetch(object):

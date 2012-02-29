@@ -33,6 +33,12 @@ db.query("SET NAMES UTF8")
 #	def __init__(self):
 #		threading.Thread.__init__(self);
 
+
+#class Store(object):
+#	def __init__(self):
+#		self.db = db;
+
+
 def now():
 	return int(time.time())
 
