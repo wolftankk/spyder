@@ -32,7 +32,7 @@ registerMenu("seeds", "seedAdmin", {
 			handler: function(){
 				var item = Spyder.cache.menus["seedsList"];
 				if (!item){
-					Spyder.workspace.addPanel("seedsList", "种子列表", {
+					Spyder.workspace.addPanel("seedsList", "文章列表", {
 						items: [
 								Ext.create("Spyder.apps.seeds.SeedsList")
 						]	
