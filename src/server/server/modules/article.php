@@ -50,6 +50,18 @@ class Article{
 
 	public function GetArticleInfo(){
 		checkArg("AID");
+		$aid = post_string("AID");
+		global $db;
+
+		$sql = "SELECT aid, lang, title, content, url, sid, status, fetchtime, lasteditor, lastupdatetime FROM spyder.articles WHERE aid = $aid";
+		$data = $db->get_one($sql);
+		if (empty($data) || (is_array($data) && count($data) == 0)){
+			send_ajax_response("error", "$aid不存在");
+			exit();
+		}
+
+		send_ajax_response("success", $data);
+		
 	}
 
 	public function EditArticle(){

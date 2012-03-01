@@ -173,10 +173,48 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 		if (!aid){
 			return;
 		}
+	
+		
 		var articleServer = Spyder.constants.articleServer;
 		articleServer.GetArticleInfo(aid, {
 			success: function(data){
+				var data = Ext.JSON.decode(data);
+				var title = data["title"];
+				var win = Ext.create("Ext.window.Window", {
+					width: 900,
+					height: 600,
+					minHeight: 550,	
+					autoHeight: true,
+					autoScroll: true,
+					cls: "iScroll",
+					layout: "fit",
+					resizable: true,
+					border: false,
+					modal: true,
+					maximizable: true,
+					maximized: false,
+					border: 0,
+					bodyBorder: false,
+					items: [
+						{
+							xtype: "form",
+							width: "100%",
+							height: "100%",
+							layout: "fit",
+							items: [
+								{
+									xtype: "htmleditor",
+									width: "100%",
+									height: "100%",
+									value: data["content"]
+								}
+							]
+						}
+					]
+				});
 				
+				win.setTitle(title);
+				win.show();
 			},
 			failure: function(error){
 				Ext.Error.raise(error)
