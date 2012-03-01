@@ -3,7 +3,7 @@
 import time
 from pyquery import PyQuery as pq
 from pybits import ansicolor
-import re
+import re, urlparse
 from db import Store
 import _mysql
 from fetch import Fetch

@@ -1,7 +1,7 @@
 #coding: utf-8
 
 from pyquery import PyQuery as pq
-import urllib2, urlparse
+import urllib2, urlparse, re
 from pybits import ansicolor
 
 class Fetch(object):
