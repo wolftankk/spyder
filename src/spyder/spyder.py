@@ -24,8 +24,7 @@ class Spyder(object):
 		self.queue = {}
 
 	def getSpiderList(self):
-		if self.spiderList == None:
-			self.spiderList = {};
+		self.spiderList = {};
 		sql = "select * FROM spyder.seeds";
 		query = self.db.query(sql);
 		r = self.db.store_result();
@@ -74,7 +73,8 @@ class Spyder(object):
 				waits.append(seed.finishtime+frequency);
 				if (frequency + finishtime) < now():
 					seed.starttime = now()
-					docData = Grab(seed, False)
+					#if not saved in db, set false
+					docData = Grab(seed)
 					seed.finishtime = now()
 
 					waits.append(seed.finishtime+frequency);

@@ -152,6 +152,8 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 				trackOver: false,
 				stripeRows: true
 			},
+			//tab: [
+			//],
 			columns: me.columns,
 			bbar: Ext.create('Ext.PagingToolbar', {
 				store: me.storeProxy,
