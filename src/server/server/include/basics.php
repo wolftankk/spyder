@@ -194,7 +194,7 @@ function send_ajax_response($type, $data){
 		$result["error"] = array("message"=>$data);
 	}elseif ($type == "success"){
 		if ($data && is_array($data)){
-			$data = json_encode($data);
+			$data = $data;
 		}
 		$result["result"] = $data;
 	}else{

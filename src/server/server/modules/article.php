@@ -18,10 +18,30 @@ class Article{
 			$where = "WHERE $where";
 		}
 
-		print_r(post_string());
 		$sql = "SELECT a.aid, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where LIMIT $start, $limit";
 		$query = $db->query($sql);
-		print_r($db->fetch_array($query));
+		$Data = array();
+		$MetaData = array();
+		$isGetMetaData = false;
+		while ($data = $db->fetch_array($query)){
+			if (!$isGetMetaData){
+				$keys = array_keys($data);
+				for ($c = 0; $c < count($keys); $c++){
+					$key = $keys[$c];
+					$fieldHidden = false;
+					if ($key == "sid"){
+						$fieldHidden = true;
+					}
+					$MetaData[] = array(
+						"fieldName" => $keys[$c],
+						"fieldHidden" => $fieldHidden
+					);
+				}
+				$isGetMetaData = true;
+			}
+			$Data[] = array_values($data);
+		}
+		send_ajax_response("success", array("Data"=>$Data, "MetaData"=>$MetaData));
 	}
 
 	public function EditArticle(){

@@ -45,7 +45,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 
 		me.callParent();
 
-		Spyder.constants.articleServer.GetArticleList(0, 1, "", {
+		Spyder.constants.articleServer.GetArticleList(0, 10, "", {
 			success: function(data){
 				console.log(data)	
 			},
