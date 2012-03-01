@@ -161,7 +161,27 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 			})
 		})
 
+		me.grid.on({
+			"itemdblclick": me.viewArticle
+		})
+
 		me.add(me.grid);
 		me.doLayout();
+	},
+	viewArticle: function(view, record, item, index){
+		var aid = record.get("aid");
+		if (!aid){
+			return;
+		}
+		var articleServer = Spyder.constants.articleServer;
+		articleServer.GetArticleInfo(aid, {
+			success: function(data){
+				
+			},
+			failure: function(error){
+				Ext.Error.raise(error)
+			}
+		})
+
 	}
 })

@@ -48,6 +48,10 @@ class Article{
 		send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
 	}
 
+	public function GetArticleInfo(){
+		checkArg("AID");
+	}
+
 	public function EditArticle(){
 
 	}
