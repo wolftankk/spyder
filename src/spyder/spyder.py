@@ -71,6 +71,7 @@ class Spyder(object):
 				frequency  = seed.frequency
 				finishtime = seed.finishtime
 				starttime  = seed.starttime
+				waits.append(seed.finishtime+frequency);
 				if (frequency + finishtime) < now():
 					seed.starttime = now()
 					docData = Grab(seed, False)
@@ -81,9 +82,9 @@ class Spyder(object):
 					self.db.query(sql)
 
 		print "进入休息时间";
-		time.sleep(min(waits) - now() - 10);
+		print waits
+		time.sleep(min(waits) - now() + 30);
 		print "休息结束 开始重新启动抓取程序";
-
 		self.run();
 
 
