@@ -105,9 +105,43 @@ class Seed{
 	 * @params: AWhere
 	 */
 	public function GetSeedList(){
-		checkArgs("start");
-		checkArgs("limit");
-		checkArgs("AWhere");
+		checkArgs("Start", "Limit", "AWhere");
+		$start = post_string("Start");
+		$limit = post_string("Limit");
+		$where = post_string("AWhere");
+		global $db;
+		if (strlen($where) > 0) {
+			$where = "WHERE $where";
+		}
+
+		$sql = "SELECT a.sid, a.sname, a.cid, b.cname, a.url, a.charset, a.enabled, a.frequency, a.timeout, a.tries, a.uid, c.uname, a.createdtime, a.lastupdatetime, a.starttime, a.finishtime FROM spyder.seeds as a LEFT JOIN spyder.seed_category as b ON a.cid = b.cid LEFT JOIN spyder.users as c ON a.uid = c.uid $where LIMIT $start, $limit";
+		$query = $db->query($sql);
+		$Data = array();
+		$MetaData = array();
+		$isGetMetaData = false;
+		while ($data = $db->fetch_array($query)){
+			if (!$isGetMetaData){
+				$keys = array_keys($data);
+				for ($c = 0; $c < count($keys); $c++){
+					$key = $keys[$c];
+					$fieldHidden = false;
+					if ($key == "uid" || $key == "cid"){
+						$fieldHidden = true;
+					}
+					$MetaData[] = array(
+						"fieldName" => $keys[$c],
+						"dataIndex" => $keys[$c],
+						"fieldHidden" => $fieldHidden
+					);
+				}
+				$isGetMetaData = true;
+			}
+			$Data[] = array_values($data);
+		}
+		
+		$count = $db->get_one("SELECT COUNT(*) as count FROM spyder.seeds $where");
+
+		send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
 	}
 
 	/**
