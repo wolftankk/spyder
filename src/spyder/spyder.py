@@ -4,28 +4,10 @@
 import threading
 import io, time
 import socket, SocketServer
-
 from pybits import ansicolor
-
 from seed import Seed
 from document import Grab 
-
 from db import db
-
-# config SocketServer and launcher
-#class SpyderUDPHandler(SocketServer.BaseRequestHandler):
-#	def handler(self):
-#		data = self.request.recv(1024)
-#		socket = self.request[1]
-#		print "%s wrote:" % self.client_address[0]
-#		print data
-#		socket.sendto(data.upper(), self.client_address)
-#server = SocketServer.UDPServer(("127.0.0.1", 9999), SpyderUDPHandler);
-#server.serve_forever()
-
-#class SpyderThread(threading.Thread):
-#	def __init__(self):
-#		threading.Thread.__init__(self);
 
 def now():
 	return int(time.time())
@@ -35,12 +17,10 @@ class Spyder(object):
 		self.db = db
 		self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		print (ansicolor.green("Spyder") + " start launching");
-		#self.sendto("Spyder start launching")
 		
 		#idle time
 		self.needIdleTime = 0
 		self.spiderList = None
-		self.getSpiderList()
 		self.queue = {}
 
 	def getSpiderList(self):
@@ -51,6 +31,7 @@ class Spyder(object):
 		r = self.db.store_result();
 		if r.num_rows() == 0:
 			print (ansicolor.red("Spyder") + " have no Spider-Data");
+			return
 
 		# return all data
 		# fetch_row(display_rows, display_columns)
@@ -64,26 +45,38 @@ class Spyder(object):
 			#init seed and format
 			self.spiderList[sid] = Seed(seedInfo)
 
+	def Test(self, sid):
+		if not sid:
+			return;
+		sql = "SELECT * FROM spyder.seeds WHERE sid=%s" % sid;
+		query = self.db.query(sql)
+		r = self.db.store_result();
+		if r.num_rows() == 0:
+			print (ansicolor.red("Spyder") + " sid " + str(sid) + " has not exists.");
+			return
+		data = r.fetch_row(0, 1);
+		if data and len(data) > 0:
+			seed = Seed(data[0]);
+			print "Seed %s start fetching." % ansicolor.yellow(seed)
+			docData = Grab(seed, False)
+		
 
 	def run(self):
-		if self.spiderList == None:
-			self.getSpiderList()
+		self.getSpiderList()
+		#if self.spiderList == None:
+		#	self.getSpiderList()
 
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
 			if seed.enabled == "1":
 				print seed
-				docData = Grab(seed);
-		#	#frequency  = seed.frequency
-		#	#finishtime = seed.finishtime
-		#	#starttime  = seed.starttime
-		#	#if self.queue[sid] == None:
-		#	#	print 1
+				#docData = Grab(seed);
+				#frequency  = seed.frequency
+				#finishtime = seed.finishtime
+				#starttime  = seed.starttime
+				#if self.queue[sid] == None:
+				#	print 1
 
-	# force: true/false
-	def refreshList(self, force):
-		self.spiderList = None
-			
 	# communication with SocketServer
 	#def sendto(self, data):
 	#	data = " ".join(data)
@@ -93,4 +86,5 @@ class Spyder(object):
 	#	print received
 
 if __name__ == "__main__":
-	Spyder().run()
+	#Spyder().run()
+	Spyder().Test(1)

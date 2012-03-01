@@ -30,21 +30,30 @@ def getElementData(obj, token):
 
 #Grab List
 class Grab(object):
-	def __init__(self, seed):
+	def __init__(self, seed, savable = True):
 		rule = seed.rule;
+		self.seed = seed
+		self.savable = savable;
+
 		self.listRule = rule.getListRule();
 		self.listRule.setPrefixUrl(seed.prefixurl);
 		self.prefixurl = seed.prefixurl;
-		listUrls = self.listRule.getFormatedUrls();
 		self.items = {}
+
+		self.fetchPage();
+
+	def fetchPage(self):
+		print "Start to fetch and parse List"
+		listUrls = self.listRule.getFormatedUrls();
 		for url in listUrls:
-			doc = Fetch(url, seed.charset, seed.timeout).read()
+			doc = Fetch(url, self.seed.charset, self.seed.timeout).read()
 			if doc:
 				self.parseDoc(doc)
 		
-		if len(self.items.items()):
+		print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
+		if len(self.items.items()) > 0:
 			for url in self.items:
-				self.items[url]["article"] = Document(url, seed)
+				self.items[url]["article"] = Document(url, self.seed, self.savable)
 	
 	def parseDoc(self, doc):
 		doc = pq(doc);
@@ -75,7 +84,7 @@ class Grab(object):
 			list(self.listRule.getEntryItem()).map(entry)
 
 class Document(object):
-	def __init__(self, url, seed):
+	def __init__(self, url, seed, savable = True):
 		self.url = url;
 		self.articleRule = seed.rule.getArticleRule();
 
@@ -83,22 +92,28 @@ class Document(object):
 		self.pages   = []
 		self.contentData = {}
 		self.sid = seed.sid
+		self.savable = savable
+		
 
 		if self.checkUrl(url) == False:
+			print "Document %s is fetcing" % ansicolor.green(url)
 			self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
 			self.parse(self.firstPage, True)
 			self.contentData["content"] = self.content
-			#print self.contentData
+
 			if self.saveArticle() > 0:
 				print ansicolor.green(self.url) + " saved!"
-
-			#save data into mysql
+		else:
+			print "Document %s has exists." % ansicolor.red(url)
 
 	def checkUrl(self, url):
 		#check url in articles
 		return Store("SELECT aid FROM spyder.articles WHERE url='%s'" % self.url).is_exists()
 
 	def saveArticle(self):
+		if not self.savable:
+			return
+
 		content = ""
 		title = ""
 		tags = ""
@@ -115,7 +130,7 @@ class Document(object):
 			title = self.contentData["title"]
 			title = _mysql.escape_string(title.encode("utf-8", "ignore"))
 
-		sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "1", str(int(time.time())))
+		sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "0", str(int(time.time())))
 		
 		return Store(sql).insert_id()
 
