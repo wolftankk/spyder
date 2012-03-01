@@ -7,8 +7,8 @@ SpyderArticleSvc.prototype.GetArticleList = function(start, limit, AWhere, __cal
 	var __message = {
 		method: method,
 		params: {
-			start: start,
-			limit: limit,
+			Start: start,
+			Limit: limit,
 			AWhere: AWhere
 		}
 	}

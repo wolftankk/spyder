@@ -69,11 +69,11 @@ function post_string($index=null){
 	$tmp = $_POST;
 	$args = array();
 	foreach ($tmp as $k => $v){
-		if (empty($v)){
-			$args[$k] = true;
-		}else{
+		//if (empty($v)){
+		//	$args[$k] = true;
+		//}else{
 			$args[$k] = $v;
-		}
+		//}
 	}
 
 	if (!isset($index)){

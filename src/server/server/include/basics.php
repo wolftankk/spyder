@@ -213,7 +213,7 @@ function checkArg($argName, $obj = null){
 	}else{
 		$arg = post_string($argName);
 	}
-	if ($arg == null || empty($arg)){
+	if (($arg == null || empty($arg)) && $arg != 0){
 		send_ajax_response("error", $argName . " cannot be empty");
 		exit();
 	}else{
