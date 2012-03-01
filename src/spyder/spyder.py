@@ -59,23 +59,33 @@ class Spyder(object):
 			seed = Seed(data[0]);
 			print "Seed %s start fetching." % ansicolor.yellow(seed)
 			docData = Grab(seed, False)
-		
 
 	def run(self):
 		self.getSpiderList()
-		#if self.spiderList == None:
-		#	self.getSpiderList()
 
+		waits = []
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
 			if seed.enabled == "1":
-				print seed
-				#docData = Grab(seed);
-				#frequency  = seed.frequency
-				#finishtime = seed.finishtime
-				#starttime  = seed.starttime
-				#if self.queue[sid] == None:
-				#	print 1
+				#是否需要启用多线程?
+				frequency  = seed.frequency
+				finishtime = seed.finishtime
+				starttime  = seed.starttime
+				if (frequency + finishtime) < now():
+					seed.starttime = now()
+					docData = Grab(seed, False)
+					seed.finishtime = now()
+
+					waits.append(seed.finishtime+frequency);
+					sql = "UPDATE spyder.seeds SET starttime=%s, finishtime=%s WHERE sid=%s" % (seed.starttime, seed.finishtime, seed.sid);
+					self.db.query(sql)
+
+		print "进入休息时间";
+		time.sleep(min(waits) - now() - 10);
+		print "休息结束 开始重新启动抓取程序";
+
+		self.run();
+
 
 	# communication with SocketServer
 	#def sendto(self, data):
@@ -86,5 +96,5 @@ class Spyder(object):
 	#	print received
 
 if __name__ == "__main__":
-	#Spyder().run()
-	Spyder().Test(1)
+	Spyder().run()
+	#Spyder().Test(1)
