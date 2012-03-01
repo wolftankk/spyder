@@ -3,9 +3,10 @@
 import time
 from pyquery import PyQuery as pq
 from pybits import ansicolor
-import re, urllib2, urlparse
+import re
 from db import Store
 import _mysql
+from fetch import Fetch
 r"""
  getElementData(doc, "a", text)
 	=> pq(doc.find("a").text())
@@ -167,49 +168,7 @@ class Document(object):
 						self.pages.append(url)
 
 
-class Fetch(object):
-	def __init__(self, url, charset, timeout = 300):
-		self.url = url;
-		self.charset = charset;
-		self.timeout = timeout;
-		self.site = None
-
-		self.openSite();
-		
-	def openSite(self):
-		self.request = urllib2.Request(self.url);
-		self.request.add_header("User-Agent", "Mozilla/5.0");
-		try:
-			self.site = urllib2.urlopen(self.request, timeout = self.timeout)
-		except urllib2.HTTPError, e:
-			print (self.url, e)
-
-	def read(self):
-		if self.site:
-			doc = self.site.read()
-			try:
-				doc = doc.decode(self.charset);
-				return doc
-			except UnicodeDecodeError:
-				#读取里面的metadata
-				content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
-				result = re.match(r'text\/html;\s+?charset=(.+)?', content)
-				if result:
-					charset = result.group(1)
-					try:
-						doc = doc.decode(charset)
-						return doc
-					except UnicodeDecodeError:
-						return doc.decode(charset, "ignore")
-		else:
-			return None
-		
-		
-
-
-
 if __name__ == "__main__":
-	Fetch("http://www.265g.com/news/201105/132396.html", "gbk").read()
 	r"""
 	#news list
 	import urllib
