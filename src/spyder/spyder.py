@@ -2,21 +2,15 @@
 #/usr/bin/env python
 
 import threading
-import _mysql as pmysql
-import MySQLdb
 import io, time
 import socket, SocketServer
 
-from config import DBCONFIG
 from pybits import ansicolor
 
 from seed import Seed
 from document import Grab 
 
-
-# config db and launcher mysql
-db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG["dbname"])
-db.query("SET NAMES UTF8")
+from db import db
 
 # config SocketServer and launcher
 #class SpyderUDPHandler(SocketServer.BaseRequestHandler):
@@ -32,12 +26,6 @@ db.query("SET NAMES UTF8")
 #class SpyderThread(threading.Thread):
 #	def __init__(self):
 #		threading.Thread.__init__(self);
-
-
-#class Store(object):
-#	def __init__(self):
-#		self.db = db;
-
 
 def now():
 	return int(time.time())
@@ -83,7 +71,9 @@ class Spyder(object):
 
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
-			docData = Grab(seed);
+			if seed.enabled == "1":
+				print seed
+				docData = Grab(seed);
 		#	#frequency  = seed.frequency
 		#	#finishtime = seed.finishtime
 		#	#starttime  = seed.starttime

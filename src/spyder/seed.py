@@ -24,6 +24,7 @@ class Seed(object):
 			self._preURL = None
 			self._charset = "utf-8"
 			self._debugMode = 0
+			self.enabled = 0
 
 			self.__parse(seed);
 		else:
@@ -56,6 +57,9 @@ class Seed(object):
 		
 		if seedData["url"] != None:
 			self.prefixurl = seedData["url"]
+
+		if "enabled" in seedData:
+			self.enabled = seedData["enabled"];
 
 		#rule
 		if seedData["rule"] != "":

@@ -1,9 +1,11 @@
 #coding=utf-8
 
+import time
 from pyquery import PyQuery as pq
 from pybits import ansicolor
 import re, urllib2, urlparse
-
+from db import Store
+import _mysql
 r"""
  getElementData(doc, "a", text)
 	=> pq(doc.find("a").text())
@@ -42,8 +44,6 @@ class Grab(object):
 		if len(self.items.items()):
 			for url in self.items:
 				self.items[url]["article"] = Document(url, seed)
-				print self.items[url]["article"] 
-				
 	
 	def parseDoc(self, doc):
 		doc = pq(doc);
@@ -81,11 +81,42 @@ class Document(object):
 		self.content = ""
 		self.pages   = []
 		self.contentData = {}
+		self.sid = seed.sid
 
-		self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
+		if self.checkUrl(url) == False:
+			self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
+			self.parse(self.firstPage, True)
+			self.contentData["content"] = self.content
+			#print self.contentData
+			if self.saveArticle() > 0:
+				print ansicolor.green(self.url) + " saved!"
 
-		self.parse(self.firstPage, True)
-		self.contentData["content"] = self.content
+			#save data into mysql
+
+	def checkUrl(self, url):
+		#check url in articles
+		return Store("SELECT aid FROM spyder.articles WHERE url='%s'" % self.url).is_exists()
+
+	def saveArticle(self):
+		content = ""
+		title = ""
+		tags = ""
+		author = ""
+		date = ""
+
+		if "content" in self.contentData:
+			if not self.content:
+				return
+			content = (self.contentData["content"]).encode("utf-8", "ignore")
+			content = _mysql.escape_string( content )
+
+		if "title" in self.contentData:
+			title = self.contentData["title"]
+			title = _mysql.escape_string(title.encode("utf-8", "ignore"))
+
+		sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "1", str(int(time.time())))
+		
+		return Store(sql).insert_id()
 
 	def getContentData(self):
 		return self.contentData
@@ -120,7 +151,10 @@ class Document(object):
 
 
 	def parsePage(self, doc):
-		pages = doc.find(self.articleRule.getPageParent())
+		p = self.articleRule.getPageParent()
+		if len(p) == 0:
+			return
+		pages = doc.find(p)
 		if len(pages):
 			for p in pages:
 				p = pq(p)
@@ -171,6 +205,9 @@ class Fetch(object):
 			return None
 		
 		
+
+
+
 if __name__ == "__main__":
 	Fetch("http://www.265g.com/news/201105/132396.html", "gbk").read()
 	r"""
