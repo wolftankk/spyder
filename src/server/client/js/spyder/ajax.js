@@ -185,7 +185,7 @@
 			var keys = []
 			for (var c = 0; c < MetaData.length; ++c){
 				var _d = MetaData[c];
-				keys.push(_d["FieldName"]);
+				keys.push(_d["dataIndex"]);
 			}
 			
 			var newData = [];

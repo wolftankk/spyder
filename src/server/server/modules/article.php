@@ -34,6 +34,7 @@ class Article{
 					}
 					$MetaData[] = array(
 						"fieldName" => $keys[$c],
+						"dataIndex" => $keys[$c],
 						"fieldHidden" => $fieldHidden
 					);
 				}
@@ -41,7 +42,10 @@ class Article{
 			}
 			$Data[] = array_values($data);
 		}
-		send_ajax_response("success", array("Data"=>$Data, "MetaData"=>$MetaData));
+		
+		$count = $db->get_one("SELECT COUNT(*) as count FROM spyder.articles $where");
+
+		send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
 	}
 
 	public function EditArticle(){
