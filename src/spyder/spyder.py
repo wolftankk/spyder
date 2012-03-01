@@ -82,8 +82,8 @@ class Spyder(object):
 					self.db.query(sql)
 
 		print "进入休息时间";
-		print waits
-		time.sleep(min(waits) - now() + 30);
+		#300秒间隔检测
+		time.sleep(300);
 		print "休息结束 开始重新启动抓取程序";
 		self.run();
 
