@@ -3,7 +3,6 @@
 
 import threading
 import io, time
-import socket, SocketServer
 from pybits import ansicolor
 from seed import Seed
 from document import Grab 
@@ -87,19 +86,10 @@ class Spyder(object):
 		print "休息结束 开始重新启动抓取程序";
 		self.run();
 
-
-	# communication with SocketServer
-	#def sendto(self, data):
-	#	data = " ".join(data)
-	#	self.client.sendto(data + "\n", ("127.0.0.1", 9999))
-	#	received = self.client.recv(1024)
-
-	#	print received
-
 if __name__ == "__main__":
 	import getopt, sys
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "Vrt", ["run", "test=", "version"]);
+		opts, args = getopt.getopt(sys.argv[1:], "Vrt:", ["run", "test=", "version"]);
 	except getopt.GetoptError, err:
 		print str(err)
 		sys.exit(2)
