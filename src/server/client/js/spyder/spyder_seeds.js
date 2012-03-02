@@ -43,6 +43,14 @@ registerMenu("seeds", "seedAdmin", {
 	]
 });
 
+Spyder.apps.seeds.seedFListType = Ext.create("Ext.data.Store", {
+	fields: ["attr", "name"],
+	data: [
+		{ attr: "html", name: "html"},
+		{ attr: "feed", name: "feed"}
+	]	
+});
+
 Ext.define("Spyder.apps.seeds.AddSeed", {
 	extend: "Ext.panel.Panel",
 	layout: "anchor",
@@ -104,13 +112,19 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 					},
 					items: [
 						{
+							xtype: "checkboxfield",
+							fieldLabel: "启用",
+							inputValue: true,
+							name: "enabled",
+							checked: true
+						},
+						{
 							fieldLabel: "名称",
 							allowBlank: false,
 							name: "sname"
 						},
 						{
 							fieldLabel: "所属类别",
-							//allowBlank: false,
 							name: "cid"
 						},
 						{
@@ -126,23 +140,20 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 						{
 							fieldLabel: "采集频率(秒)",
 							allowBlank: false,
-							name: "frequency"
+							name: "frequency",
+							value: 600
 						},
 						{
 							fieldLabel: "超时时间",
 							allowBlank: false,
-							name: "timeout"
+							name: "timeout",
+							value: 300
 						},
 						{
 							fieldLabel: "尝试次数",
 							allowBlank: false,
-							name: "tries"
-						},
-						{
-							xtype: "checkboxfield",
-							fieldLabel: "启用",
-							inputValue: true,
-							name: "enabled"
+							name: "tries",
+							value: 5
 						},
 						{
 							xtype: "fieldset",
@@ -156,48 +167,71 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							},
 							items: [
 								{
-									fieldLabel: "url格式",
+									fieldLabel: "列表类别",
 									allowBlank: false,
+									name: "listtype",
+									xtype: "combobox",
+									store: Spyder.apps.seeds.seedFListType,
+									queryMode: "local",
+									displayField: "name",
+									valueField: "attr",
+									value: "html",
+									editable: false,
+									listeners: {
+										change: function(w, newValue, oldValue){
+											var items = w.up("fieldset").items.items
+											if (newValue == "feed"){
+												for (var c = 0; c < items.length; ++c){
+													var item = items[c]
+													if (item && item != w){
+														item.hide()
+													}
+												}
+											}else{
+												for (var c = 0; c < items.length; ++c){
+													var item = items[c]
+													if (item){
+														item.show()
+													}
+												}
+											}
+										}
+									},
+								},
+								{
+									fieldLabel: "url格式",
 									name: "list[urlformat]"
 								},
 								{
 									fieldLabel: "起始页",
-									allowBlank: false,
 									name: "list[startpage]"
 								},
 								{
 									fieldLabel: "最大采集页数",
-									allowBlank: false,
 									name: "list[maxpage]"
 								},
 								{
 									fieldLabel: "step",
-									allowBlank: false,
 									name: "list[step]"
 								},
 								{
 									fieldLabel: "listParent",
-									allowBlank: false,
 									name:"list[listparent]"
 								},
 								{
 									fieldLabel: "entryParent",
-									allowBlank: false,
 									name: "list[entryparent]"
 								},
 								{
 									fieldLabel: "文章URL正则",
-									allowBlank: false,
 									name: "list[articleurl]"
 								},
 								{
 									fieldLabel: "文章标题正则",
-									allowBlank: false,
 									name: "list[titleparent]"
 								},
 								{
 									fieldLabel: "文章日期正则",
-									allowBlank: false,
 									name: "list[dateparent]"
 								}
 							]

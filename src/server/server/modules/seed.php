@@ -28,6 +28,7 @@ class Seed{
 		$timeout = checkArg("timeout", $data);
 		$tries = checkArg("tries", $data);
 		$enabled = checkArg("enabled", $data);
+		$listtype = checkArg("listtype", $data);
 
 		$data = get_object_vars($data);
 
@@ -66,7 +67,7 @@ class Seed{
 		$permissions = $userInfo["permissions"];
 
 		global $db;
-		$sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, enabled, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$enabled', '" . mysql_escape_string(serialize($rule)) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
+		$sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, enabled, listtype, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$enabled', '$listtype', '" . mysql_escape_string(serialize($rule)) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
 		$db->query($sql);
 		$sid = $db->insert_id();
 		send_ajax_response("success", $sid);
