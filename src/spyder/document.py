@@ -7,6 +7,8 @@ import re, urlparse
 from db import Store
 import _mysql
 from fetch import Fetch
+import feedparser
+
 r"""
  getElementData(doc, "a", text)
 	=> pq(doc.find("a").text())
@@ -36,12 +38,33 @@ class Grab(object):
 		self.savable = savable
 		self.type = seed.type
 
-		self.listRule = rule.getListRule();
-		self.listRule.setPrefixUrl(seed.prefixurl);
-		self.prefixurl = seed.prefixurl;
 		self.items = {}
+		if self.type == "feed":
+			self.parseFeed();
+			#rss, atom 都是标准, 所以直接提取即可
+		else:
+			self.listRule = rule.getListRule();
+			self.listRule.setPrefixUrl(seed.prefixurl);
+			self.prefixurl = seed.prefixurl;
+			self.fetchPage();
 
-		self.fetchPage();
+		self.fetchArticles();
+
+	def parseFeed(self):
+		print "Start to fetch and parse Feed list"
+		doc = Fetch(seed.url, seed.charset, self.seed.timeout).read();
+		feed = feedparser.parse(doc)
+		items = feed["entries"]
+		if len(items) > 0:
+			for item in items:
+				link = item["link"]
+				title = item["title"]
+				date = item["published"]
+				self.items[link] = {
+					"url" : link,
+					"title" : title,
+					"date" : date
+				}
 
 	def fetchPage(self):
 		print "Start to fetch and parse List"
@@ -49,14 +72,16 @@ class Grab(object):
 		for url in listUrls:
 			doc = Fetch(url, self.seed.charset, self.seed.timeout).read()
 			if doc:
-				self.parseDoc(doc)
+				self.parserHtml(doc)
 		
 		print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
+	
+	def fetchArticles(self):
 		if len(self.items.items()) > 0:
 			for url in self.items:
 				self.items[url]["article"] = Document(url, self.seed, self.savable)
 	
-	def parseDoc(self, doc):
+	def parserHtml(self, doc):
 		doc = pq(doc);
 		list = doc.find(self.listRule.getListParent());
 		if list:
@@ -191,4 +216,13 @@ if __name__ == "__main__":
 	"""
 	#test rss
 	doc = Fetch("http://www.265g.com/api/feed.php", "gb2312", 300).read()
-	
+	import feedparser
+	feed = feedparser.parse(doc)
+	#print feed["encoding"] # encoding?
+	#print feed["version"] # rss20, atom?
+
+	items = feed["entries"]
+	if len(items) > 0:
+		for item in items:
+			# get title, href, date
+			print item["title"], item["link"], item["published"]

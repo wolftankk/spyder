@@ -25,7 +25,7 @@ class Seed(object):
 			self._debugMode = 0
 			self.enabled = 0
 
-			#List Type: html, rss, ajax
+			#List Type: html, feed, ajax
 			self.type = "html" 
 
 			self.__parse(seed);
