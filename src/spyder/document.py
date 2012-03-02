@@ -52,7 +52,8 @@ class Grab(object):
 
 	def parseFeed(self):
 		print "Start to fetch and parse Feed list"
-		doc = Fetch(seed.url, seed.charset, self.seed.timeout).read();
+		seed = self.seed
+		doc = Fetch(seed.prefixurl, seed.charset, self.seed.timeout).read();
 		feed = feedparser.parse(doc)
 		items = feed["entries"]
 		if len(items) > 0:
@@ -198,10 +199,13 @@ class Document(object):
 		if len(p) == 0:
 			return
 		pages = doc.find(p)
-		if len(pages):
+
+		if len(pages) > 0:
 			for p in pages:
 				p = pq(p)
 				url = p.attr("href")
+				if not url:
+					continue
 				linkText = p.text().strip()
 				if re.match(r"[0-9]+?", linkText):
 					#filter javascript
