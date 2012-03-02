@@ -114,7 +114,7 @@ class Seed{
 			$where = "WHERE $where";
 		}
 
-		$sql = "SELECT a.sid, a.sname, a.cid, b.cname, a.url, a.charset, a.enabled, a.frequency, a.timeout, a.tries, a.uid, c.uname, a.createdtime, a.lastupdatetime, a.starttime, a.finishtime FROM spyder.seeds as a LEFT JOIN spyder.seed_category as b ON a.cid = b.cid LEFT JOIN spyder.users as c ON a.uid = c.uid $where LIMIT $start, $limit";
+		$sql = "SELECT a.sid, a.sname, a.cid, b.cname, a.url, a.charset, a.enabled, a.listtype, a.frequency, a.timeout, a.tries, a.uid, c.uname, a.createdtime, a.lastupdatetime, a.starttime, a.finishtime FROM spyder.seeds as a LEFT JOIN spyder.seed_category as b ON a.cid = b.cid LEFT JOIN spyder.users as c ON a.uid = c.uid $where LIMIT $start, $limit";
 		$query = $db->query($sql);
 		$Data = array();
 		$MetaData = array();
