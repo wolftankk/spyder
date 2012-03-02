@@ -30,7 +30,15 @@ class Fetch(object):
 			except UnicodeDecodeError:
 				#读取里面的metadata
 				content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
-				result = re.match(r'text\/html;\s+?charset=(.+)?', content)
+				result = None
+				if content:
+					# html 
+					result = re.match(r'text\/html;\s+?charset=(.+)?', content)
+				else:
+					# rss
+					#<?xml version="1.0" encoding="gb2312"?>
+					result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\?>', doc)
+
 				if result:
 					charset = result.group(1)
 					try:
@@ -38,6 +46,8 @@ class Fetch(object):
 						return doc
 					except UnicodeDecodeError:
 						return doc.decode(charset, "ignore")
+				else:
+					return doc.decode(self.charset, "ignore")
 		else:
 			return None
 

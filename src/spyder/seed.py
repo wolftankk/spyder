@@ -12,7 +12,6 @@ class Seed(object):
 		if (type(seed) == type({})):
 			self._seed = seed
 
-			# Seed attr
 			self._name = None
 			self._sid = None
 			self._rule = None
@@ -25,6 +24,9 @@ class Seed(object):
 			self._charset = "utf-8"
 			self._debugMode = 0
 			self.enabled = 0
+
+			#List Type: html, rss, ajax
+			self.type = "html" 
 
 			self.__parse(seed);
 		else:
@@ -60,6 +62,9 @@ class Seed(object):
 
 		if "enabled" in seedData:
 			self.enabled = seedData["enabled"];
+
+		if "listType" in seedData:
+			self.type = seedData["listType"]
 
 		#rule
 		if seedData["rule"] != "":
