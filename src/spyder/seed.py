@@ -63,8 +63,8 @@ class Seed(object):
 		if "enabled" in seedData:
 			self.enabled = seedData["enabled"];
 
-		if "listType" in seedData:
-			self.type = seedData["listType"]
+		if "listtype" in seedData:
+			self.type = seedData["listtype"]
 
 		#rule
 		if seedData["rule"] != "":
