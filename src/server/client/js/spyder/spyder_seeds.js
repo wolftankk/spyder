@@ -249,7 +249,16 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 						},
 						{
 							xtype: "button",
+							text: "重置",
+							handler: function(){
+								me.form.getForm().reset();
+							}
+						},
+						{
+							xtype: "button",
 							text: "submit",
+							disabled: true,
+							formBind: true,
 							handler: function(){
 								var form = me.form.getForm();
 								Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
@@ -262,13 +271,6 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 										Ext.Error.raise(error);
 									}
 								})
-							}
-						},
-						{
-							xtype: "button",
-							text: "重置",
-							handler: function(){
-								me.form.getForm().reset();
 							}
 						}
 					]

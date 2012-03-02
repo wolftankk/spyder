@@ -142,21 +142,22 @@ class Document(object):
 		article = doc.find(self.articleRule.getWrapParent())
 
 		def getContent():
+			if not article:
+				return
 			content = article(self.articleRule.getContentParent()).html()
 			if content:
 				self.content = self.content +  content
 
 		if first:
 			#need parse pages, title, tags
-
 			####title
 			self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent())
 
 			#pages
 			self.parsePage(article)
-			
 			#get content
 			getContent();
+			article = None #fetch over
 
 			for purl in self.pages:
 				self.parse(purl)
@@ -164,7 +165,7 @@ class Document(object):
 		#context
 		#_context = article("div[class='contF']").remove("script").remove('p[align="right"]')
 		getContent();
-
+		#print self.content
 
 	def parsePage(self, doc):
 		p = self.articleRule.getPageParent()
