@@ -182,7 +182,7 @@ function clearCache(){
 	
 }
 
-function send_ajax_response($type, $data, $j){
+function send_ajax_response($type, $data){
 	header("Content-type: application/json");
 
 	$result = array(
@@ -193,7 +193,7 @@ function send_ajax_response($type, $data, $j){
 	if ($type == "error"){
 		$result["error"] = array("message"=>$data);
 	}elseif ($type == "success"){
-		if ($data && is_array($data) && !$j){
+		if ($data && is_array($data)){
 			$data = json_encode($data);
 		}
 		$result["result"] = $data;
