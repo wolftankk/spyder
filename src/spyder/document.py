@@ -67,6 +67,8 @@ class Grab(object):
 					"date" : date
 				}
 
+		print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
+
 	def fetchPage(self):
 		print "Start to fetch and parse List"
 		listUrls = self.listRule.getFormatedUrls();
@@ -138,9 +140,6 @@ class Document(object):
 		return Store("SELECT aid FROM spyder.articles WHERE url='%s'" % self.url).is_exists()
 
 	def saveArticle(self):
-		if not self.savable:
-			return
-
 		content = ""
 		title = ""
 		tags = ""
@@ -150,15 +149,21 @@ class Document(object):
 		if "content" in self.contentData:
 			if not self.content:
 				return
+			content = content.strip();
 			content = (self.contentData["content"]).encode("utf-8", "ignore")
 			content = _mysql.escape_string( content )
 
 		if "title" in self.contentData:
-			title = self.contentData["title"]
+			title = self.contentData["title"].strip()
 			title = _mysql.escape_string(title.encode("utf-8", "ignore"))
+
+		self.url = self.url.encode("utf-8", "ignore")
 
 		sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "0", str(int(time.time())))
 		
+		if not self.savable:
+			return
+
 		return Store(sql).insert_id()
 
 	def getContentData(self):
