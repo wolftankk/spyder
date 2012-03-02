@@ -97,5 +97,29 @@ class Spyder(object):
 	#	print received
 
 if __name__ == "__main__":
-	Spyder().run()
-	#Spyder().Test(3)
+	import getopt, sys
+	try:
+		opts, args = getopt.getopt(sys.argv[1:], "Vrt", ["run", "test=", "version"]);
+	except getopt.GetoptError, err:
+		print str(err)
+		sys.exit(2)
+
+	for o, a in opts:
+		if o == "-V" or o == "--version":
+			#get spyder version
+			import __init__
+			print __init__.VERSION
+		elif o == "-t" or o == "--test":
+			try:
+				sid = int(a)
+				print sid
+			except ValueError:
+				print "请输入需要测试的sid"
+				sys.exit(2)
+
+			if sid == 0:
+				print "请输入需要测试的sid"
+				sys.exit(2)
+			Spyder().Test(sid)
+		elif o == "-r" or o == "--run":
+			Spyder().run()
