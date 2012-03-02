@@ -14,7 +14,7 @@ def now():
 class Spyder(object):
 	def __init__(self):
 		self.db = db
-		self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+		#self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		print (ansicolor.green("Spyder") + " start launching");
 		
 		#idle time
