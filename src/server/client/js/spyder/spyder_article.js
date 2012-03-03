@@ -266,6 +266,18 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 											xtype: "button",
 											text : "删除",
 											handler: function(){
+												articleServer.DeleteArticle(data["aid"], {
+													success: function(succ){
+														if (succ){
+															Ext.Msg.alert("成功", "删除成功");
+														}else{
+															Ext.Msg.alert("失败", "删除失败");
+														}
+													},
+													failure: function(error){
+														Ext.Error.raise(error)
+													}
+												})
 											}
 										},
 										"-",

@@ -115,7 +115,13 @@ class Article{
 	}
 
 	public function DeleteArticle(){
+		checkArgs("AID");
+		$aid = post_string("AID");
+		global $db;
+		$sql = "DELETE FROM spyder.articles WHERE aid =$aid";
+		$succ = $db->query($sql);
 
+		send_ajax_response("success", $succ);
 	}
 
 	//转换语言自动新增一文章
