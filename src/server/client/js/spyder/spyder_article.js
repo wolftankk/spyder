@@ -235,6 +235,12 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 									xtype: "toolbar",
 									width: "100%",
 									items: [
+										{
+											xtype: "button",
+											text: "发布",
+											handler: function(){
+											}
+										},
 										"->",
 										{
 											xtype: "button",
