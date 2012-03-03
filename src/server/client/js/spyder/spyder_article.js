@@ -191,22 +191,69 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 					resizable: true,
 					border: false,
 					modal: true,
-					maximizable: true,
-					maximized: false,
+					//maximizable: true,
+					//maximized: false,
 					border: 0,
 					bodyBorder: false,
+					bodyPadding: 10,
 					items: [
 						{
 							xtype: "form",
 							width: "100%",
 							height: "100%",
-							layout: "fit",
+							defaultType: "textfield",
+							type: "anchor",
+							border: false,
+							bodyStyle: "background-color: #dfe8f5",
+							defaultType: "textfield",
+							defaults: {
+								anchor: "100%"
+							},
+							fieldDefaults: {
+								labelAlign: "left",
+								labelWidth: 60
+							},
 							items: [
+								{
+									fieldLabel: "标题",
+									value: data["title"]
+								},
+								{
+									fieldLabel: "原始链接",
+									html: "原始链接\t\t<a target='_blank' href='"+data["url"]+"'>" + data["url"] + "</a>"
+								},
 								{
 									xtype: "htmleditor",
 									width: "100%",
-									height: "100%",
+									height: 465,
 									value: data["content"]
+								},
+								{
+									xtype: "toolbar",
+									width: "100%",
+									items: [
+										"->",
+										{
+											xtype: "button",
+											text : "编辑",
+											handler: function(){
+											}
+										},
+										{
+											xtype: "button",
+											text : "删除",
+											handler: function(){
+											}
+										},
+										"-",
+										{
+											xtype: "button",
+											text: "关闭",
+											handler: function(){
+												win.close();
+											}
+										}
+									]
 								}
 							]
 						}
