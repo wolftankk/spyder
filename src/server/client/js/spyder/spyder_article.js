@@ -173,9 +173,9 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 		if (!aid){
 			return;
 		}
-	
 		
 		var articleServer = Spyder.constants.articleServer;
+
 		articleServer.GetArticleInfo(aid, {
 			success: function(data){
 				var data = Ext.JSON.decode(data);
@@ -216,15 +216,18 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 							items: [
 								{
 									fieldLabel: "标题",
+									name: "title",
 									value: data["title"]
 								},
 								{
 									fieldLabel: "原始链接",
+									link: "link",
 									html: "原始链接\t\t<a target='_blank' href='"+data["url"]+"'>" + data["url"] + "</a>"
 								},
 								{
 									xtype: "htmleditor",
 									width: "100%",
+									name: "content",
 									height: 465,
 									value: data["content"]
 								},
@@ -236,7 +239,27 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 										{
 											xtype: "button",
 											text : "编辑",
-											handler: function(){
+											handler: function(widget){
+												var form = widget.up("form").getForm(),
+													results = form.getValues(),
+													title = results["title"],
+													content = results["content"];
+												articleServer.EditArticle(Ext.JSON.encode({
+													title: title,
+													content: content,
+													aid: data["aid"]	
+												}), {
+													success: function(succ){
+														if (succ){
+															Ext.Msg.alert("成功", "编辑成功");
+														}else{
+															Ext.Msg.alert("失败", "编辑失败");
+														}
+													},
+													failure: function(error){
+														Ext.Error.raise(error);
+													}
+												})	
 											}
 										},
 										{

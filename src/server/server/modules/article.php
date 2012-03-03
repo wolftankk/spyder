@@ -1,6 +1,8 @@
 <?php
 class Article{
-	public function __construct($action){
+	private $sessionId;
+	public function __construct($action, $sid){
+		$this->sessionId = $sid;
 		if (method_exists($this, $action)){
 			call_user_func(array($this, $action));
 		}else{
@@ -64,8 +66,52 @@ class Article{
 		
 	}
 
-	public function EditArticle(){
+	public function GetArticleCategoryList(){
+		global $db;
+		
+		$root = array();
 
+		#first get seed category
+		$sql = "SELECT cid, pid, cname FROM seed_category ORDER BY pid ASC";
+		$query = $db->query($sql);
+		while ($data = $db->fetch_array($query)){
+			//$cid = $data["cid"];
+			//$pid = $data["pid"];
+			//$cname = $data["cname"];
+			//if ($pid == -1){
+			//	$root[$cid] = array(
+			//		"cid" => $cid,
+			//		"pid" => $pid,
+			//		"text" => $cname
+			//	);
+			//}
+			//if ($root[$pid] && is_array($root[$pid])){
+			//	if (!$root[$pid]["children"] || !is_array($root[$pid]["children"])){
+			//		$root[$pid]["children"] = array();
+			//		$root[$pid]["expanded"] = true;
+			//	}
+			//}	
+		}
+	}
+
+	public function EditArticle(){
+		checkArgs("ArticleJSON");
+		$data = json_decode(post_string("ArticleJSON"));
+		$title = mysql_escape_string($data->title);
+		$content = mysql_escape_string($data->content);
+		$aid = checkArg("aid", $data);
+		
+		global $db;
+		$now = time();
+		$userInfo = getCurrentSessionData($this->sessionId);
+		$uid = $userInfo["uid"];
+		$permissions = $userInfo["permissions"];
+
+		$sql = "UPDATE spyder.articles SET title='$title', content='$content', lasteditor='$uid', lastupdatetime='$now' WHERE aid = $aid";
+
+		$succ = $db->query($sql);
+
+		send_ajax_response("success", $succ);
 	}
 
 	public function DeleteArticle(){
@@ -82,8 +128,8 @@ class Article{
 	}
 }
 
-function module_article_init($action){
-	new Article($action);
+function module_article_init($action, $sid){
+	new Article($action, $sid);
 }
 
 ?>
