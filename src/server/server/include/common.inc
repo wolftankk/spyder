@@ -8,12 +8,16 @@ $TIME_START = getMicrotime();
 
 //initialize mysql database;
 function db_init(){
-	global $dbhost, $dbuser, $dbpw, $dbname, $pconnect, $db;
+	global $database_config, $db;
+	$dbhost = $database_config["dbhost"];
+	$dbuser = $database_config["dbpw"];
+	$dbname = $database_config["dbname"];
+	$pconnect = $database_config["pconnect"];
 	require_once SITE_ROOT."include/mysql.class.php";
 	$db = new Crow();
 	$db->connect($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
 	$db->query("SET NAMES UTF8");
-	unset($dbhost, $dbuser, $dbpw, $dbname, $pconnect);
+	unset($database_config);
 	return $db;
 }
 ?>
