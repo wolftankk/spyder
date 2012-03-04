@@ -10,7 +10,8 @@ $TIME_START = getMicrotime();
 function db_init(){
 	global $database_config, $db;
 	$dbhost = $database_config["dbhost"];
-	$dbuser = $database_config["dbpw"];
+	$dbuser = $database_config["dbuser"];
+	$dbpw   = $database_config["dbpw"];
 	$dbname = $database_config["dbname"];
 	$pconnect = $database_config["pconnect"];
 	require_once SITE_ROOT."include/mysql.class.php";
