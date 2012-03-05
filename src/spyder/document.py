@@ -10,12 +10,10 @@ from fetch import Fetch
 import feedparser
 
 r"""
- getElementData(doc, "a", text)
-	=> pq(doc.find("a").text())
-
-	@href => getAttr
-	#text => method
-
+ Get the attr or the method of the document
+ token:
+  @ get the attr
+  # the document method func
 """
 def getElementData(obj, token):
 	#parse token
@@ -27,8 +25,12 @@ def getElementData(obj, token):
 		if flag == "@":
 			return d.attr(val);
 		elif flag == "#":
-			#目前没找其他方法....
-			return eval("d."+val+"()");
+			#return eval("d."+val+"()");
+			try:
+				result = getattr(d, val)()
+				return result
+			except AttributeError:
+				return ""
 
 #Grab List
 class Grab(object):
@@ -125,7 +127,7 @@ class Document(object):
 		self.filterscript = self.articleRule.filterscript
 		
 
-		if self.checkUrl(url) == False:
+		if self.checkUrl(url) == False or not self.savable:
 			print "Document %s is fetcing" % ansicolor.green(url)
 			self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
 			self.parse(self.firstPage, True)
@@ -163,6 +165,8 @@ class Document(object):
 		sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "0", str(int(time.time())))
 		
 		if not self.savable:
+			#for test print
+			print title, self.url, content
 			return
 
 		return Store(sql).insert_id()
@@ -237,8 +241,11 @@ if __name__ == "__main__":
 	#print feed["encoding"] # encoding?
 	#print feed["version"] # rss20, atom?
 
+
+	r"""
 	items = feed["entries"]
 	if len(items) > 0:
 		for item in items:
 			# get title, href, date
 			print item["title"], item["link"], item["published"]
+	"""
