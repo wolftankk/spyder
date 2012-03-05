@@ -134,10 +134,14 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 	},
 	createGrid: function(){
 		var me = this, store = me.storeProxy,
-			articleServer = Spyder.constants.articleServer
+			articleServer = Spyder.constants.articleServer;
+		var sm = Ext.create("Ext.selection.CheckboxModel", {
+			model: "MULTI"	
+		})
 		me.grid = Ext.create("Ext.grid.Panel", {
 			store: store,
 			lookMask: true,
+			selModel: sm,
 			frame: true,
 			collapsible: false,	
 			rorder: false,
