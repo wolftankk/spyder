@@ -51,7 +51,8 @@ class Seed{
 			"tagsparent"    => $data["article[tagparten]"],
 			"authorparent"  => $data["article[authorparent]"],
 			"contextparent" => $data["article[contextparent]"],
-			"pageparent"    => $data["article[pageparent]"]
+			"pageparent"    => $data["article[pageparent]"],
+			"filterscript"  => $data["article[filterscript]"]
 		);
 
 		$rule = array(

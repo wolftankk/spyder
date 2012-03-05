@@ -292,9 +292,13 @@ class RuleArticle(object):
 		self.contentparent = rule["contextparent"]
 		#self.contextfilters = rule["filters"]
 
-		self.tagsparent = rule["tagsparent"]
-		self.titleparent = rule["titleparent"]
-		self.authorpartent = rule["authorparent"]
+		self.tagsparent		= rule["tagsparent"]
+		self.titleparent	= rule["titleparent"]
+		self.authorpartent	= rule["authorparent"]
+		if "filterscript" in rule:
+			self.filterscript	= rule["filterscript"]
+		else:
+			self.filterscript  = True
 
 	def getWrapParent(self):
 		return self.wrapparent

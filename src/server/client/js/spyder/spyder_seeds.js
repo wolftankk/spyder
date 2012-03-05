@@ -274,6 +274,13 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 									fieldLabel: "文章页数正则",
 									name: "article[pageparent]",
 									allowBlank: false
+								},
+								{
+									xtype: "checkboxfield",
+									fieldLabel: "过滤文章中的script",
+									inputValue: true,
+									name: "article[filterscript]",
+									checked: true
 								}
 								/*批量过滤正则
 								{

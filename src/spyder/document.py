@@ -122,6 +122,7 @@ class Document(object):
 		self.contentData = {}
 		self.sid = seed.sid
 		self.savable = savable
+		self.filterscript = self.articleRule.filterscript
 		
 
 		if self.checkUrl(url) == False:
@@ -176,9 +177,15 @@ class Document(object):
 		def getContent():
 			if not article:
 				return
-			content = article(self.articleRule.getContentParent()).html()
+			content = article(self.articleRule.getContentParent())
 			if content:
-				self.content = self.content +  content
+				#filter
+				if self.filterscript:
+					content = content.remove("script");
+				
+				content = content.html();
+				if content:
+					self.content = self.content +  content
 
 		if first:
 			#need parse pages, title, tags
