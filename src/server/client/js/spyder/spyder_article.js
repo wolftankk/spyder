@@ -191,8 +191,6 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 					resizable: true,
 					border: false,
 					modal: true,
-					//maximizable: true,
-					//maximized: false,
 					border: 0,
 					bodyBorder: false,
 					bodyPadding: 10,
