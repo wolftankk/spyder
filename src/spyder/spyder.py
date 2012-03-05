@@ -14,11 +14,10 @@ def now():
 class Spyder(object):
 	def __init__(self):
 		self.db = db
-		#self.client = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 		print (ansicolor.green("Spyder") + " start launching");
-		
+
 		#idle time
-		self.needIdleTime = 0
+		self.needIdleTime = 600
 		self.spiderList = None
 		self.queue = {}
 
@@ -61,7 +60,6 @@ class Spyder(object):
 	def run(self):
 		self.getSpiderList()
 
-		waits = []
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
 			if seed.enabled == "1":
@@ -82,7 +80,7 @@ class Spyder(object):
 
 		print "进入休息时间";
 		#300秒间隔检测
-		time.sleep(300);
+		time.sleep(self.needIdleTime);
 		print "休息结束 开始重新启动抓取程序";
 		self.run();
 
@@ -102,7 +100,6 @@ if __name__ == "__main__":
 		elif o == "-t" or o == "--test":
 			try:
 				sid = int(a)
-				print sid
 			except ValueError:
 				print "请输入需要测试的sid"
 				sys.exit(2)

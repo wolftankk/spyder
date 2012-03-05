@@ -6,3 +6,5 @@ DBCONFIG = {
 	"passwd" : "",
 	"dbname" : "spyder"
 }
+
+staticPath = "/"
