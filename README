@@ -1,6 +1,5 @@
-Spyder
-Fecth the articles of specidied websites on Python language.
+Spyder(Python):
+	Deps: lxml, mysql
 
-Deps: lxml, mysql
-
-To be continue...
+Spyder(admin):
+	Deps: php-memcached
