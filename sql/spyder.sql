@@ -28,15 +28,16 @@ CREATE TABLE IF NOT EXISTS `articles` (
   `aid` int(11) NOT NULL AUTO_INCREMENT,
   `lang` varchar(150) NOT NULL,
   `title` varchar(255) NOT NULL,
-  `article` longtext NOT NULL,
+  `content` longtext NOT NULL,
   `url` varchar(255) NOT NULL,
   `sid` int(11) NOT NULL,
   `status` int(11) NOT NULL,
   `fetchtime` int(11) NOT NULL,
   `lasteditor` int(11) NOT NULL,
   `lastupdatetime` int(11) NOT NULL,
+  UNIQUE KEY `url` (`url`),
   KEY `aid` (`aid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `seed_category`;
 CREATE TABLE IF NOT EXISTS `seed_category` (
@@ -44,7 +45,10 @@ CREATE TABLE IF NOT EXISTS `seed_category` (
   `pid` int(11) NOT NULL DEFAULT '-1',
   `cname` varchar(255) NOT NULL,
   PRIMARY KEY (`cid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+INSERT INTO `seed_category` (`cid`, `pid`, `cname`) VALUES
+(0, -1, 'undefined');
 
 DROP TABLE IF EXISTS `seed_logs`;
 CREATE TABLE IF NOT EXISTS `seed_logs` (
@@ -63,7 +67,9 @@ CREATE TABLE IF NOT EXISTS `seeds` (
   `cid` int(11) NOT NULL DEFAULT '0',
   `url` varchar(255) NOT NULL,
   `charset` varchar(255) NOT NULL DEFAULT 'utf-8',
-  `rule` varchar(255) NOT NULL,
+  `enabled` tinyint(1) NOT NULL DEFAULT '1',
+  `listtype` char(100) NOT NULL DEFAULT 'html',
+  `rule` mediumtext NOT NULL,
   `frequency` int(11) NOT NULL,
   `timeout` int(11) NOT NULL DEFAULT '300',
   `tries` int(11) NOT NULL DEFAULT '5',
@@ -73,8 +79,9 @@ CREATE TABLE IF NOT EXISTS `seeds` (
   `debugMode` tinyint(4) NOT NULL,
   `starttime` int(11) NOT NULL,
   `finishtime` int(11) NOT NULL,
-  PRIMARY KEY (`sid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+  PRIMARY KEY (`sid`),
+  UNIQUE KEY `url` (`url`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `user_permission`;
 CREATE TABLE IF NOT EXISTS `user_permission` (
@@ -83,11 +90,11 @@ CREATE TABLE IF NOT EXISTS `user_permission` (
   `description` varchar(255) NOT NULL,
   `flag` int(11) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `uid` int(11) NOT NULL,
+  `uid` int(11) NOT NULL AUTO_INCREMENT,
   `uname` varchar(255) NOT NULL,
   `passwd` varchar(255) NOT NULL,
   `email` varchar(255) NOT NULL,
@@ -96,7 +103,10 @@ CREATE TABLE IF NOT EXISTS `users` (
   `createtime` int(11) NOT NULL,
   `lastlogintime` int(11) NOT NULL,
   PRIMARY KEY (`uid`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=2;
+
+INSERT INTO `users` (`uid`, `uname`, `passwd`, `email`, `permissions`, `salt`, `createtime`, `lastlogintime`) VALUES
+(1, 'admin', '90b9aa7e25f80cf4f64e990b78a9fc5ebd6cecad', '', 22, '', 1329918488, 1330927807);
 
 DROP TABLE IF EXISTS `website_extra`;
 CREATE TABLE IF NOT EXISTS `website_extra` (
@@ -137,3 +147,4 @@ CREATE TABLE IF NOT EXISTS `websites` (
   `lastsynctime` int(11) NOT NULL,
   PRIMARY KEY (`wid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+

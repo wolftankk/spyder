@@ -3,3 +3,8 @@ Spyder(Python):
 
 Spyder(admin):
 	Deps: php-memcached
+
+How to install Spyder
+1. First mysql import spyder.sql
+username: admin
+password: admin
