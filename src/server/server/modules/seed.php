@@ -82,6 +82,58 @@ class Seed{
 	public function EditSeed(){
 		checkArgs("sid");
 		checkArgs("seedJSON");
+
+		$data = post_string("seedJSON");
+		$data = json_decode($data);
+
+		$sname = checkArg("sname", $data);
+		$url = checkArg("url", $data);
+		$charset = checkArg("charset", $data);
+		$frequency = checkArg("frequency", $data);
+		$timeout = checkArg("timeout", $data);
+		$tries = checkArg("tries", $data);
+		$enabled = checkArg("enabled", $data);
+		$listtype = checkArg("listtype", $data);
+
+		$data = get_object_vars($data);
+
+		$cid = $data["cid"] ? $data["cid"] : 0;
+		$list = array(
+			"urlformat" => $data["list[urlformat]"],
+			"startpage" => $data["list[startpage]"],
+			"maxpage" => $data["list[maxpage]"],
+			"step" => $data["list[step]"],
+			"listparent" => $data["list[listparent]"],
+			"entryparent" => $data["list[entryparent]"],
+			"articleparent" => $data["list[articleparent]"],
+			"titleparent" => $data["list[titleparent]"],
+			"dateparent" => $data["list[dateparent]"]
+		); 
+		$article = array(
+			"articleparent" => $data["article[articleparent]"],
+			"titleparent"   => $data["article[titleparent]"],
+			"tagsparent"    => $data["article[tagparten]"],
+			"authorparent"  => $data["article[authorparent]"],
+			"contextparent" => $data["article[contextparent]"],
+			"pageparent"    => $data["article[pageparent]"],
+			"filterscript"  => $data["article[filterscript]"]
+		);
+
+		$rule = array(
+			"list" => $list,
+			"article" => $article
+		);
+
+
+		$lastupdatetime = time();
+		$userInfo = getCurrentSessionData($this->sessionId);
+		$uid = $userInfo["uid"];
+		$permissions = $userInfo["permissions"];
+
+		global $db;
+		$sql = "UPDATE spyder.seeds SET sname='$sname', cid='$cid', url='$url', charset='$charset', enabled='$enabled', listtype='$listtype', rule='".mysql_escape_string(serialize($rule))."', frequency='$frequency', timeout='$timeout', tries='$tries', uid='$uid', lastUpdateTime='$lastupdatetime' WHERE sid='$sid'";
+		$succ = $db->query($sql);
+		send_ajax_response("success", $succ);
 	}
 
 	/**
@@ -90,6 +142,11 @@ class Seed{
 	 */
 	public function DeleteSeed(){
 		checkArgs("sid");
+		global $db;
+		$sql = "DELETE FROM spyder.seeds WHERE sid='$sid'";
+		$succ = $db->query($sql);
+
+		send_ajax_response("success", $succ);
 	}
 
 	/**
