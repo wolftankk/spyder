@@ -46,7 +46,7 @@ SpyderSeedSvc.prototype.EditSeed= function(sid, seedJSON, __callback){
 	var __message = {
 		method: method,
 		params: {
-			sid: sid,
+			SID: sid,
 			seedJSON: seedJSON	
 		}
 	}
@@ -86,7 +86,7 @@ SpyderSeedSvc.prototype.DeleteSeed= function(sid, __callback){
 	var __message = {
 		method: method,
 		params: {
-			sid: sid
+			SID: sid
 		}
 	}
 
@@ -125,7 +125,7 @@ SpyderSeedSvc.prototype.TestSeed = function(sid, __callback){
 	var __message = {
 		method: method,
 		params: {
-			sid: sid
+			SID: sid
 		}
 	}
 
@@ -244,7 +244,7 @@ SpyderSeedSvc.prototype.EditSeedCategory= function(cid, seedCategoryJSON, __call
 	var __message = {
 		method: method,
 		params: {
-			cid: cid,
+			CID: cid,
 			seedCategoryJSON: seedCategoryJSON 
 		}
 	}
@@ -284,7 +284,7 @@ SpyderSeedSvc.prototype.DeleteSeedCategory = function(cid, __callback){
 	var __message = {
 		method: method,
 		params: {
-			cid: cid
+			CID: cid
 		}
 	}
 
