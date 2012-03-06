@@ -80,9 +80,10 @@ class Seed{
 	 * @params: seedJSON
 	 */
 	public function EditSeed(){
-		checkArgs("sid");
+		checkArgs("SID");
 		checkArgs("seedJSON");
 
+		$sid  = post_string("SID");
 		$data = post_string("seedJSON");
 		$data = json_decode($data);
 
@@ -141,7 +142,8 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeed(){
-		checkArgs("sid");
+		checkArgs("SID");
+		$sid = post_string("sid");
 		global $db;
 		$sql = "DELETE FROM spyder.seeds WHERE sid='$sid'";
 		$succ = $db->query($sql);
@@ -154,7 +156,7 @@ class Seed{
 	 * @params: sid
 	 */
 	public function TestSeed(){
-		checkArgs("sid");
+		checkArgs("SID");
 		//call python
 	}
 
@@ -237,9 +239,9 @@ class Seed{
 	 * @params: seedCategoryJSON
 	 */
 	public function EditSeedCategory(){
-		checkArgs("cid");
+		checkArgs("CID");
 		checkArgs("seedCategoryJSON");
-		$cid = post_string("cid");
+		$cid = post_string("CID");
 		$data = post_string("seedCategoryJSON");
 
 		$name = $data->name;
@@ -265,8 +267,8 @@ class Seed{
 	 * @params: sid
 	 */
 	public function DeleteSeedCategory(){
-		checkArgs("cid");
-		$cid = post_string("cid");
+		checkArgs("CID");
+		$cid = post_string("CID");
 		global $db;
 		$sql = "DELETE FROM spyder.seed_category WHERE cid='$cid'";
 		$succ = $db->query($sql);

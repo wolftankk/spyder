@@ -130,6 +130,7 @@ class Article{
 	}
 
 	public function PublicArticleToSite(){
+		checkArgs("CID", "WID");
 
 	}
 }
