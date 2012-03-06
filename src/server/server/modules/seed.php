@@ -155,6 +155,7 @@ class Seed{
 	 */
 	public function TestSeed(){
 		checkArgs("sid");
+		//call python
 	}
 
 	/**
@@ -265,6 +266,12 @@ class Seed{
 	 */
 	public function DeleteSeedCategory(){
 		checkArgs("cid");
+		$cid = post_string("cid");
+		global $db;
+		$sql = "DELETE FROM spyder.seed_category WHERE cid='$cid'";
+		$succ = $db->query($sql);
+
+		send_ajax_response("success", $succ);
 	}
 
 	public function GetSeedCategoryList(){
