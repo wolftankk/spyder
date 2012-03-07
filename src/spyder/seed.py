@@ -291,15 +291,24 @@ class RuleArticle(object):
 		self.pageparent = rule["pageparent"] #page
 		self.wrapparent = rule["articleparent"]#文章位置
 		self.contentparent = rule["contextparent"]
-		#self.contextfilters = rule["filters"]
 
 		self.tagsparent		= rule["tagsparent"]
 		self.titleparent	= rule["titleparent"]
 		self.authorpartent	= rule["authorparent"]
+		self.downloadmedia  = False
+
+		if "downloadmedia" in rule:
+			self.downloadmedia = rule["downloadmedia"]
+
 		if "filterscript" in rule:
 			self.filterscript	= rule["filterscript"]
 		else:
 			self.filterscript  = True
+
+		if "filters" in rule:
+			self.filters	= rule["filters"]
+		else:
+			self.filters    = []
 
 	def getWrapParent(self):
 		return self.wrapparent

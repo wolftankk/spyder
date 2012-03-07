@@ -231,13 +231,15 @@ class Document(object):
 						del imgAttrs[k]
 
 				# save img
-				#if image.get("src"):
-				#	imgurl = image.get("src")
-				#	#save imgurl
-				#	new_imgurl = self._saveImages(imgurl)
-				#	if new_imgurl:
-				#		print new_imgurl
-				##	imgurl = image.set("src", new_imgurl)
+				if self.articleRule.downloadmedia:
+					print "downloadmedia"
+					#if image.get("src"):
+					#	imgurl = image.get("src")
+					#	#save imgurl
+					#	new_imgurl = self._saveImages(imgurl)
+					#	if new_imgurl:
+					#		print new_imgurl
+					##	imgurl = image.set("src", new_imgurl)
 
 		#find swf? 
 
