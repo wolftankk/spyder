@@ -34,11 +34,18 @@ def getElementData(obj,token):
 							if val:
 								if element.get(tag) == val:
 									return True
+								else:
+									return False
 							else:
 								return element.get(tag)
 						elif flag == "#":
 							try:
 								result = getattr(pq(element), tag)()
+								if val:
+									if result == val:
+										return True
+									else:
+										return False
 								return result
 							except AttributeError:
 								return ""
@@ -298,6 +305,6 @@ if __name__ == "__main__":
 	obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
 	#print getElementData(obj,"a[@href,@class='hello']")
 	print getElementData(obj,"a[#text]")
-	getElementData(obj,"a[@href='xxxx']")
-	#getElementData(obj,"a[#text='ccccc']")
+	print getElementData(obj,"a[@href='xxxx']")
+	print getElementData(obj,"a[#text='cccc']")
 	#getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
