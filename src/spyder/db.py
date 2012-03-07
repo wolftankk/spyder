@@ -1,10 +1,10 @@
 #coding: utf-8
 import _mysql as pmysql
 import MySQLdb
-import config
+from config import DBCONFIG
 
 # config db and launcher mysql
-db = pmysql.connect(host=config.DBCONFIG["host"], user=config.DBCONFIG["user"], passwd=config.DBCONFIG["passwd"], db=config.DBCONFIG["dbname"])
+db = pmysql.connect(host=DBCONFIG["host"], user=DBCONFIG["user"], passwd=DBCONFIG["passwd"], db=DBCONFIG["dbname"])
 db.query("SET NAMES UTF8")
 
 # grab from https://github.com/webpy/webpy/blob/master/web/utils.py
