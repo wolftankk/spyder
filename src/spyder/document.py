@@ -24,7 +24,11 @@ def getElementData(obj,token):
 		tagName, methods = m.groups() 
 		methods = methods.split(",")
 		if len(methods) > 0:
-			elements = obj.find(tagName)
+			if "findall" in obj:
+				elements = obj.findall(tagName)
+			else:
+				elements = [obj.find(tagName)]
+
 			if len(elements) > 0:
 				for element in elements:
 					if len(methods) == 1:
@@ -62,7 +66,6 @@ class Grab(object):
 		self.items = {}
 		if self.type == "feed":
 			self.parseFeed();
-			#rss, atom 都是标准, 所以直接提取即可
 		else:
 			self.listRule = rule.getListRule();
 			self.listRule.setPrefixUrl(seed.prefixurl);
@@ -184,7 +187,7 @@ class Document(object):
 		
 		if not self.savable:
 			#for test print
-			#print title, self.url, content
+			print title, self.url, content
 			return
 
 		return Store(sql).insert_id()
