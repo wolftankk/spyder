@@ -181,7 +181,7 @@ $list = array(
 	step = 1,
 	maxpage => 10,
 	
-	listparent=> "", //exp: <ul id="xxx"></ul>
+	listparent=> "", //exp: <ul id="xxx"></ul>  <table> <tr> <td>
 	entryparent => "", //exp <li></li>
 	
 	dateparent => "",
@@ -225,6 +225,7 @@ class RuleList(object):
 
 	def getEntryItem(self):
 		#exp: <li></li>
+		#@TODO: td 部分考虑
 		return self.entryparent
 
 	def getItemLink(self):

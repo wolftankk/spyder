@@ -19,7 +19,7 @@ class Spyder(object):
 		#idle time
 		self.needIdleTime = 600
 		self.spiderList = None
-		self.queue = {}
+        #self.queue = {}
 
 	def getSpiderList(self):
 		self.spiderList = {};
@@ -60,6 +60,7 @@ class Spyder(object):
 	def run(self):
 		self.getSpiderList()
 
+		waits = []
 		for sid in self.spiderList:
 			seed = self.spiderList[sid]
 			if seed.enabled == "1":
@@ -87,7 +88,7 @@ class Spyder(object):
 if __name__ == "__main__":
 	import getopt, sys
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "Vrt:", ["run", "test=", "version"]);
+		opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help"]);
 	except getopt.GetoptError, err:
 		print str(err)
 		sys.exit(2)
@@ -97,6 +98,8 @@ if __name__ == "__main__":
 			#get spyder version
 			import __init__
 			print __init__.VERSION
+		elif o == "-h" or o == "--help":
+			print "Spyder help"
 		elif o == "-t" or o == "--test":
 			try:
 				sid = int(a)

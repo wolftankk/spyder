@@ -130,8 +130,32 @@ class Article{
 	}
 
 	public function PublicArticleToSite(){
-		checkArgs("CID", "WID");
+		checkArgs("AID", "WID");
+		$aid = post_string("AID");
+		$wid = post_string("wid");
 
+		global $db;
+		$articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+		if (empty($articleData) || !is_array($articleData) || count($articleData) == 0){
+			send_ajax_response("error", "This article #$aid is not found.");
+		}
+		//get website
+		$websiteData = $db->get_one("SELECT * FROM spyder.website_extra WHERE wid = '$wid'");
+		if (empty($websiteData) || !is_array($websiteData) || count($websiteData)){
+			send_ajax_response("error", "This website #$wid is not found.");
+		}
+
+		$method = $websiteData["method"];
+		//method: wordpress, dedecms, phpcms, ...
+		if ($method == "wordpress"){
+			//utf-8?
+			$siteDB = new Crow($websiteData["host"], $websiteData["name"], $websiteData["passwd"], $websiteData["dbname"]);
+			if ($siteDB){
+				//insert article data into wordpress
+			}
+		}else{
+
+		}
 	}
 }
 
