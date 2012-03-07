@@ -6,7 +6,10 @@ from pybits import ansicolor
 class DumpMedia():
 	def __init__(self, prefixUrl, url):
 		self.mediaUrl = urlparse.urljoin(prefixUrl, url)
-		self.fetch();
+		self.fetch()
+
+	def getMediaUrl(self):
+		return self.mediaUrl
 
 	def fetch(self):
 		try:
@@ -37,11 +40,15 @@ class DumpMedia():
 		filename = os.path.join(path,  newname+"."+self.getFileType());
 		#check has exit
 		if not os.path.exists(filename):
-			f = io.open(filename, "wb")
-			f.write(media.read());
-			f.close()
-			return True
+			#f = io.open(filename, "wb")
+			#f.write(media.read());
+			#f.close()
+			self.filename = filename
+			return filename 
 		return False
+
+	def getMediaName(self):
+		return self.filename
 	
 	def getFileType(self):
 		path = urlparse.urlsplit(self.mediaUrl).path;

@@ -8,29 +8,37 @@ from db import Store
 import _mysql
 from fetch import Fetch
 import feedparser
+from dumpmedia import DumpMedia
 
 r"""
  Get the attr or the method of the document
- token:
   @ get the attr
   # the document method func
 """
-def getElementData(obj, token):
+def getElementData(obj,token):
 	#parse token
-	p = re.compile("(\w+?)\[([@|#])?(\w+)?\]");
+	p = re.compile("(\w+?)\[(.+)?]");
+	methodParrent = re.compile("([#|@]?)(\w+)(=?[\'|\"](.+)[\'|\"])?")
 	m = p.match(token);
 	if m:
-		tag, flag, val = m.groups() 
-		d = pq(obj.find(tag))
-		if flag == "@":
-			return d.attr(val);
-		elif flag == "#":
-			#return eval("d."+val+"()");
-			try:
-				result = getattr(d, val)()
-				return result
-			except AttributeError:
-				return ""
+		tagName, methods = m.groups() 
+		methods = methods.split(",")
+		if len(methods) > 0:
+			elements = obj.find(tagName)
+			if len(elements) > 0:
+				for element in elements:
+					if len(methods) == 1:
+						methodMatch = methodParrent.match(methods[0])
+						flag, tag, r, val = methodMatch.groups()
+						if flag == "@":
+							return element.get(tag)
+						elif flag == "#":
+							try:
+								result = getattr(pq(element), tag)()
+								return result
+							except AttributeError:
+								return ""
+	return ""
 
 #Grab List
 class Grab(object):
@@ -183,7 +191,8 @@ class Document(object):
 
 	def _saveImages(self, url):
 		#fetch img
-		print url, self.prefixurl
+		m = DumpMedia(self.url, url)
+		return m.getMediaName()
 
 	def _saveMediaToLocale(self, content):
 		#image, flash, mp4?
@@ -207,11 +216,16 @@ class Document(object):
 					if k not in imgKW:
 						del imgAttrs[k]
 
-				if image.get("src"):
-					imgurl = image.get("src")
-					#save imgurl
-					new_imgurl = self._saveImages(imgurl)
-				#	imgurl = image.set("src", new_imgurl)
+				# save img
+				#if image.get("src"):
+				#	imgurl = image.get("src")
+				#	#save imgurl
+				#	new_imgurl = self._saveImages(imgurl)
+				#	if new_imgurl:
+				#		print new_imgurl
+				##	imgurl = image.set("src", new_imgurl)
+
+		#find swf? 
 
 		return content
 
@@ -271,18 +285,15 @@ if __name__ == "__main__":
 	r"""
 	html, RSS, Atom, Ajax
 	"""
-	#test rss
-	doc = Fetch("http://www.265g.com/api/feed.php", "gb2312", 300).read()
-	import feedparser
-	feed = feedparser.parse(doc)
-	#print feed["encoding"] # encoding?
-	#print feed["version"] # rss20, atom?
+	#test token
+	# remove
+	#a[@href="xxxx"]
+	#a[#text="aaaa"]
+	#a[@href="oo", #text="bbb", class="xxx"]
 
-
-	r"""
-	items = feed["entries"]
-	if len(items) > 0:
-		for item in items:
-			# get title, href, date
-			print item["title"], item["link"], item["published"]
-	"""
+	obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
+	print getElementData(obj,"a[@href,@class='hello']")
+	print getElementData(obj,"a[#text]")
+	#getElementData(obj,"a[@href='xxxx']")
+	#getElementData(obj,"a[#text='ccccc']")
+	#getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
