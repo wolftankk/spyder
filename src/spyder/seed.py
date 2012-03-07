@@ -301,6 +301,11 @@ class RuleArticle(object):
 		else:
 			self.filterscript  = True
 
+		if "filters" in rule:
+			self.filters	= rule["filters"]
+		else:
+			self.filters    = []
+
 	def getWrapParent(self):
 		return self.wrapparent
 

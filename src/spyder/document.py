@@ -126,7 +126,6 @@ class Document(object):
 		self.savable = savable
 		self.filterscript = self.articleRule.filterscript
 		
-
 		if self.checkUrl(url) == False or not self.savable:
 			print "Document %s is fetcing" % ansicolor.green(url)
 			self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
@@ -144,10 +143,10 @@ class Document(object):
 
 	def saveArticle(self):
 		content = ""
-		title = ""
-		tags = ""
-		author = ""
-		date = ""
+		title	= ""
+		tags	= ""
+		author	= ""
+		date	= ""
 
 		if "content" in self.contentData:
 			if not self.content:
@@ -166,13 +165,58 @@ class Document(object):
 		
 		if not self.savable:
 			#for test print
-			print title, self.url, content
+			#print title, self.url, content
 			return
 
 		return Store(sql).insert_id()
 
 	def getContentData(self):
 		return self.contentData
+
+	def _filter(self, content):
+		if self.filterscript:
+			content = content.remove("script");
+
+		#if len(self.articleRule.filters) > 0:
+		#	for filter in self.
+		return content
+
+	def _saveImages(self, url):
+		#fetch img
+		#m = hashlib.md5();
+		#imgName = m(url).hexdigest()
+		print "avcad" [0:2]
+		print "avcad" [2:4]
+
+	def _saveMediaToLocale(self, content):
+		#image, flash, mp4?
+		# IMG
+		images  = content.find("img")
+		if len(images) > 0:
+			for image in images:
+				#首先处理图片层
+				parent = image.getparent()
+				if parent is not None and parent.tag is "a":
+					parent.tag = "p"
+					#移除属性
+					parentAttrs = parent.attrib
+					for k in parentAttrs:
+						del parentAttrs[k]
+
+				imgKW = ["src", "alt", "width", "height"];
+				imgAttrs = image.attrib
+				#remove some attrs
+				for k in imgAttrs:
+					if k not in imgKW:
+						del imgAttrs[k]
+
+				if image.get("src"):
+					imgurl = image.get("src")
+					#save imgurl
+					new_imgurl = self._saveImages(imgurl)
+				#	imgurl = image.set("src", new_imgurl)
+
+		return content
 
 	def parse(self, doc, first=False):
 		doc = pq(doc);
@@ -184,8 +228,8 @@ class Document(object):
 			content = article(self.articleRule.getContentParent())
 			if content:
 				#filter
-				if self.filterscript:
-					content = content.remove("script");
+				content = self._filter(content);
+				content = self._saveMediaToLocale(content);
 				
 				content = content.html();
 				if content:
@@ -193,7 +237,6 @@ class Document(object):
 
 		if first:
 			#need parse pages, title, tags
-			####title
 			self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent())
 
 			#pages
@@ -205,10 +248,7 @@ class Document(object):
 			for purl in self.pages:
 				self.parse(purl)
 
-		#context
-		#_context = article("div[class='contF']").remove("script").remove('p[align="right"]')
 		getContent();
-		#print self.content
 
 	def parsePage(self, doc):
 		p = self.articleRule.getPageParent()

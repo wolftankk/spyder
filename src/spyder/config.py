@@ -7,4 +7,5 @@ DBCONFIG = {
 	"dbname" : "spyder"
 }
 
-staticPath = "/"
+staticPath = ""
+DS = "~/home/workspace/spyder/static"
