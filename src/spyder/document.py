@@ -31,7 +31,11 @@ def getElementData(obj,token):
 						methodMatch = methodParrent.match(methods[0])
 						flag, tag, r, val = methodMatch.groups()
 						if flag == "@":
-							return element.get(tag)
+							if val:
+								if element.get(tag) == val:
+									return True
+							else:
+								return element.get(tag)
 						elif flag == "#":
 							try:
 								result = getattr(pq(element), tag)()
@@ -292,8 +296,8 @@ if __name__ == "__main__":
 	#a[@href="oo", #text="bbb", class="xxx"]
 
 	obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
-	print getElementData(obj,"a[@href,@class='hello']")
+	#print getElementData(obj,"a[@href,@class='hello']")
 	print getElementData(obj,"a[#text]")
-	#getElementData(obj,"a[@href='xxxx']")
+	getElementData(obj,"a[@href='xxxx']")
 	#getElementData(obj,"a[#text='ccccc']")
 	#getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
