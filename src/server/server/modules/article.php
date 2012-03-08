@@ -144,14 +144,21 @@ class Article{
 		#if (empty($websiteData) || !is_array($websiteData) || count($websiteData)){
 		#	send_ajax_response("error", "This website #$wid is not found.");
 		#}
+		$websiteData = array(
+			"method"=> "wordpress",
+			"host" => "172.16.130.7",
+			"name" => "root",
+			"passwd"=>"",
+			"dbname"=>"bigamer"
+		);
 
-		#$method = $websiteData["method"];
-		#//method: wordpress, dedecms, phpcms, ...
-		#if ($method == "wordpress"){
-		#	$this->wp_insert_post($articleData, $websiteData)
-		#}else{
+		$method = $websiteData["method"];
+		//method: wordpress, dedecms, phpcms, ...
+		if ($method == "wordpress"){
+			$this->wp_insert_post($articleData, $websiteData);
+		//#}else{
 
-		#}
+		}
 	}
 
 	/**
@@ -180,18 +187,71 @@ class Article{
 	 * 
 	 */
 	private function wp_insert_post($articleData, $websiteData){
-		//utf-8?
-		$siteDB = new Crow($websiteData["host"], $websiteData["name"], $websiteData["passwd"], $websiteData["dbname"]);
-		$defaults = array(
-			'post_status' => "draf",
-			'post_type'   => "post",
-			'post_author' => 1,#defalt user id
-			'guid'		  => ""
-		);
-		if ($siteDB){
-			//insert article data into wordpress
-			
+		global $db;
+		//$dbcharset = "utf-8";
+		$siteDB = new Crow();
+		$siteDB->connect($websiteData["host"], $websiteData["name"], $websiteData["passwd"], $websiteData["dbname"]);
+		$siteDB->query("SET	NAMES UTF8");
+		//get wp options
+		$wp_options = $this->wp_options($siteDB);
+
+		$title = $articleData["title"];
+		$content = mysql_escape_string($articleData["content"]);
+		$fetchtime = $articleData["fetchtime"];
+
+		$post_ID = 0;
+		$post_date = $this->current_time("mysql");
+		$post_date_gmt = $this->current_time("mysql", 1);
+		$post_title = $title;
+		$post_name = sha1($articleData["url"]);//唯一标示
+		$post_status = "publish";
+		$comment_status = "closed";
+		$post_parent = 0;
+		$menu_order = 0;
+		$post_author = 1;
+		$post_type = "post";
+
+		//check
+		$post = $siteDB->get_one("SELECT ID FROM wp_posts WHERE post_name='$post_name'");
+		if (!empty($post) && is_array($post) && count($post) > 0){
+			send_ajax_response("error", "此文章已发布");
+			exit;
 		}
+
+		//insert into db
+		$sql = "INSERT INTO wp_posts SET post_author='$post_author', post_date='$post_date', post_date_gmt='$post_date_gmt', post_content='$content', post_title='$post_title', post_status='$post_status', comment_status='$comment_status', post_name='$post_name', post_type='$post_type', post_parent='$post_parent'";
+		$succ = $siteDB->query($sql);
+		if ($succ === false){
+			send_ajax_response("error", "发布文章失败, 原因: ".$siteDB->error());
+			exit;
+		}
+		$post_ID = $siteDB->insert_id();
+
+		//update guid
+		$guid = ($wp_options["siteurl"] . "?p=" . $post_ID);
+		$sql = "UPDATE wp_posts SET guid='$guid' WHERE ID=$post_ID";
+		$succ = $siteDB->query($sql);
+		send_ajax_response("success", $succ);
+	}
+
+	private function current_time($type, $gmt=0){
+		switch ($type){
+			case "mysql":
+				return ($gmt) ? gmdate("Y-m:d H:i:s") : gmdate("Y-m-d H:i:s", time() + 8 * 3600);
+				break;
+			case "timestamp":
+				return $gmt ? time() : (time() + 8 * 3600);
+				break;
+		}
+	}
+
+	private function wp_options($db){
+		$query = $db->query("SELECT * FROM wp_options");
+		$options = array();
+		while ($data = $db->fetch_array($query)){
+			$options[$data["option_name"]] = $data["option_value"];
+		}
+		return $options;
 	}
 }
 

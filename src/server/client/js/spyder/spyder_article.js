@@ -241,6 +241,13 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 											xtype: "button",
 											text: "发布",
 											handler: function(){
+												articleServer.PublicArticleToSite(data["aid"], 1, {
+													success: function(data){
+														console.log(data)
+													},
+													failure: function(){
+													}
+												})
 											}
 										},
 										"->",
