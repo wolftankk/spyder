@@ -24,10 +24,7 @@ def getElementData(obj,token):
 		tagName, methods = m.groups() 
 		methods = methods.split(",")
 		if len(methods) > 0:
-			if "findall" in obj:
-				elements = obj.findall(tagName)
-			else:
-				elements = [obj.find(tagName)]
+			elements = pq(obj).find(tagName)
 
 			if len(elements) > 0:
 				for element in elements:
@@ -307,9 +304,18 @@ if __name__ == "__main__":
 	#a[#text="aaaa"]
 	#a[@href="oo", #text="bbb", class="xxx"]
 
-	obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
-	#print getElementData(obj,"a[@href,@class='hello']")
-	print getElementData(obj,"a[#text]")
-	print getElementData(obj,"a[@href='xxxx']")
-	print getElementData(obj,"a[#text='cccc']")
-	#getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
+	#obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
+	##print getElementData(obj,"a[@href,@class='hello']")
+	#print getElementData(obj,"a[#text]")
+	#print getElementData(obj,"a[@href='xxxx']")
+	#print getElementData(obj,"a[#text='cccc']")
+	##getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
+
+	obj = pq("""<table>
+		<tr> <td><em>test1</em></td><td><a href="asd">dad</a></td> </tr>
+		<tr> <td><em>test2</em></td><td><a href="vsa">dad</a></td> </tr>
+		<tr> <td><em>test3</em></td><td><a href="bwq">da</a></td> </tr>
+	</table>""")
+	obj = obj.find("tr")
+	for o in obj:
+		print getElementData(o, "a[@href]")
