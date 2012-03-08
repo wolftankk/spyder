@@ -26,31 +26,30 @@ def getElementData(obj,token):
 		if len(methods) > 0:
 			elements = pq(obj).find(tagName)
 
-			if len(elements) > 0:
-				for element in elements:
-					if len(methods) == 1:
-						methodMatch = methodParrent.match(methods[0])
-						flag, tag, r, val = methodMatch.groups()
-						if flag == "@":
-							if val:
-								if element.get(tag) == val:
-									return True
-								else:
-									return False
-							else:
-								return element.get(tag)
-						elif flag == "#":
-							try:
-								result = getattr(pq(element), tag)()
-								if val:
-									if result == val:
-										return True
-									else:
-										return False
-								return result
-							except AttributeError:
-								return ""
-	return ""
+			if elements is None:
+				return None
+
+			#目前只取第一个
+			methodMatch = methodParrent.match(methods[0])
+			flag, tag, r, val = methodMatch.groups()
+			for element in elements:
+				if flag == "@":
+					result = element.get(tag)
+					if val and result:
+						if val == result:
+							return element
+					else:
+						return result
+				elif flag == "#":
+					try:
+						result = getattr(pq(element), tag)()
+						if val and result:
+							return None
+						else:
+							return result
+					except AttributeError:
+						return ""
+	return None
 
 #Grab List
 class Grab(object):
@@ -197,7 +196,9 @@ class Document(object):
 			content = content.remove("script");
 
 		#if len(self.articleRule.filters) > 0:
-		#	for filter in self.
+		#	for filter in self.articleRule.filters:
+		#		getElementData(content, filter)
+
 		return content
 
 	def _saveImages(self, url):

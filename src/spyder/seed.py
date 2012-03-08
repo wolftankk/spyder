@@ -308,7 +308,7 @@ class RuleArticle(object):
 		if "filters" in rule:
 			self.filters	= rule["filters"]
 		else:
-			self.filters    = []
+			self.filters    = ["p[#text='责任编辑']"]
 
 	def getWrapParent(self):
 		return self.wrapparent
