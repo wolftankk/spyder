@@ -241,13 +241,11 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 											xtype: "button",
 											text: "发布",
 											handler: function(){
-												articleServer.PublicArticleToSite(data["aid"], 1, {
-													success: function(data){
-														console.log(data)
-													},
-													failure: function(){
-													}
-												})
+												var win = Ext.create("Spyder.apps.articles.PublicArticle", {
+													articleId : data["aid"],
+													websiteId : 1	
+												});
+												win.show();
 											}
 										},
 										"->",
@@ -318,5 +316,120 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 			}
 		})
 
+	}
+})
+
+Ext.define("Spyder.apps.articles.PublicArticle", {
+	extend: "Ext.window.Window",
+	title:  "发布文章",
+	width: 400,
+	height: 300,
+	autoHeight: true,
+	autoScroll: true,
+	cls: "iScroll",
+	layout: "fit",
+	resizable: true,
+	border: false,
+	modal: true,
+	border: 0,
+	bodyBorder: false,
+	bodyPadding: 10,
+	initComponent: function(){
+		var me = this;
+		me.callParent();	
+
+		if (me.articleId == undefined){
+			Ext.Msg.alert("错误", "请指定文章ID");
+			return;
+		}
+
+		if (me.websiteId == undefined){
+			Ext.Msg.alert("错误", "请指定文章ID");
+			return;
+		}
+		
+		if (me.websiteId != undefined && me.articleId != undefined){
+			me.createMainPanel();
+		}
+	},
+	createMainPanel: function(){
+		var me = this, articleServer = Spyder.constants.articleServer;
+		var config = {
+			autoHeight: true,
+			autoScroll: true,
+			cls: "iScroll",
+			height: "100%",
+			width: "100%",
+			anchor: "fit",
+			border: false,
+			bodyBorder: false,
+			plain: true,
+			bodyStyle: "background-color: #dfe8f5",
+			defaults: {
+				bodyStyle: "background-color: #dfe8f5",
+				width: "95%" 
+			},
+			items: [
+				{
+					layout: "anchor",
+					border: false,
+					bodyStyle: "background-color: #dfe8f5",
+					defaults: {
+						bodyStyle: "background-color: #dfe8f5",
+						width: "95%" 
+					},
+					defaultType: "textfield",
+					fieldDefaults: {
+						msgTarget: "side",
+						labelAlign: "TOP",
+						labelWidth: 60
+					},
+					items: [
+						{
+							xtype: "displayfield",
+							value: "<span style='color:red'>当前为测试模式, 选项可以不填</span>"
+						},
+						{
+							fieldLabel: "选择网站"
+						},
+						{
+							fieldLabel: "文章分类"
+						},
+						{
+							fieldLabel: "文章Tags"
+						},
+						{
+							xtype: "checkboxfield",
+							inputValue: true,
+							checked: true,
+							fieldLabel: "是否开启评论"
+						},
+						{
+							xtype: "button",
+							text: "发布",
+							handler: function(){
+								articleServer.PublicArticleToSite(me.articleId, 1, {
+									success: function(succ){
+										if (succ){
+											Ext.Msg.alert("成功", "发布成功");
+											me.close();
+										}else{
+											Ext.Msg.alert("失败", "发布失败");
+										}
+									},
+									failure: function(error){
+										Ext.Error.raise(error)
+									}
+								})
+							}
+						}
+					]
+				}
+			]
+		}
+
+		var form = Ext.widget("form", config);
+		me.add(form);
+		me.doLayout();
 	}
 })
