@@ -43,14 +43,7 @@ function registerMenu(type, title, data){
 	if (Spyder.menus[type].menus[title]){
 		throw new Error(title+" has registed");
 	}
-	setTimeout(function(){
-		var panel = Spyder.menus[type].panel;
-		if (!!panel){
-			Spyder.menus[type].menus[title] = data
-			panel.add(data);
-			panel.doLayout();	
-		}
-	}, 500)
+	Spyder.menus[type].menus[title] = data
 }
 
 Ext.define("Spyder.apps.HeaderPanel", {
@@ -86,7 +79,7 @@ Ext.define("Spyder.apps.HeaderPanel", {
 				for (var c = 0; c < items.length; ++c){
 					var item = items[c], _key = item["_key"];
 					if (Spyder.menus[_key]){
-						Spyder.menus[_key].panel = item.add({
+						var panel = item.add({
 							xtype: "container",
 							layout: "hbox",
 							defaultType: "buttongroup",
@@ -94,7 +87,14 @@ Ext.define("Spyder.apps.HeaderPanel", {
 								height: 100,
 								width: 250
 							}
-						})
+						});
+						Spyder.menus[_key].panel = panel;
+						if (Spyder.menus[_key] && Spyder.menus[_key].menus){
+							var data = Spyder.menus[_key].menus;
+							for (var k in data){
+								panel.add(data[k]);
+							}
+						}
 					}
 				}
 			}

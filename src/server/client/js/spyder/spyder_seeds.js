@@ -530,7 +530,7 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 	}
 })
 
-registerMenu("seeds", "seedAdmin", {
+registerMenu("seeds", "seedCategoryAdmin", {
 	xtype: "buttongroup",
 	title: "种子分类管理",
 	layout: "anchor",
