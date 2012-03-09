@@ -108,7 +108,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 					fieldDefaults: {
 						msgTarget: "side",
 						labelAlign: "TOP",
-						labelWidth: 60
+						labelWidth: 80
 					},
 					items: [
 						{
@@ -119,7 +119,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							checked: true
 						},
 						{
-							fieldLabel: "名称",
+							fieldLabel: "种子名称",
 							allowBlank: false,
 							name: "sname"
 						},
@@ -133,7 +133,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							name: "url"
 						},
 						{
-							fieldLabel: "charset",
+							fieldLabel: "页面编码",
 							allowBlank: false,
 							name: "charset"
 						},
@@ -154,168 +154,175 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 							allowBlank: false,
 							name: "tries",
 							value: 5
-						},
-						{
-							xtype: "fieldset",
-							title: "列表规则",
-							collapsible: true,
-							defaultType: "textfield",
-							fieldDefaults: {
-								msgTarget: "side",
-								labelAlign: "TOP",
-								labelWidth: 60
-							},
-							items: [
-								{
-									fieldLabel: "列表类别",
-									allowBlank: false,
-									name: "listtype",
-									xtype: "combobox",
-									store: Spyder.apps.seeds.seedFListType,
-									queryMode: "local",
-									displayField: "name",
-									valueField: "attr",
-									value: "html",
-									editable: false,
-									listeners: {
-										change: function(w, newValue, oldValue){
-											var items = w.up("fieldset").items.items
-											if (newValue == "feed"){
-												for (var c = 0; c < items.length; ++c){
-													var item = items[c]
-													if (item && item != w){
-														item.hide()
-													}
-												}
-											}else{
-												for (var c = 0; c < items.length; ++c){
-													var item = items[c]
-													if (item){
-														item.show()
-													}
-												}
-											}
-										}
-									},
-								},
-								{
-									fieldLabel: "url格式",
-									name: "list[urlformat]"
-								},
-								{
-									fieldLabel: "起始页",
-									name: "list[startpage]"
-								},
-								{
-									fieldLabel: "最大采集页数",
-									name: "list[maxpage]"
-								},
-								{
-									fieldLabel: "step",
-									name: "list[step]"
-								},
-								{
-									fieldLabel: "listParent",
-									name:"list[listparent]"
-								},
-								{
-									fieldLabel: "entryParent",
-									name: "list[entryparent]"
-								},
-								{
-									fieldLabel: "文章URL正则",
-									name: "list[articleurl]"
-								},
-								{
-									fieldLabel: "文章标题正则",
-									name: "list[titleparent]"
-								},
-								{
-									fieldLabel: "文章日期正则",
-									name: "list[dateparent]"
-								}
-							]
-						},
-						{
-							xtype: "fieldset",
-							title: "文章规则",
-							collapsible: true,
-							defaultType: "textfield",
-							fieldDefaults: {
-								msgTarget: "side",
-								labelAlign: "TOP",
-								labelWidth: 60
-							},
-							items: [
-								{
-									fieldLabel: "文章正则",
-									name: "article[articleparent]",
-									allowBlank: false
-								},
-								{
-									fieldLabel: "文章标题正则",
-									name: "article[titleparent]",
-									allowBlank: false
-								},
-								{
-									fieldLabel: "tags正则",
-									name: "article[tagparent]"
-								},
-								{
-									fieldLabel: "作者正则",
-									name: "article[authorparent]"
-								},
-								{
-									fieldLabel: "文章正文正则",
-									name: "article[contextparent]",
-									allowBlank: false
-								},
-								{
-									fieldLabel: "文章页数正则",
-									name: "article[pageparent]",
-									allowBlank: false
-								},
-								{
-									xtype: "checkboxfield",
-									fieldLabel: "过滤文章中的script",
-									inputValue: true,
-									name: "article[filterscript]",
-									checked: true
-								}
-								/*批量过滤正则
-								{
-									fieldLabel: "文章过滤正则"//array
-								}*/
-							]
-						},
-						{
-							xtype: "button",
-							text: "重置",
-							handler: function(){
-								me.form.getForm().reset();
-							}
-						},
-						{
-							xtype: "button",
-							text: "submit",
-							disabled: true,
-							formBind: true,
-							handler: function(){
-								var form = me.form.getForm();
-								Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
-									success: function(sid){
-										if (sid){
-											Ext.Msg.alert("添加成功", "添加种子成功");
-										}
-									},
-									failure: function(error){
-										Ext.Error.raise(error);
-									}
-								})
-							}
 						}
 					]
 				},
+				{
+					xtype: "fieldset",
+					title: "列表规则",
+					collapsible: true,
+					defaultType: "textfield",
+					fieldDefaults: {
+						msgTarget: "side",
+						labelWidth: 80
+					},
+					defaults: {
+						anchor: "50%"
+					},
+					items: [
+						{
+							fieldLabel: "列表类别",
+							allowBlank: false,
+							name: "listtype",
+							xtype: "combobox",
+							store: Spyder.apps.seeds.seedFListType,
+							queryMode: "local",
+							displayField: "name",
+							valueField: "attr",
+							value: "html",
+							editable: false,
+							listeners: {
+								change: function(w, newValue, oldValue){
+									var items = w.up("fieldset").items.items
+									if (newValue == "feed"){
+										for (var c = 0; c < items.length; ++c){
+											var item = items[c]
+											if (item && item != w){
+												item.hide()
+											}
+										}
+									}else{
+										for (var c = 0; c < items.length; ++c){
+											var item = items[c]
+											if (item){
+												item.show()
+											}
+										}
+									}
+								}
+							},
+						},
+						{
+							fieldLabel: "url格式",
+							name: "list[urlformat]"
+						},
+						{
+							fieldLabel: "起始页",
+							name: "list[startpage]"
+						},
+						{
+							fieldLabel: "最大采集页数",
+							name: "list[maxpage]"
+						},
+						{
+							fieldLabel: "step",
+							name: "list[step]"
+						},
+						{
+							fieldLabel: "listParent",
+							name:"list[listparent]"
+						},
+						{
+							fieldLabel: "entryParent",
+							name: "list[entryparent]"
+						},
+						{
+							fieldLabel: "文章URL正则",
+							name: "list[articleurl]"
+						},
+						{
+							fieldLabel: "文章标题正则",
+							name: "list[titleparent]"
+						},
+						{
+							fieldLabel: "文章日期正则",
+							name: "list[dateparent]"
+						}
+					]
+				},
+				{
+					xtype: "fieldset",
+					title: "文章规则",
+					collapsible: true,
+					defaultType: "textfield",
+					fieldDefaults: {
+						msgTarget: "side",
+						labelWidth: 80
+					},
+					defaults: {
+						anchor: "50%"
+					},
+					items: [
+						{
+							fieldLabel: "文章正则",
+							name: "article[articleparent]",
+							allowBlank: false
+						},
+						{
+							fieldLabel: "文章标题正则",
+							name: "article[titleparent]",
+							allowBlank: false
+						},
+						{
+							fieldLabel: "tags正则",
+							name: "article[tagparent]"
+						},
+						{
+							fieldLabel: "作者正则",
+							name: "article[authorparent]"
+						},
+						{
+							fieldLabel: "文章正文正则",
+							name: "article[contextparent]",
+							allowBlank: false
+						},
+						{
+							fieldLabel: "文章页数正则",
+							name: "article[pageparent]",
+							allowBlank: false
+						},
+						{
+							xtype: "checkboxfield",
+							fieldLabel: "过滤script",
+							inputValue: true,
+							name: "article[filterscript]",
+							checked: true
+						}
+						//批量过滤正则
+						//{
+						//	fieldLabel: "文章过滤正则"//array
+						//}
+					]
+				},
+				{
+					xtype: "button",
+					text: "重置",
+					handler: function(){
+						me.form.getForm().reset();
+					}
+				},
+				{
+					xtype: "button",
+					text: "提交",
+					disabled: true,
+					formBind: true,
+					style: {
+						marginLeft: "10px"
+					},
+					handler: function(){
+						var form = me.form.getForm();
+						Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
+							success: function(sid){
+								if (sid){
+									Ext.Msg.alert("添加成功", "添加种子成功");
+								}
+							},
+							failure: function(error){
+								Ext.Error.raise(error);
+							}
+						})
+					}
+				}
 			],
 		}
 
