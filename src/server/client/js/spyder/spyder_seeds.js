@@ -15,9 +15,9 @@ registerMenu("seeds", "seedAdmin", {
 			text: "添加种子",
 			tooltip: "点击打开,并且新增一个采集种子",
 			handler: function(){
-				var item = Spyder.cache.menus["addSeed"];
+				var item = Spyder.cache.menus["seeds.AddSeed"];
 				if (!item){
-					Spyder.workspace.addPanel("addSeed", "添加种子", {
+					Spyder.workspace.addPanel("seeds.AddSeed", "添加种子", {
 						items: [
 								Ext.create("Spyder.apps.seeds.AddSeed")
 						]	
@@ -30,9 +30,9 @@ registerMenu("seeds", "seedAdmin", {
 			text: "种子列表",
 			tooltip: "包含编辑,删除, 当前状态等功能",
 			handler: function(){
-				var item = Spyder.cache.menus["seedsList"];
+				var item = Spyder.cache.menus["seeds.SeedsList"];
 				if (!item){
-					Spyder.workspace.addPanel("seedsList", "种子列表", {
+					Spyder.workspace.addPanel("seeds.SeedsList", "种子列表", {
 						items: [
 								Ext.create("Spyder.apps.seeds.SeedsList")
 						]	

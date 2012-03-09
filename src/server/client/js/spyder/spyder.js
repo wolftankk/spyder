@@ -511,6 +511,8 @@ Ext.define("Spyder.apps.Viewport", {
 		me.callParent();
 		me.add(me.createMainPanel());
 		me.doLayout();
+
+		me.readPound();
 	},
 	onRender: function(){
 		var me = this, h = Ext.core.Element.getViewHeight();
@@ -544,6 +546,17 @@ Ext.define("Spyder.apps.Viewport", {
 				remove: function(container, item,opts){
 					var name = item.b_name;
 					if (!!name){
+						var hash = location.hash;
+						if (hash.indexOf("#") > -1){
+							var list = hash.substring(1);
+							var list = list.split("|");
+							if (Ext.Array.indexOf(list, name) > -1){
+								list = Ext.Array.remove(list, name);
+								hash = list.join("|");
+								location.replace("#"+hash);
+							}
+						}
+
 						if (Spyder.cache.menus[name]){
 							Spyder.cache.menus[name] = null;
 							Spyder.cache.containers[name] = null;
@@ -601,6 +614,7 @@ Ext.define("Spyder.apps.Viewport", {
 	removePanel: function(name){
 		var me = this, item = Spyder.cache.menus[name];
 		me.workspace.getTabBar().closeTab(item.tab);
+		
 		if (item){
 			me.workspace.remove(item, true);
 			item.close();
@@ -614,9 +628,25 @@ Ext.define("Spyder.apps.Viewport", {
 			tabTip: title
 		}, config));
 		me.workspace.doLayout();
+		
+		var hash = location.hash;
+		if (hash.indexOf("#") == -1){
+			var url = "#" + name
+			location.replace(url);
+		}else{
+			var list = hash.substring(1);
+			var list = list.split("|");
+			if (Ext.Array.indexOf(list, name) == -1){
+				hash += "|" + name;
+				location.replace(hash);
+			}
+		}
+
 		//设置一个私有的name名称, 为了能直接摧毁
 		item.b_name = name;
 		Spyder.cache.menus[name] = item;
 		me.workspace.setActiveTab(item);
+	},
+	readPound: function(){
 	}
 });
