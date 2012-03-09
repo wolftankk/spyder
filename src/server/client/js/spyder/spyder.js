@@ -547,11 +547,12 @@ Ext.define("Spyder.apps.Viewport", {
 					var name = item.b_name;
 					if (!!name){
 						var hash = location.hash;
+						var title = name + ":" + item.title;
 						if (hash.indexOf("#") > -1){
 							var list = hash.substring(1);
 							var list = list.split("|");
-							if (Ext.Array.indexOf(list, name) > -1){
-								list = Ext.Array.remove(list, name);
+							if (Ext.Array.indexOf(list, title) > -1){
+								list = Ext.Array.remove(list, title);
 								hash = list.join("|");
 								location.replace("#"+hash);
 							}
@@ -631,13 +632,14 @@ Ext.define("Spyder.apps.Viewport", {
 		
 		var hash = location.hash;
 		if (hash.indexOf("#") == -1){
-			var url = "#" + name
+			var url = "#" + name + ":" + title
 			location.replace(url);
 		}else{
 			var list = hash.substring(1);
 			var list = list.split("|");
-			if (Ext.Array.indexOf(list, name) == -1){
-				hash += "|" + name;
+			var title = name + ":" + title;
+			if (Ext.Array.indexOf(list, title) == -1){
+				hash += "|" + title;
 				location.replace(hash);
 			}
 		}
@@ -648,5 +650,29 @@ Ext.define("Spyder.apps.Viewport", {
 		me.workspace.setActiveTab(item);
 	},
 	readPound: function(){
+		var hash = location.hash.substring(1);
+		var list = hash.split("|"), me = this;
+		if (list.length == 0){return;}
+		for (var c =0; c < list.length; ++c){
+			var app = list[c].split(":");
+			var appName = app.shift();
+			var title = app.shift()
+
+			var app = appName.split(".");
+			if (app.length == 1){
+				continue;
+			}
+			var appNamespace = app.shift();
+			var appMethod = app.shift();
+
+			if (Spyder.apps[appNamespace] && Spyder.apps[appNamespace][appMethod]){
+				console.log(Spyder.workspace)
+				me.addPanel(appName, title, {
+					items: [
+						Ext.create("Spyder.apps."+appName)
+					]	
+				})
+			}
+		}
 	}
 });
