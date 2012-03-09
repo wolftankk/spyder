@@ -253,7 +253,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 										"->",
 										{
 											xtype: "button",
-											text : "编辑",
+											text : "保存",
 											handler: function(widget){
 												var form = widget.up("form").getForm(),
 													results = form.getValues(),
