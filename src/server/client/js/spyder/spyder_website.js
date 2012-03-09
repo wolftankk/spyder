@@ -14,9 +14,9 @@ registerMenu("websites", "websiteAdmin", {
 			xtype: "button",
 			text: "增加网站",
 			handler: function(){
-				var item = Spyder.cache.menus["addWebsite"];
+				var item = Spyder.cache.menus["websites.addWebsite"];
 				if (!item){
-					Spyder.workspace.addPanel("addWebsite", "增加网站", {
+					Spyder.workspace.addPanel("websites.addWebsite", "增加网站", {
 						items: [
 							Ext.create("Spyder.apps.websites.addWebsite")
 						]	

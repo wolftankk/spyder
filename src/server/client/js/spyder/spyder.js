@@ -666,7 +666,6 @@ Ext.define("Spyder.apps.Viewport", {
 			var appMethod = app.shift();
 
 			if (Spyder.apps[appNamespace] && Spyder.apps[appNamespace][appMethod]){
-				console.log(Spyder.workspace)
 				me.addPanel(appName, title, {
 					items: [
 						Ext.create("Spyder.apps."+appName)

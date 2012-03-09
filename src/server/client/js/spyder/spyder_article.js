@@ -14,9 +14,9 @@ registerMenu("articles", "articleAdmin", {
 			xtype: "button",
 			text: "文章列表",
 			handler: function(){
-				var item = Spyder.cache.menus["articleList"];
+				var item = Spyder.cache.menus["articles.ArticleList"];
 				if (!item){
-					Spyder.workspace.addPanel("articleList", "文章列表", {
+					Spyder.workspace.addPanel("articles.ArticleList", "文章列表", {
 						items: [
 								Ext.create("Spyder.apps.articles.ArticleList")
 						]	

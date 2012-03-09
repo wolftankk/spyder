@@ -545,9 +545,9 @@ registerMenu("seeds", "seedCategoryAdmin", {
 			xtype: "button",
 			text: "添加种子分类",
 			handler: function(){
-				var item = Spyder.cache.menus["addSeedCategory"];
+				var item = Spyder.cache.menus["seeds.AddSeedCategory"];
 				if (!item){
-					Spyder.workspace.addPanel("addSeed", "添加种子分类", {
+					Spyder.workspace.addPanel("seeds.AddSeedCategory", "添加种子分类", {
 						items: [
 							Ext.create("Spyder.apps.seeds.AddSeedCategory")
 						]	
