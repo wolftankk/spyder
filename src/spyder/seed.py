@@ -10,7 +10,7 @@ class SeedEmpty(Exception): pass
 class Seed(object):
     def __init__(self, seed):
         if (type(seed) == type({})):
-            self._seed = seed
+	    self._seed = seed
 
             self._name = None
             self._sid = None
@@ -308,7 +308,7 @@ class RuleArticle(object):
         if "filters" in rule:
             self.filters    = rule["filters"]
         else:
-            self.filters    = ["p[#text='责任编辑']"]
+            self.filters    = ["p[#text='责任编辑']", "p[#text='找网页游戏，就上265G！']"]
 
     def getWrapParent(self):
         return self.wrapparent

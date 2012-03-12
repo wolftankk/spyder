@@ -14,8 +14,12 @@ r"""
  Get the attr or the method of the document
   @ get the attr
   # the document method func
+
+  @param Obj Doc
+  @param token 
+  @isFilter return element when it's true, else return val
 """
-def getElementData(obj,token):
+def getElementData(obj,token, isFilter=False):
     #parse token
     p = re.compile("(\w+?)\[(.+)?]");
     methodParrent = re.compile("([#|@]?)(\w+)(=?[\'|\"](.+)[\'|\"])?")
@@ -32,21 +36,33 @@ def getElementData(obj,token):
             #目前只取第一个
             methodMatch = methodParrent.match(methods[0])
             flag, tag, r, val = methodMatch.groups()
+
             for element in elements:
                 if flag == "@":
-                    result = element.get(tag)
-                    if val and result:
-                        if val == result:
-                            return element
-                    else:
-                        return result
+		    if isFilter:
+			print ""
+			#if val and result:
+			#    if val == result:
+			#        return element
+			#else:
+		    else:
+			result = element.get(tag)
+			return result
                 elif flag == "#":
                     try:
-                        result = getattr(pq(element), tag)()
-                        if val and result:
-                            return None
-                        else:
-                            return result
+			if isFilter:
+			    result = getattr(pq(element), tag)()
+			    if val and result:
+			        if (isinstance(val, str)):
+			            val = unicode(val, "utf8")
+			        
+			        r = re.search(val, result);
+			        if r:
+				    return element
+			            break;
+			else:
+			    result = getattr(pq(element), tag)()
+			    return result
                     except AttributeError:
                         return ""
     return None
@@ -195,9 +211,11 @@ class Document(object):
         if self.filterscript:
             content = content.remove("script");
 
-        #if len(self.articleRule.filters) > 0:
-        #    for filter in self.articleRule.filters:
-        #        getElementData(content, filter)
+        if len(self.articleRule.filters) > 0:
+            for filter in self.articleRule.filters:
+                element = getElementData(content, filter, True)
+		if element is not None:
+		    element.clear()
 
         return content
 
