@@ -315,21 +315,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                         marginLeft: "10px"
                     },
                     handler: function(){
-                        var form = me.form.getForm();
-			values = form.getValues();
-			if (values.filters){
-			    values.filters = values.filters.split("|");
-			}
-                        //Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
-                        //    success: function(sid){
-                        //        if (sid){
-                        //            Ext.Msg.alert("添加成功", "添加种子成功");
-                        //        }
-                        //    },
-                        //    failure: function(error){
-                        //        Ext.Error.raise(error);
-                        //    }
-                        //})
+			me.processForm();
                     }
                 }
             ],
@@ -342,11 +328,16 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
     },
     restoreForm: function(data){
 	var me = this, form = me.form.getForm(), fKeys = form.getValues();
+	me.selectedSID = data.sid;
 	var list = data["list"], article = data["article"];
 	for (var k in list){
 	    data["list["+k+"]"] = list[k]
 	}
 	for (var k in article){
+	    if (k == "filters" && article.filters){
+		data["filters"] = article.filters.join("|");
+		delete article["filters"];
+	    }
 	    data["article["+k+"]"] = article[k]
 	}
 	delete data["list"];
@@ -356,6 +347,48 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
     },
     processForm: function(){
 	var me = this, action = me.action || "view";
+	if (action == "add" || action == "edit"){
+	    var form = me.form.getForm();
+	    values = form.getValues();
+	    if (values.filters){
+		values.filters = values.filters.split("|");
+		if (!Ext.isArray(values.filters)){
+		    values.filters = [values.filters];
+		}
+		values.filters = values.filters;
+	    }
+	    if (action == "add"){
+		Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(values), {
+		    success: function(sid){
+			if (sid){
+			    Ext.Msg.alert("添加成功", "添加种子成功");
+			}
+		    },
+		    failure: function(error){
+			Ext.Error.raise(error);
+		    }
+		})
+	    }else{
+		if (action == "edit") {
+		    if (me.selectedSID == undefined){
+			Ext.Msg.alert("失败", "编辑失败, 请选择需要编辑的种子")
+			return;
+		    }
+		    Spyder.constants.seedServer.EditSeed(me.selectedSID, Ext.JSON.encode(values), {
+			success: function(succ){
+			    if (succ){
+				Ext.Msg.alert("编辑成功", "编辑种子成功");
+			    }else{
+				Ext.Msg.alert("编辑失败", "编辑种子失败");
+			    }
+			},
+			failure: function(error){
+			    Ext.Error.raise(error);
+			}
+		    })
+		}
+	    }
+	}
     }
 });
 
@@ -557,7 +590,19 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 	})
     },
     deleteSeed: function(record){
-	
+	var sid = record.get("sid");
+	Spyder.constants.seedServer.DeleteSeed(sid, {
+	    success: function(succ){
+		if (succ){
+		    Ext.Msg.alert("成功", "删除种子成功")
+		}else{
+		    Ext.Msg.alert("失败", "删除种子失败")
+		}
+	    },
+	    failure: function(error){
+		Ext.Error.raise(error)
+	    }
+	})
     }
 })
 
