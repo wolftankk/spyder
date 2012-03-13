@@ -205,7 +205,7 @@ class Article{
         $post_title = $title;
         $post_name = sha1($articleData["url"]);//唯一标示
         $post_status = "publish";
-        $comment_status = "closed";
+        $comment_status = "open";
         $post_parent = 0;
         $menu_order = 0;
         $post_author = 1;
@@ -230,7 +230,9 @@ class Article{
         //update guid
         $guid = ($wp_options["siteurl"] . "?p=" . $post_ID);
         $sql = "UPDATE wp_posts SET guid='$guid' WHERE ID=$post_ID";
-        $succ = $siteDB->query($sql);
+	$succ = $siteDB->query($sql);
+	//update status
+	//简体转繁体
         send_ajax_response("success", $succ);
     }
 
