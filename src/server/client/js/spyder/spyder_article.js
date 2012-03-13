@@ -165,15 +165,13 @@ Ext.define("Spyder.apps.articles.ArticleList", {
             })
         })
 
-        me.grid.on({
-            "itemdblclick": me.viewArticle
-        })
+        me.grid.on("itemdblclick", me.viewArticle, me)
 
         me.add(me.grid);
         me.doLayout();
     },
     viewArticle: function(view, record, item, index){
-        var aid = record.get("aid");
+        var aid = record.get("aid"), me = this;
         if (!aid){
             return;
         }
@@ -231,7 +229,21 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                                     width: "100%",
                                     name: "content",
                                     height: 465,
-                                    value: data["content"]
+                                    value: data["content"],
+				    listeners: {
+					render: function(f){
+					    var toolbar = f.getToolbar();
+					    if (!toolbar){ return; }
+					    toolbar.add("-",{
+						xtype: "button",
+						icon: "./resources/themes/images/edit-language.png",
+						tooltip: "转换语言, 从简体转成繁体",
+						handler: function(){
+						    me.convertLanuage(data["aid"]);
+						}
+					    })
+					}
+				    }
                                 },
                                 {
                                     xtype: "toolbar",
@@ -315,7 +327,20 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                 Ext.Error.raise(error)
             }
         })
-
+    },
+    convertLanuage: function(aid){
+	var me = this;
+	if (aid == 0 || aid == undefined){
+	    return;
+	}
+	Spyder.constants.articleServer.ConvertLanage(aid, {
+	    success: function(data){
+		console.log(data)	
+	    },
+	    failure: function(error){
+		Ext.Error.raise(error)
+	    }
+	})
     }
 })
 

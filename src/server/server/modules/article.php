@@ -2,7 +2,8 @@
 class Article{
     private $sessionId;
     public function __construct($action, $sid){
-        $this->sessionId = $sid;
+	$this->sessionId = $sid;
+	$this->loadDefaultTables();
         if (method_exists($this, $action)){
             call_user_func(array($this, $action));
         }else{
@@ -20,7 +21,7 @@ class Article{
             $where = "WHERE $where";
         }
 
-        $sql = "SELECT a.aid, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
+        $sql = "SELECT a.aid, a.lang, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
         $query = $db->query($sql);
         $Data = array();
         $MetaData = array();
@@ -33,7 +34,7 @@ class Article{
                     $fieldHidden = false;
                     if ($key == "sid"){
                         $fieldHidden = true;
-                    }
+		    }
                     $MetaData[] = array(
                         "fieldName" => $keys[$c],
                         "dataIndex" => $keys[$c],
@@ -122,6 +123,23 @@ class Article{
         $succ = $db->query($sql);
 
         send_ajax_response("success", $succ);
+    }
+
+    public function ConvertLanage($sl='zh-cn', $tl = 'zh-tw'){
+	//title, content
+	$needle = $this->mTables['zh-tw'];
+	
+    }
+
+    private function loadDefaultTables(){
+	uses("ZhConversion");
+	$this->mTables = array(
+	    'zh-hans' => $zh2Hans,
+	    'zh-hant' => $zh2Hant,
+	    'zh-cn'   => array_merge($zh2Hans, $zh2CN),
+	    'zh-tw'   => array_merge($zh2Hant, $zh2TW),
+	    'zh'      => array()
+	);
     }
 
     //转换语言自动新增一文章
