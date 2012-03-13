@@ -37,7 +37,7 @@ class Fetch(object):
                 else:
                     # rss
                     #<?xml version="1.0" encoding="gb2312"?>
-                    result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\?>', doc)
+                    result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
 
                 if result:
                     charset = result.group(1)
