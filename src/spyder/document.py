@@ -41,7 +41,10 @@ def getElementData(obj,token, isFilter=False):
                 if flag == "@":
 		    result = element.get(tag)
 		    if isFilter:
-			print result;
+			if val and result:
+			    if (val == result):
+				return element
+				break;
 		    else:
 			return result
                 elif flag == "#":
