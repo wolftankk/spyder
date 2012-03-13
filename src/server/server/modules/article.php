@@ -51,13 +51,19 @@ class Article{
         send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
 
-    public function GetArticleInfo(){
-        checkArg("AID");
-        $aid = post_string("AID");
+    private function _getArticleInfo($aid){
         global $db;
 
         $sql = "SELECT aid, lang, title, content, url, sid, status, fetchtime, lasteditor, lastupdatetime FROM spyder.articles WHERE aid = $aid";
         $data = $db->get_one($sql);
+
+	return $data;
+    }
+
+    public function GetArticleInfo(){
+        checkArg("AID");
+        $aid = post_string("AID");
+	$data = $this->_getArticleInfo($aid);
         if (empty($data) || (is_array($data) && count($data) == 0)){
             send_ajax_response("error", "$aid不存在");
             exit();
@@ -126,13 +132,19 @@ class Article{
     }
 
     public function ConvertLanage($sl='zh-cn', $tl = 'zh-tw'){
-	//title, content
-	$needle = $this->mTables['zh-tw'];
-	
+	checkArgs("AID");
+	$aid = post_string("AID");
+	$needle = array_keys($this->mTables['zh-tw']);
+
+	$data = $this->_getArticleInfo($aid);
+	$lang = $data["lang"] == "" ? "zh-cn" : $data['lang'];
+
+	print_r($this->mTables);
     }
 
     private function loadDefaultTables(){
 	uses("ZhConversion");
+	global $zh2Hant, $zh2Hans, $zh2CN, $zh2TW;
 	$this->mTables = array(
 	    'zh-hans' => $zh2Hans,
 	    'zh-hant' => $zh2Hant,
