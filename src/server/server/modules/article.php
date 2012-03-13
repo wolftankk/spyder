@@ -20,7 +20,7 @@ class Article{
 			$where = "WHERE $where";
 		}
 
-		$sql = "SELECT a.aid, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where LIMIT $start, $limit";
+		$sql = "SELECT a.aid, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
 		$query = $db->query($sql);
 		$Data = array();
 		$MetaData = array();
