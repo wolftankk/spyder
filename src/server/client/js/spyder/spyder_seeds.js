@@ -19,7 +19,9 @@ registerMenu("seeds", "seedAdmin", {
                 if (!item){
                     Spyder.workspace.addPanel("seeds.AddSeed", "添加种子", {
                         items: [
-                                Ext.create("Spyder.apps.seeds.AddSeed")
+                            Ext.create("Spyder.apps.seeds.AddSeed", {
+				action : "add"	
+			    })
                         ]    
                     })
                 }
@@ -338,11 +340,22 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
         me.add(form)
         me.doLayout();
     },
-    restoreForm: function(){
+    restoreForm: function(data){
+	var me = this, form = me.form.getForm(), fKeys = form.getValues();
+	var list = data["list"], article = data["article"];
+	for (var k in list){
+	    data["list["+k+"]"] = list[k]
+	}
+	for (var k in article){
+	    data["article["+k+"]"] = article[k]
+	}
+	delete data["list"];
+	delete data["article"];
 
+	form.setValues(data);
     },
-    processForm: function(action){
-
+    processForm: function(){
+	var me = this, action = me.action || "view";
     }
 });
 
@@ -519,8 +532,24 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 	var sid = record.get("sid");
 	Spyder.constants.seedServer.GetSeedRule(sid, {
 	    success: function(data){
-		var data = Ext.JSON.decode(data)
-		console.log(data)	
+		var data = Ext.JSON.decode(data);
+		data = Ext.Object.merge(data, record.data);
+		var panel = Ext.create("Spyder.apps.seeds.AddSeed", {
+		    action : "edit"   
+		});
+		panel.restoreForm(data);
+		var win = Ext.create("Ext.window.Window", {
+		    width: 1000,
+		    height: 500,
+		    cls: "iScroll",
+		    title: record.get("sname"),
+		    autoHeight: true,
+		    autoScroll: true,
+		    items: [
+			panel
+		    ]
+		});
+		win.show();
 	    },
 	    failure: function(error){
 		Ext.Error.raise(error)
