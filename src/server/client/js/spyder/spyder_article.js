@@ -170,8 +170,13 @@ Ext.define("Spyder.apps.articles.ArticleList", {
         me.add(me.grid);
         me.doLayout();
     },
-    viewArticle: function(view, record, item, index){
-        var aid = record.get("aid"), me = this;
+    viewArticle: function(view, record, onlyAID){
+	var aid, me = this;
+	if (Ext.isBoolean(onlyAID)){
+	    aid = record;
+	}else{
+	    aid = record.get("aid");
+	}
         if (!aid){
             return;
         }
@@ -321,6 +326,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                 });
                 
                 win.setTitle(title);
+		me.win = win;
                 win.show();
             },
             failure: function(error){
@@ -334,8 +340,13 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 	    return;
 	}
 	Spyder.constants.articleServer.ConvertLanage(aid, {
-	    success: function(data){
-		console.log(data)	
+	    success: function(aid){
+		if (aid > 0){
+		    //Ext.Msg.alert("转换成功", "转换成功");
+		    me.win.hide();
+		    me.viewArticle(null, aid, true);
+		    me.storeProxy.loadPage(1);
+		}
 	    },
 	    failure: function(error){
 		Ext.Error.raise(error)

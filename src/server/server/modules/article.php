@@ -134,17 +134,50 @@ class Article{
     public function ConvertLanage($sl='zh-cn', $tl = 'zh-tw'){
 	checkArgs("AID");
 	$aid = post_string("AID");
-	$needle = array_keys($this->mTables['zh-tw']);
 
 	$data = $this->_getArticleInfo($aid);
 	$lang = $data["lang"] == "" ? "zh-cn" : $data['lang'];
 
-	print_r($this->mTables);
+	if ($lang == 'zh-tw'){
+	    send_ajax_response("error", "本文已经是繁体了!");
+	    exit;
+	}
+
+	//这里只需要转两个: title 以及content
+	$data["content"] = $this->convertFromHansToHant($data["content"]);
+	$data["title"] = $this->convertFromHansToHant($data["title"]);
+	$data["lang"]  = 'zh-tw';
+	$data['url']   = $data['url'].'(zh-tw)';
+	$data["fetchtime"] = time();
+	$data["lastupdatetime"] = time();
+
+	//另存为
+	$sql = "INSERT INTO spyder.articles SET ";
+	unset($data["aid"]);
+	$v = array();
+	foreach ($data as $key => $val){
+	    $v[] = $key . "='" . "$val'";
+	}
+	$sql .= join($v, ", ");
+
+	global $db;
+	$succ = $db->query($sql);
+	if ($succ){
+	    $id = $db->insert_id();
+	    send_ajax_response("success", $id);
+	    exit();
+	}
+	send_ajax_response("error", "转换失败");
+    }
+
+    private function convertFromHansToHant($content){
+	$needle = array_keys($this->mTables['zh-tw']);
+	$content = str_replace($needle, $this->mTables['zh-tw'], $content);
+	return mysql_escape_string($content);
     }
 
     private function loadDefaultTables(){
-	uses("ZhConversion");
-	global $zh2Hant, $zh2Hans, $zh2CN, $zh2TW;
+        require_once(LIBS.'ZhConversion.php');
 	$this->mTables = array(
 	    'zh-hans' => $zh2Hans,
 	    'zh-hant' => $zh2Hant,
