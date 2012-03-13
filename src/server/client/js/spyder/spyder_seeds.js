@@ -283,7 +283,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                         {
                             fieldLabel: "文章页数正则",
                             name: "article[pageparent]",
-                            allowBlank: false
+                            allowBlank: true
                         },
                         {
                             xtype: "checkboxfield",
@@ -568,7 +568,8 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 		var data = Ext.JSON.decode(data);
 		data = Ext.Object.merge(data, record.data);
 		var panel = Ext.create("Spyder.apps.seeds.AddSeed", {
-		    action : "edit"   
+		    action : "edit",
+		    autoScroll: false
 		});
 		panel.restoreForm(data);
 		var win = Ext.create("Ext.window.Window", {

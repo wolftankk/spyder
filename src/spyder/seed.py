@@ -306,9 +306,12 @@ class RuleArticle(object):
             self.filterscript  = True
 
         if "filters" in rule:
-            self.filters = rule["filters"]
+            #self.filters = rule["filters"]
+	    self.filters = []
+	    for f in rule["filters"]:
+		self.filters.append(rule["filters"][f])
         else:
-            self.filters = ["p[#text='责任编辑']", "p[#text='找网页游戏，就上265G！']"]
+            self.filters = []
 
     def getWrapParent(self):
         return self.wrapparent
