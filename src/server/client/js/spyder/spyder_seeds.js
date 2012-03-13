@@ -314,16 +314,20 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                     },
                     handler: function(){
                         var form = me.form.getForm();
-                        Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
-                            success: function(sid){
-                                if (sid){
-                                    Ext.Msg.alert("添加成功", "添加种子成功");
-                                }
-                            },
-                            failure: function(error){
-                                Ext.Error.raise(error);
-                            }
-                        })
+			values = form.getValues();
+			if (values.filters){
+			    values.filters = values.filters.split("|");
+			}
+                        //Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(form.getValues()), {
+                        //    success: function(sid){
+                        //        if (sid){
+                        //            Ext.Msg.alert("添加成功", "添加种子成功");
+                        //        }
+                        //    },
+                        //    failure: function(error){
+                        //        Ext.Error.raise(error);
+                        //    }
+                        //})
                     }
                 }
             ],
@@ -333,6 +337,12 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
         me.form = form
         me.add(form)
         me.doLayout();
+    },
+    restoreForm: function(){
+
+    },
+    processForm: function(action){
+
     }
 });
 
@@ -379,6 +389,32 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
                 });
             }
         }
+    
+	var _actions = {
+	    xtype: 'actioncolumn',
+	    width: 50,
+	    items: [
+	    ]
+	}
+
+	_actions.items.push(
+	    "-","-","-",{
+		icon: './resources/themes/images/fam/user_edit.png',
+		tooltip: "编辑种子",
+		handler:function(grid, rowIndex, colIndex){
+		    var d = me.storeProxy.getAt(rowIndex)
+		    me.editSeed(d);
+		}
+	    },"-","-", {
+		icon: "./resources/themes/images/fam/delete.gif",
+		tooltip: "删除种子",
+		handler: function(grid, rowIndex, colIndex){
+		    var d = me.storeProxy.getAt(rowIndex)
+		    me.deleteSeed(d);
+		}
+	    }, "-","-","-");
+
+        me.columns.splice(0, 0, _actions);
 
         if (!Spyder.apps.seeds.seedListModel){
             Ext.define("Spyder.apps.seeds.seedListModel", {
@@ -470,66 +506,29 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
             })
         })
 
-        //me.grid.on({
-        //    "itemdblclick": me.viewArticle
-        //})
+        me.grid.on({
+            "itemdblclick": function(f, record){
+		me.editSeed(record)
+	    }
+        })
 
         me.add(me.grid);
         me.doLayout();
     },
-    viewArticle: function(view, record, item, index){
-        var aid = record.get("aid");
-        if (!aid){
-            return;
-        }
-    
-        
-        var articleServer = Spyder.constants.articleServer;
-        articleServer.GetArticleInfo(aid, {
-            success: function(data){
-                var data = Ext.JSON.decode(data);
-                var title = data["title"];
-                var win = Ext.create("Ext.window.Window", {
-                    width: 900,
-                    height: 600,
-                    minHeight: 550,    
-                    autoHeight: true,
-                    autoScroll: true,
-                    cls: "iScroll",
-                    layout: "fit",
-                    resizable: true,
-                    border: false,
-                    modal: true,
-                    maximizable: true,
-                    maximized: false,
-                    border: 0,
-                    bodyBorder: false,
-                    items: [
-                        {
-                            xtype: "form",
-                            width: "100%",
-                            height: "100%",
-                            layout: "fit",
-                            items: [
-                                {
-                                    xtype: "htmleditor",
-                                    width: "100%",
-                                    height: "100%",
-                                    value: data["content"]
-                                }
-                            ]
-                        }
-                    ]
-                });
-                
-                win.setTitle(title);
-                win.show();
-            },
-            failure: function(error){
-                Ext.Error.raise(error)
-            }
-        })
-
+    editSeed: function(record){
+	var sid = record.get("sid");
+	Spyder.constants.seedServer.GetSeedRule(sid, {
+	    success: function(data){
+		var data = Ext.JSON.decode(data)
+		console.log(data)	
+	    },
+	    failure: function(error){
+		Ext.Error.raise(error)
+	    }
+	})
+    },
+    deleteSeed: function(record){
+	
     }
 })
 
