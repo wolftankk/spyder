@@ -104,6 +104,11 @@ class Article{
     public function EditArticle(){
         checkArgs("ArticleJSON");
         $data = json_decode(post_string("ArticleJSON"));
+	if ($data == NULL){
+	    require_once(LIBS."JSON.php");
+	    $JSON = new Services_JSON();
+	    $data = $JSON->decode(post_string("ArticleJSON"));
+	}
         $title = mysql_escape_string($data->title);
         $content = mysql_escape_string($data->content);
         $aid = checkArg("aid", $data);

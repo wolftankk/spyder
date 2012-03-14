@@ -273,7 +273,9 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                                                 var form = widget.up("form").getForm(),
                                                     results = form.getValues(),
                                                     title = results["title"],
-                                                    content = results["content"];
+                                                    content = Ext.htmlDecode(results["content"]);
+						    content = encodeURIComponent(content)
+
                                                 articleServer.EditArticle(Ext.JSON.encode({
                                                     title: title,
                                                     content: content,

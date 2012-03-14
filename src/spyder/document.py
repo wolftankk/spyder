@@ -66,7 +66,10 @@ def getElementData(obj,token, isFilter=False):
                         return ""
     return None
 
-#Grab List
+
+r"""
+    Grab articles List
+"""
 class Grab(object):
     def __init__(self, seed, savable = True):
         rule = seed.rule;
@@ -147,6 +150,9 @@ class Grab(object):
 
             list(self.listRule.getEntryItem()).map(entry)
 
+r"""
+    Fecth and parser Article page
+"""
 class Document(object):
     def __init__(self, url, seed, savable = True):
         self.url = url;
@@ -329,11 +335,10 @@ if __name__ == "__main__":
     #print getElementData(obj,"a[#text='cccc']")
     ##getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
 
-    obj = pq("""<table>
+    obj = pq("""aaa<!--xxx-->ddd<table>
         <tr> <td><em>test1</em></td><td><a href="asd">dad</a></td> </tr>
         <tr> <td><em>test2</em></td><td><a href="vsa">dad</a></td> </tr>
         <tr> <td><em>test3</em></td><td><a href="bwq">da</a></td> </tr>
     </table>""")
-    obj = obj.find("tr")
-    for o in obj:
-        print getElementData(o, "a[@href]")
+
+    print obj.html();
