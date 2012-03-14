@@ -63,11 +63,19 @@ Ext.define("Spyder.apps.articles.ArticleList", {
             var d = metadata[c];
             fields.push(d["dataIndex"])
             if (!d["fieldHidden"]){
-                columns.push({
+		var column = {
                     flex: 1,
                     header: d["fieldName"],
                     dataIndex: d["dataIndex"]    
-                });
+                }
+
+		switch (d["dataIndex"]){
+		    case "fetchTime":
+			column.xtype = "datecolumn"
+			column.format = "Y/m/d - G:i:s"
+			break;
+		}
+                columns.push(column);
             }
         }
 
@@ -112,6 +120,15 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 
         me.storeProxy = Ext.create("Spyder.apps.articles.articleListStore");
         me.storeProxy.setProxy(me.updateProxy());
+	//update store
+	me.storeProxy.on({
+	    load : function(s, records){
+		for (var c = 0; c < records.length; ++c){
+		    var record = records[c];
+		    record.set("fetchTime", new Date(record.get("fetchTime") * 1000))
+		}
+	    }
+	})
         me.createGrid();
     },
     updateProxy: function(){
