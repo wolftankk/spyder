@@ -428,11 +428,23 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
             var d = metadata[c];
             fields.push(d["dataIndex"])
             if (!d["fieldHidden"]){
-                columns.push({
+                var column = {
                     flex: 1,
                     header: d["fieldName"],
                     dataIndex: d["dataIndex"]    
-                });
+                };
+
+		switch (d["dataIndex"]){
+		    case "createdtime":
+		    case "lastupdatetime":
+		    case "starttime":
+		    case "finishtime":
+			column.xtype = "datecolumn";
+			column.format = "m/d G:i";
+			break;
+		}
+
+		columns.push(column);
             }
         }
     
@@ -503,6 +515,19 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 
         me.storeProxy = Ext.create("Spyder.apps.seeds.seedListStore");
         me.storeProxy.setProxy(me.updateProxy());
+
+	var keys = ["createdtime", "lastupdatetime", "starttime", "finishtime"]
+	me.storeProxy.on({
+	    load: function(s, records){
+		for (var c = 0; c < records.length; ++c){
+		    var record = records[c];
+		    for (var k = 0; k < keys.length; ++k){
+			var key = keys[k];
+			record.set(key, new Date(record.get(key) * 1000));
+		    }
+		}
+	    }
+	})
         me.createGrid();
     },
     updateProxy: function(){
