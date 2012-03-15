@@ -208,35 +208,35 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                         },
                         {
                             fieldLabel: "url格式",
-                            name: "list[urlformat]"
+                            name: "list[urlformat]"// xx-[page].html
                         },
                         {
                             fieldLabel: "起始页",
-                            name: "list[startpage]"
+                            name: "list[startpage]"//1
                         },
                         {
                             fieldLabel: "最大采集页数",
-                            name: "list[maxpage]"
+                            name: "list[maxpage]"//10
                         },
                         {
                             fieldLabel: "step",
-                            name: "list[step]"
+                            name: "list[step]"//1
                         },
                         {
                             fieldLabel: "listParent",
-                            name:"list[listparent]"
+                            name:"list[listparent]"//div[xxx]table
                         },
                         {
                             fieldLabel: "entryParent",
-                            name: "list[entryparent]"
+                            name: "list[entryparent]"//trxxx
                         },
                         {
                             fieldLabel: "文章URL正则",
-                            name: "list[articleurl]"
+                            name: "list[articleurl]"//a href?
                         },
                         {
                             fieldLabel: "文章标题正则",
-                            name: "list[titleparent]"
+                            name: "list[titleparent]"//h[#text]
                         },
                         {
                             fieldLabel: "文章日期正则",
@@ -263,7 +263,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                             allowBlank: false
                         },
                         {
-                            fieldLabel: "文章标题正则",
+                            fieldLabel: "文章标题",
                             name: "article[titleparent]",
                             allowBlank: false
                         },
@@ -357,6 +357,11 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 		}
 		values.filters = values.filters;
 	    }
+	    if (values["list[urlformat]"]){
+		values["list[urlformat]"] = encodeURIComponent(values["list[urlformat]"])
+	    }
+
+	    console.log(action)
 	    if (action == "add"){
 		Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(values), {
 		    success: function(sid){

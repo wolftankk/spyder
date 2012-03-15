@@ -250,17 +250,21 @@ class Document(object):
                 for k in imgAttrs:
                     if k not in imgKW:
                         del imgAttrs[k]
+		#补充img url
+		imgSrc = image.get("src");
+		imgSrc = urlparse.urljoin(self.url, imgSrc);
+		image.set("src", imgSrc);
 
                 # save img
-                if self.articleRule.downloadmedia:
-                    print "downloadmedia"
-                    #if image.get("src"):
-                    #    imgurl = image.get("src")
-                    #    #save imgurl
-                    #    new_imgurl = self._saveImages(imgurl)
-                    #    if new_imgurl:
-                    #        print new_imgurl
-                    ##    imgurl = image.set("src", new_imgurl)
+                #if self.articleRule.downloadmedia:
+                #    print "downloadmedia"
+                #    #if image.get("src"):
+                #    #    imgurl = image.get("src")
+                #    #    #save imgurl
+                #    #    new_imgurl = self._saveImages(imgurl)
+                #    #    if new_imgurl:
+                #    #        print new_imgurl
+                #    ##    imgurl = image.set("src", new_imgurl)
 
         #find swf? 
 
