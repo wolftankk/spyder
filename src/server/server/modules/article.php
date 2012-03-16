@@ -215,21 +215,40 @@ class Article{
         #if (empty($websiteData) || !is_array($websiteData) || count($websiteData)){
         #    send_ajax_response("error", "This website #$wid is not found.");
         #}
+
+	# wordpress
         //$websiteData = array(
         //    "method"=> "wordpress",
         //    "host" => "172.16.130.7",
         //    "name" => "root",
         //    "passwd"=>"",
         //    "dbname"=>"bigamer"
-        //);
+	//);
+	#supesite
+        $websiteData = array(
+            "method"=> "supesite",
+            "host" => "172.16.130.7",
+            "name" => "root",
+            "passwd"=>"",
+            "dbname"=>"supesite"
+	);
+	
 
-        //$method = $websiteData["method"];
-        ////method: wordpress, dedecms, phpcms, supesite ...
-        //if ($method == "wordpress"){
-        //    $this->wp_insert_post($articleData, $websiteData);
-        ////#}else{
-
-        //}
+        $method = $websiteData["method"];
+        //method: wordpress, dedecms, phpcms, supesite ...
+	switch ($method){
+	    case "wordpress":
+		uses("wordpress");
+		break;
+	    case "supesite":
+		uses("supesite");
+		$website = new Supesite($websiteData);
+		$id = $website->insert_article($articleData);
+		break;
+	    default:
+		send_ajax_response("error", "Sorry, Spyder donot support $method.");
+		exit;
+	}
     }
 
 }
