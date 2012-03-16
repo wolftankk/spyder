@@ -39,20 +39,55 @@ class Supesite {
     }
 
     public function insert_article($articleData){
-	$hash = md5($articleData["url"]);
+	$hash = substr(md5($articleData["url"]), 0, 10);
 
 	//check
+	$this->checkArticleExist($hash);
 
-	//$setsqlarr = array(
-	//    "catid"   => $this->defaultCatID,
-	//    "subject" => mysql_escape_string($articleData["title"]),
-	//    'hash'    => 
-	//);
+	//插入到postitems
+	$setsqlarr = array(
+	    'catid'   => $this->defaultCatID,
+	    'subject' => mysql_escape_string($articleData["title"]),
+	    'hash'    => $hash,
+	    'picid'   => 1, //图文咨询标志
+	    'uid'     => 3,
+	    'username'=> 'admin',
+	    'type'    => "news",
+	    'folder'  => 1,
+	    "fromtype"=> "adminpost"
+	);
+	//styletitle 标题样式
+	$setsqlarr["haveattach"] = 0;
+	$setsqlarr["dateline"]   = time();
+
+	$itemid = $this->inserttable("postitems", $setsqlarr, 1);
+
+	//插入到spacenews
+	$setsqlarr = array(
+	    'message' => mysql_escape_string($articleData['content']),
+	    'postip'  => '127.0.0.1'
+	);
+
+	//TAG line360
+	//include tags
+	$setsqlarr["itemid"] = $itemid;
+
+	$nid = $this->inserttable("postmessages", $setsqlarr, 1);
+
+	if ($nid > 0){
+	    send_ajax_response("success", true);
+	}
     }
 
     private function checkArticleExist($hash){
 	$sql = "SELECT itemid FROM {$this->getTableName('postitems')} WHERE hash='$hash'";
-	$data = $this->ssDB->query($data);
+	$data = $this->ssDB->get_one($sql);
+	if (is_array($data) && count($data) > 0){
+	    send_ajax_response("error", "此篇文章已经在此站点发布过");
+	    exit;
+	}
+	$sql = "SELECT itemid FROM {$this->getTableName('spaceitems')} WHERE hash='$hash'";
+	$data = $this->ssDB->get_one($sql);
 	if (is_array($data) && count($data) > 0){
 	    send_ajax_response("error", "此篇文章已经在此站点发布过");
 	    exit;
