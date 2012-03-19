@@ -1,3 +1,5 @@
+#coding=utf-8
+
 import urllib2, urlparse, os, sys, io
 import config
 import hashlib

@@ -257,9 +257,7 @@ class Document(object):
 		image.set("src", imgSrc);
 
                 # save img
-                #if self.articleRule.downloadmedia:
-                #    print "downloadmedia"
-		if config.storeImage
+		if config.storeImage:
                     if image.get("src"):
                         imgurl = image.get("src")
                         #save imgurl
