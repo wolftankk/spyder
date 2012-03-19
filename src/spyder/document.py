@@ -9,6 +9,7 @@ import _mysql
 from fetch import Fetch
 import feedparser
 from dumpmedia import DumpMedia
+import config
 
 r"""
  Get the attr or the method of the document
@@ -258,13 +259,14 @@ class Document(object):
                 # save img
                 #if self.articleRule.downloadmedia:
                 #    print "downloadmedia"
-                #    #if image.get("src"):
-                #    #    imgurl = image.get("src")
-                #    #    #save imgurl
-                #    #    new_imgurl = self._saveImages(imgurl)
-                #    #    if new_imgurl:
-                #    #        print new_imgurl
-                #    ##    imgurl = image.set("src", new_imgurl)
+		if config.storeImage
+                    if image.get("src"):
+                        imgurl = image.get("src")
+                        #save imgurl
+                        new_imgurl = self._saveImages(imgurl)
+                        if new_imgurl:
+                            print new_imgurl
+                        imgurl = image.set("src", new_imgurl)
 
         #find swf? 
 
