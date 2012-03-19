@@ -37,16 +37,24 @@ class Image{
     }
 }
 
-print_r($_FILES);
-print_r($_POST);
+#print_r($_FILES);
+#print_r($_POST);
+
+if ($_FILES && $_FILES["XiMaGe"]){
+
+}
 
 ?>
-
+<!--
 <html>
 <head></head>
 <body>
-<form action="upload_image.php" method="post">
-    <input name="_image" type="file" />
+<form enctype="multipart/form-data" action="upload_image.php" method="post">
+    <input type="hidden" name="_header" value="py-spyder"/>
+    <input type="hidden" name="imgname" value="" />
+    <input name="XiMaGe" type="file" />
+    <input type="submit" />
 </form>
 </body>
 </html>
+-->
