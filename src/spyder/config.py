@@ -8,3 +8,7 @@ DBCONFIG = {
 }
 
 staticPath = "/Users/wolftankk/home/workspace/spyder/static"
+
+# where will these images be saved
+# Choose: locale / remote
+imageSaveMethod = "remote"

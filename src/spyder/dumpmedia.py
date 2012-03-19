@@ -36,16 +36,27 @@ class DumpMedia():
     def write(self, media):
         m = hashlib.sha1(self.mediaUrl)
         newname = m.hexdigest()
-        path = self.getPath(newname)
-        filename = os.path.join(path,  newname+"."+self.getFileType());
-        #check has exit
-        if not os.path.exists(filename):
-            #f = io.open(filename, "wb")
-            #f.write(media.read());
-            #f.close()
-            self.filename = filename
-            return filename 
-        return False
+	
+	if config.imageSaveMethod == "locale":
+	    #get path
+	    path = self.getPath(newname)
+	    filename = os.path.join(path,  newname+"."+self.getFileType());
+	elif config.imageSaveMethod == "remote":
+	    self.postMedia(media, newname);
+
+	return False
+
+        ###check has exit
+        #if not os.path.exists(filename):
+        #    #f = io.open(filename, "wb")
+        #    #f.write(media.read());
+        #    #f.close()
+        #    self.filename = filename
+        #    return filename 
+        #return False
+
+    def postMedia(self, media, newname):
+
 
     def getMediaName(self):
         return self.filename
