@@ -1,60 +1,43 @@
 <?php
 // Server image updload
-define("UPLOAD_PATH", "/Users/wolftankk/home/workspace/spyder/temp");
+define("UPLOAD_PATH", "/Users/wolftankk/home/workspace/spyder/static");
 
-class Image{
-    private $fileNameKey;
-    private $maxFileSize;
-    private $maxImageHeight;
-    private $maxImageWidth;
-    private $isOverwriteFile;
-    private $acceptFileTypeList;
-    private $denyFileTypeList;
-    private $errorCode;
+$ua = $_SERVER["HTTP_USER_AGENT"];
 
-    public function __construct($args){
-	$this->acceptFileTypeList = array();
-	$this->denyFileTypeList   = array();
-	$this->isOverwriteFile    = true;
-	$this->fileNameKey        = $args;
-    }
+if ($ua == "Python-Spyder/1.1"){
+    $imageData = $_POST["XiMaGe"];
+    $imageName = $_POST["imageName"];
+    $imageType = $_POST["imageType"];
+    
+    if (in_array($imageType, array("png", "gif", "jpg", "jpeg"))){
+	#create path
+	$path = "";
+	for ($i = 0; $i < 8; $i=$i+2){
+	    $path = $path."/".substr($imageName, $i, 2);
+	    #check and create
+	    $phyPath = UPLOAD_PATH . $path;
 
-    public function setMaxFileSize($size){
-	$this->maxFileSize = $size;
-    }
+	    if (!is_dir($phyPath)){
+	        if (!mkdir($phyPath, 0755)){
+	            return;
+	        }
+	        if (!chmod($phyPath, 0755)){
+	            return;
+	        }
+	    }
+	}
+	$path = $path . "/" . $imageName . "." . $imageType;
 
-    public function setMaxImage($height, $width){
-	$this->maxImageHeight = $height;
-	$this->maxImageWidth  = $width;
-    }
-
-    public function setOverwriteFile($isOverwirte){
-	$this->isOverwriteFile = $isOverwirte;
-    }
-
-    public function upload($dest, $fileName = ''){
-
+	$phyPath = UPLOAD_PATH . $path;
+	$fhandle = fopen($phyPath, "wb");
+	if (!$fhandle){
+	    return;
+	}
+	$fwrite  = fwrite($fhandle, $imageData);
+	if ($fwrite){
+	    fclose($fhandle);
+	    echo $path; 
+	}
     }
 }
-
-#print_r($_FILES);
-#print_r($_POST);
-
-if ($_FILES && $_FILES["XiMaGe"]){
-
-}
-
 ?>
-<!--
-<html>
-<head></head>
-<body>
-<form enctype="multipart/form-data" action="upload_image.php" method="post">
-    <input type="hidden" name="_header" value="py-spyder"/>
-    <input type="hidden" name="imgname" value="" />
-    <input name="XiMaGe" type="file" />
-    <input type="submit" />
-</form>
-</body>
-</html>
--->

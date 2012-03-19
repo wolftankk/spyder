@@ -56,7 +56,23 @@ class DumpMedia():
         #return False
 
     def postMedia(self, media, newname):
+	from poster.encode import multipart_encode
+	from poster.streaminghttp import register_openers
+	
+	register_openers()
+	datagen, headers = multipart_encode({
+	    "XiMaGe" : media.read(),
+	    "imageName" : newname,
+	    "imageType"    : self.getFileType()
+	})
+	request = urllib2.Request(config.uploadPath, datagen, headers);
+	request.add_header("User-Agent", "Python-Spyder/1.1");
 
+	path = urllib2.urlopen(request).read()
+	path = config.staticUrl + path;
+	self.filename = path
+	print "下载成功";
+	return True
 
     def getMediaName(self):
         return self.filename

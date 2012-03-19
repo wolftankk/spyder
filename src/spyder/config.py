@@ -7,8 +7,10 @@ DBCONFIG = {
     "dbname" : "spyder"
 }
 
-staticPath = "/Users/wolftankk/home/workspace/spyder/static"
+#staticPath = "/Users/wolftankk/home/workspace/spyder/static"
 
 # where will these images be saved
 # Choose: locale / remote
 imageSaveMethod = "remote"
+uploadPath = "http://172.16.130.103/upload_image.php"
+staticUrl = "http://172.16.130.103/static"
