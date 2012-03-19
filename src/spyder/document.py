@@ -228,7 +228,7 @@ class Document(object):
     def _saveImages(self, url):
         #fetch img
         m = DumpMedia(self.url, url)
-        #return m.getMediaName()
+        return m.getMediaName()
 
     def _saveMediaToLocale(self, content):
         #image, flash, mp4?
