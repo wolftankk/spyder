@@ -228,7 +228,7 @@ class Document(object):
     def _saveImages(self, url):
         #fetch img
         m = DumpMedia(self.url, url)
-        return m.getMediaName()
+        #return m.getMediaName()
 
     def _saveMediaToLocale(self, content):
         #image, flash, mp4?
@@ -263,8 +263,8 @@ class Document(object):
                         #save imgurl
                         new_imgurl = self._saveImages(imgurl)
                         if new_imgurl:
-                            print new_imgurl
-                        imgurl = image.set("src", new_imgurl)
+			    print new_imgurl
+			    imgurl = image.set("src", new_imgurl)
 
         #find swf? 
 

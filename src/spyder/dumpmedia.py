@@ -83,7 +83,7 @@ class DumpMedia():
         path = urlparse.urlsplit(self.mediaUrl).path;
         spath = path.split(".")
         if spath is not None:
-            return spath[-1]
+            return spath[-1].lower()
         else:
             subtype = self.getSubType()
             maintype = self.getMainType()
