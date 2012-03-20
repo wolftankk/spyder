@@ -5,7 +5,7 @@ define("UPLOAD_PATH", "/Users/wolftankk/home/workspace/spyder/static");
 $ua = $_SERVER["HTTP_USER_AGENT"];
 
 if ($ua == "Python-Spyder/1.1"){
-    $imageData = $_POST["XiMaGe"];
+    $imageData = base64_decode($_POST["XiMaGe"]);
     $imageName = $_POST["imageName"];
     $imageType = $_POST["imageType"];
     

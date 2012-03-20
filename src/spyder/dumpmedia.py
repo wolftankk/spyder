@@ -60,10 +60,11 @@ class DumpMedia():
     def postMedia(self, media, newname):
 	from poster.encode import multipart_encode
 	from poster.streaminghttp import register_openers
+	import base64
 	
 	register_openers()
 	datagen, headers = multipart_encode({
-	    "XiMaGe" : media.read(),
+	    "XiMaGe" : base64.b64encode(media.read()),
 	    "imageName" : newname,
 	    "imageType"    : self.getFileType()
 	})
