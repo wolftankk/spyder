@@ -221,7 +221,7 @@ class Document(object):
             for filter in self.articleRule.filters:
                 element = getElementData(content, filter, True)
 		if element is not None:
-		    element.clear()
+		    element.getparent().remove(element);
 
         return content
 
