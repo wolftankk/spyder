@@ -136,6 +136,33 @@ class Article{
         send_ajax_response("success", $succ);
     }
 
+    private function _convertLanguge($aid){
+	$data = $this->_getArticleInfo($aid);
+	$lang = $data["lang"] == "" ? "zhCN" : $data['lang'];
+	if ($lang == "zhTW"){
+	    return $aid;
+	}
+
+	$data["content"] = $this->convertFromHansToHant($data["content"]);
+	$data["title"] = $this->convertFromHansToHant($data["title"]);
+	$data["lang"]  = 'zhTW';
+	$data['url']   = $data['url'];
+	$data["fetchtime"] = time();
+	$data["lastupdatetime"] = time();
+	//另存为
+	$sql = "INSERT INTO spyder.articles SET ";
+	unset($data["aid"]);
+	$v = array();
+	foreach ($data as $key => $val){
+	    $v[] = $key . "='" . "$val'";
+	}
+	$sql .= join($v, ", ");
+
+	global $db;
+	$succ = $db->query($sql);
+	return $db->insert_id();
+    }
+
     public function ConvertLanage(){
 	checkArgs("AID");
 	$aid = post_string("AID");
@@ -203,7 +230,18 @@ class Article{
         $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
         if (empty($articleData) || !is_array($articleData) || count($articleData) == 0){
             send_ajax_response("error", "This article #$aid is not found.");
-        }
+	}
+
+	if ($options && is_array($options)){
+	    $autoConvert = $options["convertLanuage"];
+	}
+
+	if ($autoConvert){
+	    $aid = $this->_convertLanguge($aid);
+	    if ($aid > 0){
+		$articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+	    }
+	}
 
         //get website
         #$websiteData = $db->get_one("SELECT * FROM spyder.website_extra WHERE wid = '$wid'");
