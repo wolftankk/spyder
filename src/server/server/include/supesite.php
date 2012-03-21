@@ -4,10 +4,11 @@ class Supesite {
     private $options;
     private $defaultCatID;
 
-    public function __construct($websiteData){
+    public function __construct($websiteData, $errors){
 	$this->connectDatabase($websiteData);
 	$this->prefix_t = "supe_";
 
+	$this->errors = $errors;
 	//check undefinedCategory is exist
 	$this->checkUndefinedCategory();
     }
@@ -38,11 +39,18 @@ class Supesite {
 	}
     }
 
+    public function getErrors(){
+	return $this->errors;
+    }
+
     public function insert_article($articleData){
 	$hash = substr(md5($articleData["url"]), 0, 10);
 
 	//check
-	$this->checkArticleExist($hash);
+	$isExist = $this->checkArticleExist($hash, $articleData["title"]);
+	if ($isExist){
+	    return false;
+	}
 
 	//插入到postitems
 	$setsqlarr = array(
@@ -75,22 +83,27 @@ class Supesite {
 	$nid = $this->inserttable("postmessages", $setsqlarr, 1);
 
 	if ($nid > 0){
-	    send_ajax_response("success", true);
+	    #send_ajax_response("success", true);
+	    return $nid;
 	}
     }
 
-    private function checkArticleExist($hash){
+    private function checkArticleExist($hash, $title){
 	$sql = "SELECT itemid FROM {$this->getTableName('postitems')} WHERE hash='$hash'";
 	$data = $this->ssDB->get_one($sql);
 	if (is_array($data) && count($data) > 0){
-	    send_ajax_response("error", "此篇文章已经在此站点发布过");
-	    exit;
+	    //send_ajax_response("error", "此篇文章已经在此站点发布过");
+	    //exit;
+	    $this->errors[] = "<$title>已经在此站点发布过";
+	    return true;
 	}
 	$sql = "SELECT itemid FROM {$this->getTableName('spaceitems')} WHERE hash='$hash'";
 	$data = $this->ssDB->get_one($sql);
 	if (is_array($data) && count($data) > 0){
-	    send_ajax_response("error", "此篇文章已经在此站点发布过");
-	    exit;
+	    $this->errors[] = "<$title>已经在此站点发布过";
+	    return true;
+	    //send_ajax_response("error", "此篇文章已经在此站点发布过");
+	    //exit;
 	}
     }
 

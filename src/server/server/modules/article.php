@@ -142,6 +142,13 @@ class Article{
 	if ($lang == "zhTW"){
 	    return $aid;
 	}
+	global $db;
+
+	$sql = "SELECT aid FROM spyder.articles WHERE lang='zhTW' and url = '{$data["url"]}'";
+	$testData = $db->get_one($sql);
+	if ($testData && is_array($testData) && $testData["aid"]){
+	    return $testData["aid"];
+	}
 
 	$data["content"] = $this->convertFromHansToHant($data["content"]);
 	$data["title"] = $this->convertFromHansToHant($data["title"]);
@@ -149,6 +156,7 @@ class Article{
 	$data['url']   = $data['url'];
 	$data["fetchtime"] = time();
 	$data["lastupdatetime"] = time();
+	
 	//另存为
 	$sql = "INSERT INTO spyder.articles SET ";
 	unset($data["aid"]);
@@ -158,7 +166,6 @@ class Article{
 	}
 	$sql .= join($v, ", ");
 
-	global $db;
 	$succ = $db->query($sql);
 	if ($succ){
 	    return $db->insert_id();
@@ -207,25 +214,13 @@ class Article{
     //文章发布系统
     public function PublicArticleToSite(){
         checkArgs("AID", "WID");
-        $aid = post_string("AID");
-	$wid = post_string("wid");
+        $articles = post_string("AID");
+	$wid = post_string("WID");
 	$options = post_string("Options");
 
-        global $db;
-        $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
-        if (empty($articleData) || !is_array($articleData) || count($articleData) == 0){
-            send_ajax_response("error", "This article #$aid is not found.");
-	}
-
-	if ($options && is_array($options)){
-	    $autoConvert = $options["convertLanuage"];
-	}
-
-	if ($autoConvert){
-	    $aid = $this->_convertLanguge($aid);
-	    if ($aid > 0){
-		$articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
-	    }
+	if (empty($articles) && !is_array($articles) && (is_array($articles) && count($articles) == 0)){
+            send_ajax_response("error", "请传入文章ID列表");
+	    exit;
 	}
 
         //get website
@@ -250,25 +245,58 @@ class Article{
             "passwd"=>"",
             "dbname"=>"supesite"
 	);
-	
-
         $method = $websiteData["method"];
-        //method: wordpress, dedecms, phpcms, supesite ...
-	switch ($method){
-	    case "wordpress":
-		uses("wordpress");
-		break;
-	    case "supesite":
-		uses("supesite");
-		$website = new Supesite($websiteData);
-		$id = $website->insert_article($articleData);
-		break;
-	    default:
-		send_ajax_response("error", "Sorry, Spyder donot support $method.");
-		exit;
+
+	$errors = array();
+	global $db;
+	for ($c = 0; $c < count($articles); $c++){
+	    $aid = intval($articles[$c]);
+	    if ($aid <= 0){
+		$errors[] = "#aid非法!";
+		continue;
+	    }
+	    $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+	    if (empty($articleData) || !is_array($articleData) || count($articleData) == 0){
+		$errors[] = "This article #$aid is not found.";
+		continue;
+	    }
+
+	    $autoConvert = false;
+	    if ($options && is_object($options)){
+		$autoConvert = $options->convertLanuage;
+	    }
+
+	    if ($autoConvert){
+		$aid = $this->_convertLanguge($aid);
+		if ($aid > 0){
+		    $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+		}
+	    }
+
+	    //method: wordpress, dedecms, phpcms, supesite ...
+	    switch ($method){
+		case "wordpress":
+		    uses("wordpress");
+		    break;
+		case "supesite":
+		    uses("supesite");
+		    $website = new Supesite($websiteData, $errors);
+		    $website->insert_article($articleData);
+		    $errors = $website->getErrors();
+		    break;
+		default:
+		    send_ajax_response("error", "Sorry, Spyder donot support $method.");
+		    exit;
+	    }
+	}
+	if (count($errors) == 0){
+	    send_ajax_response("success", true);
+	    exit;
+	}else{
+	    send_ajax_response("error", join("<br/>", $errors));
+	    exit;
 	}
     }
-
 }
 
 function module_article_init($action, $sid){

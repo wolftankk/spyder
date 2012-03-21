@@ -187,7 +187,17 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 			var records = sm.getSelection();
 			if (records.length == 0){
 			    Ext.Msg.alert("错误", "请选择需要发布的文章");
+			    return;
 			}
+			var articles = [];
+			for (var i = 0; i < records.length; i++){
+			    articles.push(records[i].get("aid"));
+			}
+			var win = Ext.create("Spyder.apps.articles.PublicArticle", {
+			    articles  : articles,
+			    websiteId : 1    
+			});
+			win.show();
 		    }
 		}
 	    ],
@@ -294,7 +304,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                                             text: "发布",
                                             handler: function(){
                                                 var win = Ext.create("Spyder.apps.articles.PublicArticle", {
-                                                    articleId : data["aid"],
+                                                    articles: [data["aid"]],
                                                     websiteId : 1    
                                                 });
                                                 win.show();
@@ -411,9 +421,9 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
         var me = this;
         me.callParent();    
 
-        if (me.articleId == undefined){
-            Ext.Msg.alert("错误", "请指定文章ID");
-            return;
+        if (me.articles == undefined){
+	    Ext.Msg.alert("错误", "请指定文章ID");
+	    return;
         }
 
         if (me.websiteId == undefined){
@@ -421,7 +431,7 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
             return;
         }
         
-        if (me.websiteId != undefined && me.articleId != undefined){
+        if (me.websiteId != undefined && me.articles != undefined){
             me.createMainPanel();
         }
     },
@@ -462,26 +472,36 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
                             xtype: "displayfield",
                             value: "<span style='color:red'>当前为测试模式, 选项可以不填</span>"
                         },
-                        {
-                            fieldLabel: "选择网站"
-                        },
-                        {
-                            fieldLabel: "文章分类"
-                        },
-                        {
-                            fieldLabel: "文章Tags"
-                        },
-                        {
-                            xtype: "checkboxfield",
-                            inputValue: true,
-                            checked: true,
-                            fieldLabel: "是否开启评论"
-                        },
+                        //{
+                        //    fieldLabel: "选择网站"
+                        //},
+                        //{
+                        //    fieldLabel: "文章分类"
+                        //},
+                        //{
+                        //    fieldLabel: "文章Tags"
+                        //},
+                        //{
+                        //    xtype: "checkboxfield",
+                        //    inputValue: true,
+                        //    checked: true,
+                        //    fieldLabel: "是否开启评论"
+                        //},
+			{
+			    xtype: "checkboxfield",
+			    inputValue: true,
+			    checked: true,
+			    fieldLabel: "自动转成繁体",
+			    name: "convertLanuage"
+			},
                         {
                             xtype: "button",
                             text: "发布",
-                            handler: function(){
-                                articleServer.PublicArticleToSite(me.articleId, 1, "" , {
+                            handler: function(widget){
+				var form = widget.up("form").getForm(),
+				    options = form.getValues();
+
+                                articleServer.PublicArticleToSite(me.articles, 1, options, {
                                     success: function(succ){
                                         if (succ){
                                             Ext.Msg.alert("成功", "发布成功");
