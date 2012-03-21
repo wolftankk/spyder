@@ -160,46 +160,31 @@ class Article{
 
 	global $db;
 	$succ = $db->query($sql);
-	return $db->insert_id();
+	if ($succ){
+	    return $db->insert_id();
+	}else{
+	    return false;
+	}
     }
 
     public function ConvertLanage(){
 	checkArgs("AID");
 	$aid = post_string("AID");
 
-	$data = $this->_getArticleInfo($aid);
-	$lang = $data["lang"] == "" ? "zhCN" : $data['lang'];
+	$newAid = $this->_convertLanguge($aid);
 
-	if ($lang == 'zhTW'){
+	$aid = intval($aid);
+	$newAid = intval($newAid);
+	if ($newAid === false){
+	    send_ajax_response("error", "转换失败");
+	    exit;
+	}elseif ($newAid == $aid){
 	    send_ajax_response("error", "本文已经是繁体了!");
 	    exit;
+	}else{
+	    send_ajax_response("success", $newAid);
+	    exit;
 	}
-
-	//目标只有繁体 > <
-	$data["content"] = $this->convertFromHansToHant($data["content"]);
-	$data["title"] = $this->convertFromHansToHant($data["title"]);
-	$data["lang"]  = 'zhTW';
-	$data['url']   = $data['url'];
-	$data["fetchtime"] = time();
-	$data["lastupdatetime"] = time();
-
-	//另存为
-	$sql = "INSERT INTO spyder.articles SET ";
-	unset($data["aid"]);
-	$v = array();
-	foreach ($data as $key => $val){
-	    $v[] = $key . "='" . "$val'";
-	}
-	$sql .= join($v, ", ");
-
-	global $db;
-	$succ = $db->query($sql);
-	if ($succ){
-	    $id = $db->insert_id();
-	    send_ajax_response("success", $id);
-	    exit();
-	}
-	send_ajax_response("error", "转换失败");
     }
 
     private function convertFromHansToHant($content){
