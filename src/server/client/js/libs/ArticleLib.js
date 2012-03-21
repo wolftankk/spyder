@@ -199,13 +199,14 @@ SpyderArticleSvc.prototype.DeleteArticle = function(AID, __callback){
     Spyder.Ajax.asyncRequest("POST", this.url+method, __callbacks, Ext.JSON.encode(__message));
 }
 
-SpyderArticleSvc.prototype.PublicArticleToSite = function(AID, WID, __callback){
+SpyderArticleSvc.prototype.PublicArticleToSite = function(AID, WID, Options, __callback){
     var method = "article.PublicArticleToSite";
     var __message = {
         method: method,
         params: {
             AID: AID,
-            WID: WID
+            WID: WID,
+	    Options: Options
         }
     }
 

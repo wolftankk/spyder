@@ -192,17 +192,12 @@ class Article{
 	);
     }
 
-    //转换语言自动新增一文章
-    private function _AddArticle(){
-
-    }
-
-
     //文章发布系统
     public function PublicArticleToSite(){
         checkArgs("AID", "WID");
         $aid = post_string("AID");
-        $wid = post_string("wid");
+	$wid = post_string("wid");
+	$options = post_string("Options");
 
         global $db;
         $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");

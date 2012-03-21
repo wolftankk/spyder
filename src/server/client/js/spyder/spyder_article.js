@@ -173,6 +173,19 @@ Ext.define("Spyder.apps.articles.ArticleList", {
                 trackOver: false,
                 stripeRows: true
             },
+	    tbar: [
+		"-",
+		{
+		    xtype: "button",
+		    text : "批量发布",
+		    handler: function(){
+			var records = sm.getSelection();
+			if (records.length == 0){
+			    Ext.Msg.alert("错误", "请选择需要发布的文章");
+			}
+		    }
+		}
+	    ],
             columns: me.columns,
             bbar: Ext.create('Ext.PagingToolbar', {
                 store: me.storeProxy,
@@ -463,7 +476,7 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
                             xtype: "button",
                             text: "发布",
                             handler: function(){
-                                articleServer.PublicArticleToSite(me.articleId, 1, {
+                                articleServer.PublicArticleToSite(me.articleId, 1, "" , {
                                     success: function(succ){
                                         if (succ){
                                             Ext.Msg.alert("成功", "发布成功");
