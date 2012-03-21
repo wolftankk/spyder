@@ -429,7 +429,6 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
                 Ext.Error.raise(error)
             }
         })
-        
     },
     buildStoreAndModel: function(metadata){
         var me = this, fields = [], columns = [];

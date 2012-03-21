@@ -44,6 +44,10 @@ Ext.define("Spyder.apps.articles.ArticleList", {
         var me = this
 
         me.callParent();
+	me.langList = {
+	    zhCN : "简体",
+	    zhTW : "繁体"
+	}
 
         Spyder.constants.articleServer.GetArticleList(0, 1, "", {
             success: function(data){
@@ -126,6 +130,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 		for (var c = 0; c < records.length; ++c){
 		    var record = records[c];
 		    record.set("fetchTime", new Date(record.get("fetchTime") * 1000))
+		    record.set("lang", me.langList[record.get("lang")]);
 		}
 	    }
 	})
