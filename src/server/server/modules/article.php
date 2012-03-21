@@ -136,23 +136,23 @@ class Article{
         send_ajax_response("success", $succ);
     }
 
-    public function ConvertLanage($sl='zh-cn', $tl = 'zh-tw'){
+    public function ConvertLanage(){
 	checkArgs("AID");
 	$aid = post_string("AID");
 
 	$data = $this->_getArticleInfo($aid);
-	$lang = $data["lang"] == "" ? "zh-cn" : $data['lang'];
+	$lang = $data["lang"] == "" ? "zhCN" : $data['lang'];
 
-	if ($lang == 'zh-tw'){
+	if ($lang == 'zhTW'){
 	    send_ajax_response("error", "本文已经是繁体了!");
 	    exit;
 	}
 
-	//这里只需要转两个: title 以及content
+	//目标只有繁体 > <
 	$data["content"] = $this->convertFromHansToHant($data["content"]);
 	$data["title"] = $this->convertFromHansToHant($data["title"]);
-	$data["lang"]  = 'zh-tw';
-	$data['url']   = $data['url'].'(zh-tw)';
+	$data["lang"]  = 'zhTW';
+	$data['url']   = $data['url'];
 	$data["fetchtime"] = time();
 	$data["lastupdatetime"] = time();
 
@@ -176,8 +176,8 @@ class Article{
     }
 
     private function convertFromHansToHant($content){
-	$needle = array_keys($this->mTables['zh-tw']);
-	$content = str_replace($needle, $this->mTables['zh-tw'], $content);
+	$needle = array_keys($this->mTables['zhTW']);
+	$content = str_replace($needle, $this->mTables['zhTW'], $content);
 	return mysql_escape_string($content);
     }
 
@@ -186,8 +186,8 @@ class Article{
 	$this->mTables = array(
 	    'zh-hans' => $zh2Hans,
 	    'zh-hant' => $zh2Hant,
-	    'zh-cn'   => array_merge($zh2Hans, $zh2CN),
-	    'zh-tw'   => array_merge($zh2Hant, $zh2TW),
+	    'zhCN'   => array_merge($zh2Hans, $zh2CN),
+	    'zhTW'   => array_merge($zh2Hant, $zh2TW),
 	    'zh'      => array()
 	);
     }
