@@ -155,7 +155,7 @@ Ext.define("Spyder.apps.articles.ArticleList", {
         var sm = Ext.create("Ext.selection.CheckboxModel", {
             model: "MULTI"    
         })
-        me.grid = Ext.create("Ext.grid.Panel", {
+        me.grid = Ext.create("Spyder.plugins.LiveSearch", {
             store: store,
             lookMask: true,
             selModel: sm,

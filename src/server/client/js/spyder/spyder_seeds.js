@@ -556,7 +556,7 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
     createGrid: function(){
         var me = this, store = me.storeProxy,
             seedServer = Spyder.constants.seedServer
-        me.grid = Ext.create("Ext.grid.Panel", {
+        me.grid = Ext.create("Spyder.plugins.LiveSearch", {
             store: store,
             lookMask: true,
             frame: true,
