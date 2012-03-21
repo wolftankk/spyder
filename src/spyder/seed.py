@@ -24,6 +24,7 @@ class Seed(object):
             self._charset = "utf-8"
             self._debugMode = 0
             self.enabled = 0
+	    self.lang = "zhCN"
 
             #List Type: html, feed, ajax
             self.type = "html" 
@@ -64,7 +65,10 @@ class Seed(object):
             self.enabled = seedData["enabled"];
 
         if "listtype" in seedData:
-            self.type = seedData["listtype"]
+            self.type = seedData["listtype"];
+
+	if "lang" in seedData:
+	    self.lang = seedData["lang"];
 
         #rule
         if seedData["rule"] != "":

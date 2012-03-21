@@ -165,6 +165,7 @@ class Document(object):
         self.sid = seed.sid
         self.savable = savable
         self.filterscript = self.articleRule.filterscript
+	self.lang = seed.lang
         
         if self.checkUrl(url) == False or not self.savable:
             print "Document %s is fetcing" % ansicolor.green(url)
@@ -201,7 +202,7 @@ class Document(object):
 
         self.url = self.url.encode("utf-8", "ignore")
 
-        sql = "INSERT INTO spyder.articles (title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s')" % (title, content, self.url, str(self.sid), "0", str(int(time.time())))
+        sql = "INSERT INTO spyder.articles (lang, title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.url, str(self.sid), "0", str(int(time.time())))
         
         if not self.savable:
             #for test print
