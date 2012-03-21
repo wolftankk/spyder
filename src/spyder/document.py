@@ -9,7 +9,7 @@ import _mysql
 from fetch import Fetch
 import feedparser
 from dumpmedia import DumpMedia
-import config
+import config, lxml
 
 r"""
  Get the attr or the method of the document
@@ -222,6 +222,13 @@ class Document(object):
                 element = getElementData(content, filter, True)
 		if element is not None:
 		    element.getparent().remove(element);
+
+	# clean html
+	def do(i, element):
+	    if (isinstance(element, lxml.html.HtmlComment)):
+		element.getparent().remove(element)
+	content.children().each(do)
+	#end clean html
 
         return content
 

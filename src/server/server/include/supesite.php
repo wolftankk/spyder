@@ -49,7 +49,7 @@ class Supesite {
 	    'catid'   => $this->defaultCatID,
 	    'subject' => mysql_escape_string($articleData["title"]),
 	    'hash'    => $hash,
-	    'picid'   => 1, //图文咨询标志
+	    'picid'   => 0, //图文咨询标志
 	    'uid'     => 3,
 	    'username'=> 'admin',
 	    'type'    => "news",
