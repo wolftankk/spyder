@@ -140,6 +140,11 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                             name: "charset",
 			    tip  : "设置你采集页面的页面编码, 为空时候程序将自动判断"
                         },
+			{
+			    fieldLabel: "页面语言",
+			    allowBlank: false,
+			    name: "lang"
+			},
                         {
                             fieldLabel: "采集频率(秒)",
                             allowBlank: false,
