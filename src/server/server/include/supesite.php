@@ -57,10 +57,11 @@ class Supesite {
 	}
 
 	//get 编辑
-	$sql = "SELECT uid, username FROM {$this->getTableName('members')} WHERE uid IN (10001, 10010)";
-	$query = $db->query($sql);
+	$sql = "SELECT uid, username FROM {$this->getTableName('members')} WHERE uid > 10000 AND uid <= 10010";
+	$query = $this->ssDB->query($sql);
 	$users = array();
-	while ($d = $db->fetch_array($query)){
+
+	while ($d = $this->ssDB->fetch_array($query)){
 	    if ($d && is_array($d)){
 		$users[] = $d;
 	    }
@@ -69,7 +70,7 @@ class Supesite {
 	$pUsername = "";
 	$pUserID   = "";
 	if (count($users) > 0){
-	    $rs = rand(0, count($users) - 1);
+	    $rs = rand(0, (count($users) - 1));
 	    $d = $users[$rs];
 	    $pUsername = $d["username"];
 	    $pUserID   = $d["uid"];
