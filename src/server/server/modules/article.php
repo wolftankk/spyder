@@ -264,6 +264,7 @@ class Article{
 	    $autoConvert = false;
 	    if ($options && is_object($options)){
 		$autoConvert = $options->convertLanuage;
+		$articleCatID = $options->websiteCatID;
 	    }
 
 	    if ($autoConvert){
@@ -273,6 +274,11 @@ class Article{
 		}
 	    }
 
+	    if ($articleCatID){
+		$articleCatID = intval($articleCatID);
+		$articleCatID = $articleCatID == 0 ? 10 : $articleCatID;
+	    }
+
 	    //method: wordpress, dedecms, phpcms, supesite ...
 	    switch ($method){
 		case "wordpress":
@@ -280,7 +286,7 @@ class Article{
 		    break;
 		case "supesite":
 		    uses("supesite");
-		    $website = new Supesite($websiteData, $errors, 10);
+		    $website = new Supesite($websiteData, $errors, $articleCatID);
 		    $website->insert_article($articleData);
 		    $errors = $website->getErrors();
 		    break;

@@ -47,6 +47,18 @@ class Supesite {
 	return $this->errors;
     }
 
+    public function getCategories(){
+	$sql = "SELECT catid, name FROM {$this->getTableName('categories')} WHERE type = 'news'";
+	$query = $this->ssDB->query($sql);
+	$data = array();
+	while ($d = $this->ssDB->fetch_array($query)){
+	    $data[] = $d;
+	}
+
+	send_ajax_response("success", $data);
+	exit;
+    }
+
     public function insert_article($articleData){
 	$hash = substr(md5($articleData["url"]), 0, 10);
 

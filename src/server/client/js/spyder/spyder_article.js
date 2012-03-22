@@ -419,8 +419,8 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
     bodyPadding: 10,
     initComponent: function(){
         var me = this;
-        me.callParent();    
-
+        me.callParent();
+	
         if (me.articles == undefined){
 	    Ext.Msg.alert("错误", "请指定文章ID");
 	    return;
@@ -430,10 +430,25 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
             Ext.Msg.alert("错误", "请指定文章ID");
             return;
         }
-        
-        if (me.websiteId != undefined && me.articles != undefined){
-            me.createMainPanel();
-        }
+
+	Spyder.constants.websiteServer.GetCategoriesFromWebsite(1, {
+	    success : function(data){
+		me.websiteStore = Ext.create('Ext.data.Store', {
+		    fields: [
+			"catid",
+			"name",
+		    ],
+		    data: Ext.JSON.decode(data)   
+		})
+
+		if (me.websiteId != undefined && me.articles != undefined){
+		    me.createMainPanel();
+		}
+	    },
+	    failure: function(error){
+		Ext.Error.raise(error)
+	    }
+	})  
     },
     createMainPanel: function(){
         var me = this, articleServer = Spyder.constants.articleServer;
@@ -487,6 +502,19 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
                         //    checked: true,
                         //    fieldLabel: "是否开启评论"
                         //},
+			//{
+			//    fieldLabel: "选择频道"
+			//},
+			{
+			    fieldLabel: "选择分类",
+			    xtype: "combobox",
+			    store:  me.websiteStore,
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "catid",
+			    name: "websiteCatID",
+			    editable: false
+			},
 			{
 			    xtype: "checkboxfield",
 			    inputValue: true,
