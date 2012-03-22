@@ -56,14 +56,36 @@ class Supesite {
 	    return false;
 	}
 
+	//get 编辑
+	$sql = "SELECT uid, username FROM {$this->getTableName('members')} WHERE uid IN (10001, 10010)";
+	$query = $db->query($sql);
+	$users = array();
+	while ($d = $db->fetch_array($query)){
+	    if ($d && is_array($d)){
+		$users[] = $d;
+	    }
+	}
+
+	$pUsername = "";
+	$pUserID   = "";
+	if (count($users) > 0){
+	    $rs = rand(0, count($users) - 1);
+	    $d = $users[$rs];
+	    $pUsername = $d["username"];
+	    $pUserID   = $d["uid"];
+	}else{
+	    $pUsername = "admin";
+	    $pUserID   = 3;
+	}
+
 	//插入到postitems
 	$setsqlarr = array(
 	    'catid'   => $this->defaultCatID,
 	    'subject' => mysql_escape_string($articleData["title"]),
 	    'hash'    => $hash,
 	    'picid'   => 0, //图文咨询标志
-	    'uid'     => 3,
-	    'username'=> 'admin',
+	    'uid'     => $pUserID,
+	    'username'=> $pUsername, 
 	    'type'    => "news",
 	    'folder'  => 1,
 	    "fromtype"=> "adminpost"
