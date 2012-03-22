@@ -419,6 +419,15 @@ Ext.define("Spyder.apps.seeds.SeedsList", {
 
         me.callParent();
 
+	//Spyder.constants.seedServer.GetSeedCategoryList("", {
+	//    success: function(data){
+	//	console.log(data);	
+	//    },
+	//    failure: function(error){
+	//	Ext.Error.raise(error);
+	//    }
+	//})
+
         Spyder.constants.seedServer.GetSeedList(0, 1, "", {
             success: function(data){
                 var data = Ext.JSON.decode(data);

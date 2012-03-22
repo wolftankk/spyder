@@ -295,7 +295,15 @@ class Seed{
     }
 
     public function GetSeedCategoryList(){
+	global $db;
+	$sql = "SELECT cid, pid, cname FROM spyder.seed_category ORDER BY pid ASC";
+	$query = $db->query($sql);
+	$data = array();
+	while ($d = $db->fetch_array($query)){
+	    $data[] = $d;
+	}
 
+	//$root = array();
     }
 
     /**
