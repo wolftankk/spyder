@@ -4,13 +4,17 @@ class Supesite {
     private $options;
     private $defaultCatID;
 
-    public function __construct($websiteData, $errors){
+    public function __construct($websiteData, $errors, $catID = null){
 	$this->connectDatabase($websiteData);
 	$this->prefix_t = "supe_";
 
 	$this->errors = $errors;
 	//check undefinedCategory is exist
-	$this->checkUndefinedCategory();
+	if ($catID == null){
+	    $this->checkUndefinedCategory();
+	}else{
+	    $this->defaultCatID = $catID;
+	}
     }
 
     private function connectDatabase($websiteData){
