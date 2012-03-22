@@ -280,7 +280,7 @@ class Article{
 		    break;
 		case "supesite":
 		    uses("supesite");
-		    $website = new Supesite($websiteData, $errors);
+		    $website = new Supesite($websiteData, $errors, 10);
 		    $website->insert_article($articleData);
 		    $errors = $website->getErrors();
 		    break;
