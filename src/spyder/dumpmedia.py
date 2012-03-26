@@ -8,6 +8,7 @@ from pybits import ansicolor
 class DumpMedia():
     def __init__(self, prefixUrl, url):
         self.mediaUrl = urlparse.urljoin(prefixUrl, url)
+	self.filename = None;
         self.fetch()
 
     def getMediaUrl(self):
