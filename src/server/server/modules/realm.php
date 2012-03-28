@@ -180,11 +180,45 @@ class Realm{
     }
 
     public function AddRealm(){
+        checkArgs("RJSON");
+        
+        //json_decode 有问题
+        $data = post_string("RJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+	$gid  = checkArg("gid", $data);
+	$oid  = checkArg("oid", $data);
+
+	$url = $data->url;
+	$date = $data->date;
+	$status = $data->status;
+
+	$sql = "INSERT INTO supe_gamerealms (name, gid, oid, url, date, status) VALUES ('$name', $gid, $oid, '$url', '$date', '$status')";
+        $this->ssDB->query($sql);
+        $rid = $this->ssDB->insert_id();
+        send_ajax_response("success", $rid);
     }
 
     public function EditRealm(){
+        checkArgs("RID", "RJSON");
+        
+        //json_decode 有问题
+	$rid = post_string("RID");
+        $data = post_string("RJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+	$gid  = checkArg("gid", $data);
+	$oid  = checkArg("oid", $data);
+
+	$url = $data->url;
+	$date = $data->date;
+	$status = $data->status;
+
+	$sql = "UPDATE supe_gamerealms set name='$name', gid = '$gid', oid = '$oid', url = '$url', date='$date', status='$status' WHERE id=$rid";
+        $succ = $this->ssDB->query($sql);
+        send_ajax_response("success", $succ);
     }
 
     public function DeleteRealm(){
@@ -200,7 +234,7 @@ class Realm{
             $where = "WHERE $where";
 	}
 
-	$sql = "SELECT * FROM supe_gamerealms $where LIMIT $start, $limit";
+	$sql = "SELECT a.id, a.gid, b.name as gname, a.oid, c.name as oname, a.url, a.date, a.name, a.status  FROM supe_gamerealms as a LEFT JOIN supe_webgames as b ON a.gid = b.id LEFT JOIN supe_gameoperators as c ON a.oid = c.id $where LIMIT $start, $limit";
         $Data = array();
         $MetaData = array();
 	$isGetMetaData = false;
@@ -213,7 +247,7 @@ class Realm{
                 for ($c = 0; $c < count($keys); $c++){
                     $key = $keys[$c];
                     $fieldHidden = false;
-                    if ($key == "id"){
+                    if (in_array($key, array("id", "gid", "oid"))){
                         $fieldHidden = true;
                     }
                     $MetaData[] = array(

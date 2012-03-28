@@ -812,9 +812,25 @@ Ext.define("Spyder.apps.realms.addRealm", {
         var me = this;
         me.callParent();
 	
-	//get game and realm data
+	me.gameList = Ext.create("Ext.data.Store", {
+	    fields: ["id", "name"],
+	    data  : cache["games"]  
+	})
+
+	me.operalist = Ext.create("Ext.data.Store", {
+	    fields: ["id", "name"],
+	    data  : cache["operators"]  
+	})
+
+	me.statuslist = Ext.create("Ext.data.Store", {
+	    fields: ["id", "name"],
+	    data : [
+		{id: 0, name: "即将开服"},
+		{id : 1, name: "已经开服"}
+	    ]   
+	})
 	
-        //me.createMainPanel();
+        me.createMainPanel();
     },
     createMainPanel: function(){
         var me = this;
@@ -854,14 +870,61 @@ Ext.define("Spyder.apps.realms.addRealm", {
                     },
                     items: [
                         {
-                            fieldLabel: "游戏名称",
+                            fieldLabel: "名称",
                             allowBlank: false,
                             name: "name"
                         },
                         {
-                            fieldLabel: "链接",
-                            name: "url"
+                            fieldLabel: "游戏",
+                            allowBlank: false,
+                            name: "gid",
+			    xtype: "combobox",
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "id",
+			    editable: false,
+			    store: me.gameList
                         },
+                        {
+                            fieldLabel: "运营商",
+                            allowBlank: false,
+                            name: "oid",
+			    xtype: "combobox",
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "id",
+			    editable: false,
+			    store: me.operalist
+                        },
+			{
+			    fieldLabel: "url",
+			    name: "url"
+			},
+			{
+			    fieldLabel: "开服日期",
+			    name: "_date",
+                            allowBlank: false,
+			    xtype: "datefield",
+			    format: "Y/m/d"
+			},
+			{
+			    fieldLabel: "开服时间",
+			    name: "time",
+			    allowBlank: false,
+			    xtype: "timefield",
+			    format: "H:i"
+			},
+			{
+			    fieldLabel: "当前状态",
+			    name: "status",
+			    xtype: "combobox",
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "id",
+			    editable: false,
+                            allowBlank: false,
+			    store: me.statuslist
+			}
                     ]
                 },
                 {
@@ -894,6 +957,12 @@ Ext.define("Spyder.apps.realms.addRealm", {
     restoreForm: function(record){
 	var me = this, form = me.form.getForm();
 	form.setValues(record.data);
+	form.setValues({
+	    "status" : record.get("_status"),
+	    "_date" : new Date(record.get("date")),
+	    "time"  : new Date(record.get("date"))
+	})
+
 	me.selectedRID = record.get("id");
     },
     processForm: function(){
@@ -901,6 +970,9 @@ Ext.define("Spyder.apps.realms.addRealm", {
 	if (action == "add" || action == "edit"){
 	    var form = me.form.getForm();
 	    values = form.getValues();
+
+	    date = new Date(values["_date"] + " " + values["time"]);
+	    values["date"] = +date;
 
 	    if (action == "add"){
 		realmServer.AddRealm(Ext.JSON.encode(values), {
@@ -985,6 +1057,11 @@ Ext.define("Spyder.apps.realms.realmList", {
                     dataIndex: d["dataIndex"]    
                 }
 
+		if (d["fieldName"] == "date"){
+		    column.xtype = "datecolumn";
+		    column.format = "Y/m/d H:i";
+		}
+
                 columns.push(column);
             }
         }
@@ -1030,6 +1107,22 @@ Ext.define("Spyder.apps.realms.realmList", {
 
         me.storeProxy = Ext.create("Spyder.apps.realms.realmListStore");
         me.storeProxy.setProxy(me.updateProxy());
+
+	var status = {
+	    0 : "即将开服",
+	    1 : "已经开服"
+	}
+	me.storeProxy.on({
+	    load: function(f, records){
+		for (var c = 0; c < records.length; ++c){
+		    var record = records[c];
+		    record.set("date", new Date(record.get("date") * 1))
+		    record.set("_status", record.get("status"));
+		    record.set("status", status[record.get("status")]);
+		}
+	    }
+	})
+
 	me.createGrid();
     },
     updateProxy: function(){
@@ -1084,7 +1177,7 @@ Ext.define("Spyder.apps.realms.realmList", {
 			    }
 			});
 			var win = Ext.create("Ext.window.Window", {
-			    width: 500,
+			    width: 300,
 			    height: 300,
 			    title: "增加开服",
 			    items: [
