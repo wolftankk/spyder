@@ -102,11 +102,38 @@ class Realm{
     }
 
     public function AddOperator(){
+        checkArgs("OperatorJSON");
+        
+        //json_decode 有问题
+        $data = post_string("OperatorJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+
+	$url  = $data->url;
+
+	$sql = "INSERT INTO supe_gameoperators (name, url) VALUES ('$name', '$url')";
+        $this->ssDB->query($sql);
+        $gid = $this->ssDB->insert_id();
+        send_ajax_response("success", $gid);
     }
 
     public function EditOperator(){
+	checkArgs("OID");
+        checkArgs("OperatorJSON");
+        
+        //json_decode 有问题
+	$oid = post_string("OID");
+        $data = post_string("OperatorJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+
+	$url  = $data->url;
+
+	$sql = "UPDATE supe_gameoperators SET name='$name', url = '$url' WHERE id = $oid";
+        $succ = $this->ssDB->query($sql);
+        send_ajax_response("success", $succ);
     }
 
     public function DeleteOperator(){
@@ -114,7 +141,42 @@ class Realm{
     }
 
     public function GetOperatorPageData(){
+	checkArgs("Start", "Limit", "AWhere");
+        $start = post_string("Start");
+        $limit = post_string("Limit");
+        $where = post_string("AWhere");
+        if (strlen($where) > 0) {
+            $where = "WHERE $where";
+	}
 
+	$sql = "SELECT * FROM supe_gameoperators $where LIMIT $start, $limit";
+        $Data = array();
+        $MetaData = array();
+	$isGetMetaData = false;
+
+        $query = $this->ssDB->query($sql);
+
+        while ($data = $this->ssDB->fetch_array($query)){
+            if (!$isGetMetaData){
+                $keys = array_keys($data);
+                for ($c = 0; $c < count($keys); $c++){
+                    $key = $keys[$c];
+                    $fieldHidden = false;
+                    if ($key == "id"){
+                        $fieldHidden = true;
+                    }
+                    $MetaData[] = array(
+                        "fieldName" => $keys[$c],
+                        "dataIndex" => $keys[$c],
+                        "fieldHidden" => $fieldHidden
+                    );
+                }
+                $isGetMetaData = true;
+            }
+            $Data[] = array_values($data);
+	}
+        $count = $this->ssDB->get_one("SELECT COUNT(*) as count FROM supe_gameoperators $where");
+        send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
 
     public function AddRealm(){
@@ -130,7 +192,6 @@ class Realm{
     }
 
     public function GetRealmPageData(){
-
     }
 }
 

@@ -424,6 +424,155 @@ Ext.define("Spyder.apps.realms.gameList", {
 })
 
 
+Ext.define("Spyder.apps.realms.addOperator", {
+    extend: "Ext.panel.Panel",
+    border: false,
+    layout: "anchor",
+    height: "100%", 
+    width: "100%",
+    autoScroll: true,
+    autoHeight: true,
+    border: 0,
+    bodyStyle: "background-color: #dfe8f5",
+    defaults: {
+        bodyStyle: "background-color: #dfe8f5",
+        border: 0    
+    },
+    suspandLayout: true,
+    initComponent: function(){
+        var me = this;
+        me.callParent();
+
+        me.createMainPanel();
+    },
+    createMainPanel: function(){
+        var me = this;
+        var config = {
+            autoHeight: true,
+            autoScroll: true,
+            cls: "iScroll",
+            height: "100%",
+            width: "100%",
+            anchor: "fit",
+            border: false,
+            bodyBorder: false,
+            plain: true,
+            bodyPadding: "10",
+            items: [
+                {
+                    layout: {
+                        type:"table",
+                        columns: 1,
+                        tableAttrs: {
+                            cellspacing: 10,
+                            style: {
+                                width: "100%"
+                            }
+                        }
+                    },
+                    border: false,
+                    bodyStyle: "background-color: #dfe8f5",
+                    defaults: {
+                        bodyStyle: "background-color: #dfe8f5"
+                    },
+                    defaultType: "textfield",
+                    fieldDefaults: {
+                        msgTarget: "side",
+                        labelAlign: "TOP",
+                        labelWidth: 80
+                    },
+                    items: [
+                        {
+                            fieldLabel: "游戏名称",
+                            allowBlank: false,
+                            name: "name"
+                        },
+                        {
+                            fieldLabel: "链接",
+                            name: "url"
+                        },
+                    ]
+                },
+                {
+                    xtype: "button",
+                    text: "重置",
+                    handler: function(){
+                        me.form.getForm().reset();
+                    }
+                },
+                {
+                    xtype: "button",
+                    text: "提交",
+                    disabled: true,
+                    formBind: true,
+                    style: {
+                        marginLeft: "10px"
+                    },
+                    handler: function(){
+			me.processForm();
+                    }
+                }
+            ],
+        }
+
+        var form = Ext.widget("form", config);
+        me.form = form
+        me.add(form)
+        me.doLayout();
+    },
+    restoreForm: function(record){
+	var me = this, form = me.form.getForm();
+	form.setValues(record.data);
+	me.selectedOID = record.get("id");
+    },
+    processForm: function(){
+	var me = this, action = me.action || "view";
+	if (action == "add" || action == "edit"){
+	    var form = me.form.getForm();
+	    values = form.getValues();
+
+	    if (action == "add"){
+		realmServer.AddOperator(Ext.JSON.encode(values), {
+		    success: function(gid){
+			if (gid){
+			    Ext.Msg.alert("添加成功", "添加运营厂商成功");
+			}
+			if (me.callback){
+			    me.callback();
+			}
+		    },
+		    failure: function(error){
+			Ext.Error.raise(error);
+		    }
+		})
+	    }else{
+		if (action == "edit") {
+		    if (me.selectedOID == undefined){
+			Ext.Msg.alert("失败", "编辑失败, 请选择需要编辑的运营厂商")
+			return;
+		    }
+		    realmServer.EditOperator(me.selectedOID, Ext.JSON.encode(values), {
+			success: function(succ){
+			    if (succ){
+				Ext.Msg.alert("编辑成功", "编辑运营厂商成功");
+			    }else{
+				Ext.Msg.alert("编辑失败", "编辑运营厂商失败");
+			    }
+			    if (me.callback){
+				me.callback();
+			    }
+			},
+			failure: function(error){
+			    Ext.Error.raise(error);
+			}
+		    })
+		}
+	    }
+	}
+    }
+})
+
+
 Ext.define("Spyder.apps.realms.operaList", {
     extend: "Ext.panel.Panel",    
     layout: "fit",
@@ -510,7 +659,7 @@ Ext.define("Spyder.apps.realms.operaList", {
 
         me.storeProxy = Ext.create("Spyder.apps.realms.operaListStore");
         me.storeProxy.setProxy(me.updateProxy());
-	//me.createGrid();
+	me.createGrid();
     },
     updateProxy: function(){
         var me = this;
@@ -554,9 +703,9 @@ Ext.define("Spyder.apps.realms.operaList", {
 		"-",
 		{
 		    xtype: "button",
-		    text : "增加游戏",
+		    text : "增加运行商",
 		    handler: function(){
-			var panel = Ext.create("Spyder.apps.realms.addGame", {
+			var panel = Ext.create("Spyder.apps.realms.addOperator", {
 			    action : "add",
 			    autoScroll: true,
 			    callback: function(){
@@ -564,9 +713,9 @@ Ext.define("Spyder.apps.realms.operaList", {
 			    }
 			});
 			var win = Ext.create("Ext.window.Window", {
-			    width: 1000,
-			    height: 500,
-			    title: "增加游戏",
+			    width: 500,
+			    height: 300,
+			    title: "增加运行商",
 			    items: [
 				panel
 			    ]
@@ -584,14 +733,14 @@ Ext.define("Spyder.apps.realms.operaList", {
             })
         })
 
-        me.grid.on("itemdblclick", me.viewGame, me)
+        me.grid.on("itemdblclick", me.viewOperator, me)
 
         me.add(me.grid);
         me.doLayout();
     },
-    viewGame: function(f, record){
+    viewOperator: function(f, record){
 	var me = this;
-	var panel = Ext.create("Spyder.apps.realms.addGame", {
+	var panel = Ext.create("Spyder.apps.realms.addOperator", {
 	    action : "edit",
 	    autoScroll: true,
 	    callback: function(){
@@ -600,9 +749,9 @@ Ext.define("Spyder.apps.realms.operaList", {
 	});
 	panel.restoreForm(record)
 	var win = Ext.create("Ext.window.Window", {
-	    width: 1000,
-	    height: 500,
-	    title: "编辑游戏: " + record.get("name"),
+	    width: 300,
+	    height: 300,
+	    title: "编辑运营商: " + record.get("name"),
 	    items: [
 		panel
 	    ]
