@@ -192,6 +192,42 @@ class Realm{
     }
 
     public function GetRealmPageData(){
+	checkArgs("Start", "Limit", "AWhere");
+        $start = post_string("Start");
+        $limit = post_string("Limit");
+        $where = post_string("AWhere");
+        if (strlen($where) > 0) {
+            $where = "WHERE $where";
+	}
+
+	$sql = "SELECT * FROM supe_gamerealms $where LIMIT $start, $limit";
+        $Data = array();
+        $MetaData = array();
+	$isGetMetaData = false;
+
+        $query = $this->ssDB->query($sql);
+
+        while ($data = $this->ssDB->fetch_array($query)){
+            if (!$isGetMetaData){
+                $keys = array_keys($data);
+                for ($c = 0; $c < count($keys); $c++){
+                    $key = $keys[$c];
+                    $fieldHidden = false;
+                    if ($key == "id"){
+                        $fieldHidden = true;
+                    }
+                    $MetaData[] = array(
+                        "fieldName" => $keys[$c],
+                        "dataIndex" => $keys[$c],
+                        "fieldHidden" => $fieldHidden
+                    );
+                }
+                $isGetMetaData = true;
+            }
+            $Data[] = array_values($data);
+	}
+        $count = $this->ssDB->get_one("SELECT COUNT(*) as count FROM supe_gamerealms $where");
+        send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
 }
 
