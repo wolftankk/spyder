@@ -60,7 +60,6 @@ class Spyder(object):
     def run(self):
         self.getSpiderList()
 
-        waits = []
         for sid in self.spiderList:
             seed = self.spiderList[sid]
             if seed.enabled == "1":
@@ -68,14 +67,12 @@ class Spyder(object):
                 frequency  = seed.frequency
                 finishtime = seed.finishtime
                 starttime  = seed.starttime
-                waits.append(seed.finishtime+frequency);
                 if (frequency + finishtime) < now():
                     seed.starttime = now()
                     #if not saved in db, set false
                     docData = Grab(seed)
                     seed.finishtime = now()
 
-                    waits.append(seed.finishtime+frequency);
                     sql = "UPDATE spyder.seeds SET starttime=%s, finishtime=%s WHERE sid=%s" % (seed.starttime, seed.finishtime, seed.sid);
                     self.db.query(sql)
 

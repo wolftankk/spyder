@@ -53,4 +53,4 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    Fetch("http://www.265g.com/news/201105/132396.html", "gbk").read()
+    print Fetch("http://www.51wan.com/z/gl/list_34_1.html", "gbk").read()

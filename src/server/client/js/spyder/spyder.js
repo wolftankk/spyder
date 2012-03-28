@@ -23,7 +23,11 @@ Spyder = {
         websites:{
             title: "网站",
             menus: {}
-        }
+        },
+	realms:  {
+	    title: "开服",
+	    menus: {}
+	}
     }
 }
 
