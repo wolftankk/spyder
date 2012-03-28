@@ -14,11 +14,48 @@ class Realm{
     }
 
     public function AddGame(){
+        checkArgs("GameJSON");
+        
+        //json_decode 有问题
+        $data = post_string("GameJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+
+	$desc = $data->description;
+	$url  = $data->url;
+	$category  = $data->category;
+	$developer = $data->developer;
+	$type = $data->type;
+	$theme = $data->theme;
+
+	$sql = "INSERT INTO supe_webgames (name, description, url, category, developer, type, theme) VALUES ('$name', '" . mysql_escape_string($desc) . "', '$url', '$category', '$developer', '$type', '$theme')";
+        $this->ssDB->query($sql);
+        $gid = $this->ssDB->insert_id();
+        send_ajax_response("success", $gid);
     }
 
     public function EditGame(){
+	checkArgs("GID");
+        checkArgs("GameJSON");
+        
+        //json_decode 有问题
+	$gid = post_string("GID");
+        $data = post_string("GameJSON");
+	$data = json_decode($data);
 
+        $name = checkArg("name", $data);
+
+	$desc = mysql_escape_string($data->description);
+	$url  = $data->url;
+	$category  = $data->category;
+	$developer = $data->developer;
+	$type = $data->type;
+	$theme = $data->theme;
+
+	$sql = "UPDATE supe_webgames SET name='$name', description = '$desc', url = '$url', category = '$category', developer = '$developer', type = '$type', theme='$theme' WHERE id = $gid";
+        $succ = $this->ssDB->query($sql);
+        send_ajax_response("success", $succ);
     }
 
     public function DeleteGame(){
