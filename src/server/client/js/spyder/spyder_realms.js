@@ -61,6 +61,11 @@ registerMenu("realms", "realmsAmin", {
 //申请服务
 realmServer = new SpyderRealmSvc(Spyder_server);
 
+Ext.define("Spyder.apps.realms.addGame", {
+    extend: "Ext.panel.Panel"    
+    
+})
+
 
 Ext.define("Spyder.apps.realms.gameList", {
     extend: "Ext.panel.Panel",    
@@ -78,21 +83,17 @@ Ext.define("Spyder.apps.realms.gameList", {
         var me = this
 
         me.callParent();
-	//me.langList = {
-	//    zhCN : "简体",
-	//    zhTW : "繁体"
-	//}
-
-        //Spyder.constants.articleServer.GetArticleList(0, 1, "", {
-        //    success: function(data){
-        //        var data = Ext.JSON.decode(data);
-        //        metadata = data["MetaData"];
-        //        me.buildStoreAndModel(metadata);
-        //    },
-        //    failure: function(error){
-        //        Ext.Error.raise(error)
-        //    }
-        //})
+	
+	realmServer.GetGameDataPageData(0, 1, "", {
+            success: function(data){
+                var data = Ext.JSON.decode(data);
+                metadata = data["MetaData"];
+                me.buildStoreAndModel(metadata);
+            },
+            failure: function(error){
+                Ext.Error.raise(error)
+            }
+        })
     },
     buildStoreAndModel: function(metadata){
         var me = this, fields = [], columns = [];
@@ -107,27 +108,21 @@ Ext.define("Spyder.apps.realms.gameList", {
                     dataIndex: d["dataIndex"]    
                 }
 
-		switch (d["dataIndex"]){
-		    case "fetchTime":
-			column.xtype = "datecolumn"
-			column.format = "Y/m/d - G:i:s"
-			break;
-		}
                 columns.push(column);
             }
         }
 
-        if (!Spyder.apps.articles.articleListModel){
-            Ext.define("Spyder.apps.articles.articleListModel", {
+        if (!Spyder.apps.realms.gameListModel){
+            Ext.define("Spyder.apps.realms.gameListModel", {
                 extend: "Ext.data.Model",
                 fields: fields    
             })
         }
 
-        if (!Ext.isDefined(Spyder.apps.articles.articleListStore)){
-            Ext.define("Spyder.apps.articles.articleListStore", {
+        if (!Ext.isDefined(Spyder.apps.realms.gameListStore)){
+            Ext.define("Spyder.apps.realms.gameListStore", {
                 extend: "Ext.data.Store",
-                model: Spyder.apps.articles.articleListModel,
+                model: Spyder.apps.realms.gameListModel,
                 autoLoad: true,
                 pageSize: 50,
                 load: function(options){
@@ -156,31 +151,21 @@ Ext.define("Spyder.apps.realms.gameList", {
             });
         }
 
-        me.storeProxy = Ext.create("Spyder.apps.articles.articleListStore");
+        me.storeProxy = Ext.create("Spyder.apps.realms.gameListStore");
         me.storeProxy.setProxy(me.updateProxy());
-	//update store
-	me.storeProxy.on({
-	    load : function(s, records){
-		for (var c = 0; c < records.length; ++c){
-		    var record = records[c];
-		    record.set("fetchTime", new Date(record.get("fetchTime") * 1000))
-		    record.set("lang", me.langList[record.get("lang")]);
-		}
-	    }
-	})
-        me.createGrid();
+	me.createGrid();
     },
     updateProxy: function(){
-        var me = this, articleServer = Spyder.constants.articleServer;
+        var me = this;
         return {
              type: "b_proxy",
-             b_method: articleServer.GetArticleList,
+             b_method: realmServer.GetGameDataPageData,
              startParam: "start",
              limitParam: "limit",
              b_params: {
                  "filter": me.b_filter
              },
-             b_scope: articleServer,
+             b_scope: realmServer,
              reader: {
                  type: "json",
                  root: "Data",
@@ -189,15 +174,14 @@ Ext.define("Spyder.apps.realms.gameList", {
         }
     },
     createGrid: function(){
-        var me = this, store = me.storeProxy,
-            articleServer = Spyder.constants.articleServer;
-        var sm = Ext.create("Ext.selection.CheckboxModel", {
-            model: "MULTI"    
-        })
+        var me = this, store = me.storeProxy;
+        //var sm = Ext.create("Ext.selection.CheckboxModel", {
+        //    model: "MULTI"    
+        //})
         me.grid = Ext.create("Spyder.plugins.LiveSearch", {
             store: store,
             lookMask: true,
-            selModel: sm,
+            //selModel: sm,
             frame: true,
             collapsible: false,    
             rorder: false,
@@ -216,22 +200,13 @@ Ext.define("Spyder.apps.realms.gameList", {
 		"-",
 		{
 		    xtype: "button",
-		    text : "批量发布",
+		    text : "增加游戏",
 		    handler: function(){
-			var records = sm.getSelection();
-			if (records.length == 0){
-			    Ext.Msg.alert("错误", "请选择需要发布的文章");
-			    return;
-			}
-			var articles = [];
-			for (var i = 0; i < records.length; i++){
-			    articles.push(records[i].get("aid"));
-			}
-			var win = Ext.create("Spyder.apps.articles.PublicArticle", {
-			    articles  : articles,
-			    websiteId : 1    
-			});
-			win.show();
+			//var win = Ext.create("Spyder.apps.articles.PublicArticle", {
+			//    articles  : articles,
+			//    websiteId : 1    
+			//});
+			//win.show();
 		    }
 		}
 	    ],
@@ -244,195 +219,10 @@ Ext.define("Spyder.apps.realms.gameList", {
             })
         })
 
-        me.grid.on("itemdblclick", me.viewArticle, me)
+        //me.grid.on("itemdblclick", me.viewArticle, me)
 
         me.add(me.grid);
         me.doLayout();
-    },
-    viewArticle: function(view, record, onlyAID){
-	var aid, me = this;
-	if (Ext.isBoolean(onlyAID)){
-	    aid = record;
-	}else{
-	    aid = record.get("aid");
-	}
-        if (!aid){
-            return;
-        }
-        
-        var articleServer = Spyder.constants.articleServer;
-
-        articleServer.GetArticleInfo(aid, {
-            success: function(data){
-                var data = Ext.JSON.decode(data);
-                var title = data["title"];
-                var win = Ext.create("Ext.window.Window", {
-                    width: 900,
-                    height: 600,
-                    minHeight: 550,    
-                    autoHeight: true,
-                    autoScroll: true,
-                    cls: "iScroll",
-                    layout: "fit",
-                    resizable: true,
-                    border: false,
-                    modal: true,
-                    border: 0,
-                    bodyBorder: false,
-                    bodyPadding: 10,
-                    items: [
-                        {
-                            xtype: "form",
-                            width: "100%",
-                            height: "100%",
-                            defaultType: "textfield",
-                            type: "anchor",
-                            border: false,
-                            bodyStyle: "background-color: #dfe8f5",
-                            defaultType: "textfield",
-                            defaults: {
-                                anchor: "100%"
-                            },
-                            fieldDefaults: {
-                                labelAlign: "left",
-                                labelWidth: 60
-                            },
-                            items: [
-                                {
-                                    fieldLabel: "标题",
-                                    name: "title",
-                                    value: data["title"]
-                                },
-                                {
-                                    fieldLabel: "原始链接",
-                                    link: "link",
-                                    html: "原始链接\t\t<a target='_blank' href='"+data["url"]+"'>" + data["url"] + "</a>"
-                                },
-                                {
-                                    xtype: "htmleditor",
-                                    width: "100%",
-                                    name: "content",
-                                    height: 465,
-                                    value: data["content"],
-				    listeners: {
-					render: function(f){
-					    var toolbar = f.getToolbar();
-					    if (!toolbar){ return; }
-					    toolbar.add("-",{
-						xtype: "button",
-						icon: "./resources/themes/images/edit-language.png",
-						tooltip: "转换语言, 从简体转成繁体",
-						handler: function(){
-						    me.convertLanuage(data["aid"]);
-						}
-					    })
-					}
-				    }
-                                },
-                                {
-                                    xtype: "toolbar",
-                                    width: "100%",
-                                    items: [
-                                        {
-                                            xtype: "button",
-                                            text: "发布",
-                                            handler: function(){
-                                                var win = Ext.create("Spyder.apps.articles.PublicArticle", {
-                                                    articles: [data["aid"]],
-                                                    websiteId : 1    
-                                                });
-                                                win.show();
-                                            }
-                                        },
-                                        "->",
-                                        {
-                                            xtype: "button",
-                                            text : "保存",
-                                            handler: function(widget){
-                                                var form = widget.up("form").getForm(),
-                                                    results = form.getValues(),
-                                                    title = results["title"],
-                                                    content = Ext.htmlDecode(results["content"]);
-						    content = encodeURIComponent(content)
-
-                                                articleServer.EditArticle(Ext.JSON.encode({
-                                                    title: title,
-                                                    content: content,
-                                                    aid: data["aid"]    
-                                                }), {
-                                                    success: function(succ){
-                                                        if (succ){
-                                                            Ext.Msg.alert("成功", "编辑成功");
-                                                        }else{
-                                                            Ext.Msg.alert("失败", "编辑失败");
-                                                        }
-                                                    },
-                                                    failure: function(error){
-                                                        Ext.Error.raise(error);
-                                                    }
-                                                })    
-                                            }
-                                        },
-                                        {
-                                            xtype: "button",
-                                            text : "删除",
-                                            handler: function(){
-                                                articleServer.DeleteArticle(data["aid"], {
-                                                    success: function(succ){
-                                                        if (succ){
-                                                            Ext.Msg.alert("成功", "删除成功");
-                                                        }else{
-                                                            Ext.Msg.alert("失败", "删除失败");
-                                                        }
-                                                    },
-                                                    failure: function(error){
-                                                        Ext.Error.raise(error)
-                                                    }
-                                                })
-                                            }
-                                        },
-                                        "-",
-                                        {
-                                            xtype: "button",
-                                            text: "关闭",
-                                            handler: function(){
-                                                win.close();
-                                            }
-                                        }
-                                    ]
-                                }
-                            ]
-                        }
-                    ]
-                });
-                
-                win.setTitle(title);
-		me.win = win;
-                win.show();
-            },
-            failure: function(error){
-                Ext.Error.raise(error)
-            }
-        })
-    },
-    convertLanuage: function(aid){
-	var me = this;
-	if (aid == 0 || aid == undefined){
-	    return;
-	}
-	Spyder.constants.articleServer.ConvertLanage(aid, {
-	    success: function(aid){
-		if (aid > 0){
-		    //Ext.Msg.alert("转换成功", "转换成功");
-		    me.win.hide();
-		    me.viewArticle(null, aid, true);
-		    me.storeProxy.loadPage(1);
-		}
-	    },
-	    failure: function(error){
-		Ext.Error.raise(error)
-	    }
-	})
     }
 })
 
