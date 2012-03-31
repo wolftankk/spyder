@@ -59,7 +59,13 @@ class Realm{
     }
 
     public function DeleteGame(){
+	checkArgs("GID");
 
+	$gid = post_string("GID");
+
+	$sql = "DELETE FROM supe_webgames WHERE id=$gid";
+	$succ = $this->ssDB->query($sql);
+	send_ajax_response("success", $succ);
     }
 
     public function GetGameDataPageData(){
@@ -137,7 +143,13 @@ class Realm{
     }
 
     public function DeleteOperator(){
+	checkArgs("OID");
 
+	$oid = post_string("OID");
+
+	$sql = "DELETE FROM supe_gameoperators WHERE id = $oid";
+	$succ = $this->ssDB->query($sql);
+        send_ajax_response("success", $succ);
     }
 
     public function GetOperatorPageData(){
@@ -222,7 +234,13 @@ class Realm{
     }
 
     public function DeleteRealm(){
+	checkArgs("RID");
 
+	$oid = post_string("RID");
+
+	$sql = "DELETE FROM supe_gamerealms WHERE id = $rid";
+	$succ = $this->ssDB->query($sql);
+        send_ajax_response("success", $succ);
     }
 
     public function GetRealmPageData(){
