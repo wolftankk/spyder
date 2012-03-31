@@ -65,6 +65,9 @@ class Realm{
 
 	$sql = "DELETE FROM supe_webgames WHERE id=$gid";
 	$succ = $this->ssDB->query($sql);
+	//自动移除realms上的相关数据
+	$sql = "DELETE FROM supe_gamerealms WHERE gid = $gid";
+	$succ = $succ && ($this->ssDB->query($sql));
 	send_ajax_response("success", $succ);
     }
 
@@ -149,6 +152,9 @@ class Realm{
 
 	$sql = "DELETE FROM supe_gameoperators WHERE id = $oid";
 	$succ = $this->ssDB->query($sql);
+	//自动移除realms上的相关数据
+	$sql = "DELETE FROM supe_gamerealms WHERE oid = $oid";
+	$succ = $succ && ($this->ssDB->query($sql));
         send_ajax_response("success", $succ);
     }
 

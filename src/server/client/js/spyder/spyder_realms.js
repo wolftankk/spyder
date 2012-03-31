@@ -191,6 +191,24 @@ Ext.define("Spyder.apps.realms.addGame", {
                         me.form.getForm().reset();
                     }
                 },
+		{
+		    xtype: "button",
+		    text: "删除",
+		    handler: function(){
+			realmServer.DeleteGame(me.selectedGID, {
+			    success: function(succ){
+				if (succ){
+				    Ext.Msg.alert("成功", "删除成功");
+				    if (me.callback){
+					me.callback();
+				    }
+				}
+			    },
+			    failure: function(){
+			    }
+			})
+		    }
+		},
                 {
                     xtype: "button",
                     text: "提交",
