@@ -831,7 +831,7 @@ Ext.define("Spyder.apps.realms.addRealm", {
         me.callParent();
 	
 	me.gameList = Ext.create("Ext.data.Store", {
-	    fields: ["id", "name"],
+	    fields: ["itemid", "name"],
 	    data  : cache["games"]  
 	})
 
@@ -899,7 +899,7 @@ Ext.define("Spyder.apps.realms.addRealm", {
 			    xtype: "combobox",
 			    queryMode: "local",
 			    displayField: "name",
-			    valueField: "id",
+			    valueField: "itemid",
 			    editable: false,
 			    store: me.gameList
                         },

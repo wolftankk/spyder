@@ -29,7 +29,7 @@ class Realm{
 	$type = $data->type;
 	$theme = $data->theme;
 
-	$sql = "INSERT INTO supe_webgames (name, description, url, category, developer, type, theme) VALUES ('$name', '" . mysql_escape_string($desc) . "', '$url', '$category', '$developer', '$type', '$theme')";
+	$sql = "INSERT INTO supe_gamesitems (name, description, url, category, developer) VALUES ('$name', '" . mysql_escape_string($desc) . "', '$url', '$category', '$developer')";
         $this->ssDB->query($sql);
         $gid = $this->ssDB->insert_id();
         send_ajax_response("success", $gid);
@@ -53,7 +53,7 @@ class Realm{
 	$type = $data->type;
 	$theme = $data->theme;
 
-	$sql = "UPDATE supe_webgames SET name='$name', description = '$desc', url = '$url', category = '$category', developer = '$developer', type = '$type', theme='$theme' WHERE id = $gid";
+	$sql = "UPDATE supe_gamesitems SET name='$name', description = '$desc', url = '$url', category = '$category', developer = '$developer' WHERE itemid = $gid";
         $succ = $this->ssDB->query($sql);
         send_ajax_response("success", $succ);
     }
@@ -63,7 +63,7 @@ class Realm{
 
 	$gid = post_string("GID");
 
-	$sql = "DELETE FROM supe_webgames WHERE id=$gid";
+	$sql = "DELETE FROM supe_gamesitems WHERE itemid=$gid";
 	$succ = $this->ssDB->query($sql);
 	//自动移除realms上的相关数据
 	$sql = "DELETE FROM supe_gamerealms WHERE gid = $gid";
@@ -80,7 +80,7 @@ class Realm{
             $where = "WHERE $where";
 	}
 
-	$sql = "SELECT * FROM supe_webgames $where LIMIT $start, $limit";
+	$sql = "SELECT * FROM supe_gamesitems $where LIMIT $start, $limit";
         $Data = array();
         $MetaData = array();
 	$isGetMetaData = false;
@@ -93,7 +93,7 @@ class Realm{
                 for ($c = 0; $c < count($keys); $c++){
                     $key = $keys[$c];
                     $fieldHidden = false;
-                    if ($key == "id"){
+                    if ($key == "itemid"){
                         $fieldHidden = true;
                     }
                     $MetaData[] = array(
@@ -106,7 +106,7 @@ class Realm{
             }
             $Data[] = array_values($data);
 	}
-        $count = $this->ssDB->get_one("SELECT COUNT(*) as count FROM supe_webgames $where");
+        $count = $this->ssDB->get_one("SELECT COUNT(*) as count FROM supe_gamesitems $where");
         send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
 
@@ -258,7 +258,7 @@ class Realm{
             $where = "WHERE $where";
 	}
 
-	$sql = "SELECT a.id, a.gid, b.name as gname, a.oid, c.name as oname, a.url, a.date, a.name, a.status  FROM supe_gamerealms as a LEFT JOIN supe_webgames as b ON a.gid = b.id LEFT JOIN supe_gameoperators as c ON a.oid = c.id $where LIMIT $start, $limit";
+	$sql = "SELECT a.id, a.gid, b.name as gname, a.oid, c.name as oname, a.url, a.date, a.name, a.status  FROM supe_gamerealms as a LEFT JOIN supe_gamesitems as b ON a.gid = b.itemid LEFT JOIN supe_gameoperators as c ON a.oid = c.id $where LIMIT $start, $limit";
         $Data = array();
         $MetaData = array();
 	$isGetMetaData = false;
@@ -271,7 +271,7 @@ class Realm{
                 for ($c = 0; $c < count($keys); $c++){
                     $key = $keys[$c];
                     $fieldHidden = false;
-                    if (in_array($key, array("id", "gid", "oid"))){
+                    if (in_array($key, array("itemid", "id", "gid", "oid"))){
                         $fieldHidden = true;
                     }
                     $MetaData[] = array(
