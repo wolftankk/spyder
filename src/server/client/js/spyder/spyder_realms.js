@@ -654,6 +654,33 @@ Ext.define("Spyder.apps.realms.operaList", {
     buildStoreAndModel: function(metadata){
         var me = this, fields = [], columns = [];
         me.columns = columns;
+	var actions = {
+	    xtype : "actioncolumn",
+	    width : 30,
+	    items: [
+		{
+		    icon: "./resources/themes/images/fam/delete.gif",
+		    tooltip: "删除运营商",
+		    handler: function(grid, rowIndex, colIndex){
+			var record = me.storeProxy.getAt(rowIndex)
+			var oid = record.get("id");
+			realmServer.DeleteOperator(oid, {
+			    success: function(succ){
+				if (succ){
+				    Ext.MessageBox.alert("成功", "删除成功");
+				    me.storeProxy.loadPage(1);
+				}
+			    },
+			    failure: function(error){
+				Ext.Error.raise(error)
+			    }
+			})
+		    }
+		}
+	    ]
+	}
+
+	columns.push(actions);
         for (var c = 0; c < metadata.length; ++c){
             var d = metadata[c];
             fields.push(d["dataIndex"])
@@ -1065,6 +1092,34 @@ Ext.define("Spyder.apps.realms.realmList", {
     buildStoreAndModel: function(metadata){
         var me = this, fields = [], columns = [];
         me.columns = columns;
+
+	var actions = {
+	    xtype : "actioncolumn",
+	    width : 30,
+	    items: [
+		{
+		    icon: "./resources/themes/images/fam/delete.gif",
+		    tooltip: "删除开服数据",
+		    handler: function(grid, rowIndex, colIndex){
+			var record = me.storeProxy.getAt(rowIndex)
+			var rid = record.get("id");
+			realmServer.DeleteRealm(rid, {
+			    success: function(succ){
+				if (succ){
+				    Ext.MessageBox.alert("成功", "删除成功");
+				    me.storeProxy.loadPage(1);
+				}
+			    },
+			    failure: function(error){
+				Ext.Error.raise(error)
+			    }
+			})
+		    }
+		}
+	    ]
+	}
+
+	columns.push(actions);
         for (var c = 0; c < metadata.length; ++c){
             var d = metadata[c];
             fields.push(d["dataIndex"])

@@ -242,7 +242,7 @@ class Realm{
     public function DeleteRealm(){
 	checkArgs("RID");
 
-	$oid = post_string("RID");
+	$rid = intval(post_string("RID"));
 
 	$sql = "DELETE FROM supe_gamerealms WHERE id = $rid";
 	$succ = $this->ssDB->query($sql);
