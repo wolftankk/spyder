@@ -13,7 +13,7 @@ $database_config = array(
 
 $sitepath = "";
 
-define("DEBUG", true);
+#define("DEBUG", true);
 //set cookie
 define('COOKIEDOMAIN', '');
 define('COOKIEPATH', '/');
@@ -26,7 +26,8 @@ ini_set('session.use_cookies', 1);
 ini_set('session.use_only_cookies', 1);
 ini_set('session.use_trans_sid', 0);
 
+ini_set("display_errors", "off");
 if (DEBUG){
-	ini_set('display_errors', 'on');
+    ini_set('display_errors', 'on');
 }
 ?>
