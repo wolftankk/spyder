@@ -199,6 +199,28 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 			});
 			win.show();
 		    }
+		},
+		{
+		    xtype : "button",
+		    text  : "高级搜索",
+		    handler: function(){
+                        articleServer.GetArticleList(0, 1, "", {
+                            success: function(data){
+                                var win = Ext.create("Spyder.plugins.AdvanceSearch", {
+                                    searchData: Ext.JSON.decode(data),
+                                    b_callback: function(where){
+					me.b_filter = where
+					me.storeProxy.setProxy(me.updateProxy());
+                                        me.storeProxy.loadPage(1)
+                                    }
+                                })
+                                win.show();
+                            },
+                            failure: function(error){
+                                Ext.Error.raise(error);
+                            }
+                        });
+		    }
 		}
 	    ],
             columns: me.columns,

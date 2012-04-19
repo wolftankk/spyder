@@ -166,3 +166,213 @@ Ext.define("Spyder.plugins.LiveSearch",{
         
     }
 });
+
+Spyder.plugins.OperatorsList = Ext.create("Ext.data.Store", {
+    fields: ["attr", "name"],
+    data: [
+        { attr: ">", name: "大于"},
+        { attr: ">=", name: "大于等于"},
+        { attr: "<", name: "小于"},
+        { attr: "<=", name: "小于等于"},
+        { attr: "=", name: "等于"},
+        { attr: "!=", name: "不等于"},
+        { attr: "LIKE", name: "约等于"}
+    ]
+});
+
+Ext.define("Spyder.plugins.AdvanceSearch", {
+    extend: "Ext.window.Window",
+    title: "高级搜索",
+    height: 400,
+    width: 700,
+    layout: "fit",
+    closable: true,
+    maximizable: true,
+    minimizable: true,
+    autoScroll: true,
+    autoHeight: true,
+    resizable: true,
+    modal: true,
+    border: 0,
+    bodyBorder: 0,
+    checkable: false,
+    initComponent: function(){
+        var me = this;
+        var form = Ext.create("Spyder.plugins.AdvanceSearchForm", {
+            checkable : me.checkable,
+            b_callback: me.b_callback,
+            searchData: me.searchData
+        });
+        form.parent = me;
+        me.callParent(arguments);
+        me.add(form);
+        me.doLayout();
+    }
+});
+
+Ext.define("Spyder.plugins.AdvanceSearchForm", {
+    extend: "Ext.form.Panel",
+    frame: true,
+    bodyBorder: 0,
+    border: 0,
+    height: "100%",
+    width: "100%",
+    flex: 1,
+    autoHeight: true,
+    autoScroll: true,
+    autoDestory: true,
+    plain: true,
+    currentIndex: 0,
+    initComponent: function(){
+        var me = this;
+
+        me.advanceFilters = [];
+        var metaData = me.searchData["MetaData"];
+
+        for (var k in metaData){
+            var item = metaData[k];
+            if (!item.fieldHidden){
+                //下拉菜单
+                me.advanceFilters.push({
+                    attr: item.dataIndex,
+                    name: item.fieldName,
+                    _type: 21
+                });
+            }
+        }
+
+        me.tbar = [
+            {
+                xtype: "button",
+                text: "增加过滤条件",
+                icon: "./resources/themes/images/fam/add.png",
+                scope: me,
+                handler: me.onAddBtnClick
+            }
+        ]
+        me.callParent(arguments);
+    },
+    buttons: [
+        {
+            text: "搜索",
+            handler: function(widget, e){
+                var me = this, parent = me.up("form"), form = parent.getForm(), result = form.getValues();
+                if (!form.isValid()){
+                    return;
+                }
+                var filters = [];
+                for (var c in result){
+                    var item = result[c];
+                    var key = item[0], op = item[1], value = item[2];
+                    for (var _s in parent.advanceFilters){
+                        var filter = parent.advanceFilters[_s];
+                        if (filter.attr == key){
+			    op = "LIKE";
+                            value = "'%"+value+"%'";
+                            //switch (filter._type){
+                            //    case 21:
+                            //        if (op == "LIKE"){
+                            //            value = "'%"+value+"%'";
+                            //        }else{
+                            //            value = "'"+value + "'";
+                            //        }
+                            //        break;
+                            //    defaults:
+                            //        if (op == "LIKE"){
+                            //            op = "!=";
+                            //        }
+                            //        value = value;
+                            //        break;
+                            //}
+                        }
+                    }
+                    filters.push(key + " " + op + " " + value);
+                }
+                parent.search(filters.join(" AND "));
+            }
+        }
+    ],
+    search: function(where){
+        var me = this;
+        if (me.b_callback){
+            me.b_callback(where);
+        }
+
+        if (me.parent){
+            me.parent.close();
+        }
+    },
+    onAddBtnClick: function(widget, e){
+        var me = this;
+        me.currentIndex++;
+
+        var FiltersStore = Ext.create("Ext.data.Store", {
+            fields: ["attr", "name"],
+            data: me.advanceFilters
+        });
+        
+        var filter = new Ext.form.FieldSet({
+            layout: "column",
+            frame: true,
+            title: "搜索条件",
+            autoWidth: true,
+            defaults: {
+                hideLabel: true,
+                margin: "0 5 0 0",
+                padding: "5 0"
+            },
+            columnWidth: 0.5,
+            id: "customerFilter" + me.currentIndex,
+            items: [
+                {
+                    id: "customerFilter" + me.currentIndex + "_dropdown",
+                    xtype: "combobox",
+                    allowBlank: false,
+                    editable: true,
+                    store: FiltersStore,
+                    queryMode: "local",
+                    displayField: "name",
+                    valueField: "attr",
+                    name: "customerFilter"+me.currentIndex
+                },
+                {
+                    id: "customerFilter" + me.currentIndex + "_operater",
+                    xtype: "combobox",
+                    width: 75,
+                    allowBlank: false,
+                    editable: false,
+                    store: Spyder.plugins.OperatorsList,
+                    queryMode: "local",
+                    displayField: "name",
+                    valueField: "attr",
+                    value: "=",
+                    name: "customerFilter"+me.currentIndex
+                },
+                {
+                    id: "customerFilter" + me.currentIndex + "_value",
+                    xtype: "textfield",
+                    allowBlank: false,
+                    width: 230,
+                    name: "customerFilter"+me.currentIndex
+                },
+                {
+                    xtype: "button",
+                    icon: "./resources/themes/images/fam/delete.gif",
+                    margin: "0 0 0 20",
+                    tooltip: "删除此过滤",
+                    handler: function(widget, e){
+                        var parent = widget.up("fieldset");
+                        parent.removeAll(true);
+                        me.remove(parent, true);
+                        me.doLayout();
+                        me.setAutoScroll(true);
+                    }
+                }
+            ]
+        })
+
+        me.add(filter)
+        me.doLayout();
+        me.setAutoScroll(true);
+    },
+});

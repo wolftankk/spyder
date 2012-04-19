@@ -18,7 +18,7 @@ class Article{
         $where = post_string("AWhere");
         global $db;
         if (strlen($where) > 0) {
-            $where = "WHERE $where";
+            $where = " WHERE $where ";
         }
 
         $sql = "SELECT a.aid, a.lang, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
@@ -46,7 +46,7 @@ class Article{
             $Data[] = array_values($data);
         }
         
-        $count = $db->get_one("SELECT COUNT(*) as count FROM spyder.articles $where");
+        $count = $db->get_one("SELECT COUNT(*) as count, b.sname FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where");
 
         send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
