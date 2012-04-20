@@ -20,6 +20,8 @@ class Fetch(object):
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
         except urllib2.HTTPError, e:
             print (self.url, e)
+	finally:
+	    pass
 
     def read(self):
         if self.site:

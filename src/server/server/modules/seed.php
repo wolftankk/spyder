@@ -147,7 +147,7 @@ class Seed{
      */
     public function DeleteSeed(){
         checkArgs("SID");
-        $sid = post_string("sid");
+        $sid = post_string("SID");
         global $db;
         $sql = "DELETE FROM spyder.seeds WHERE sid='$sid'";
         $succ = $db->query($sql);

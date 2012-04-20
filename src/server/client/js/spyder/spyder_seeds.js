@@ -366,7 +366,6 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 		values["list[urlformat]"] = encodeURIComponent(values["list[urlformat]"])
 	    }
 
-	    console.log(action)
 	    if (action == "add"){
 		Spyder.constants.seedServer.AddSeed(Ext.JSON.encode(values), {
 		    success: function(sid){
