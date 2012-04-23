@@ -218,6 +218,15 @@ class Document(object):
         if self.filterscript:
             content = content.remove("script");
 
+	#过滤所有文章中的a链接
+	def filterLink(i, element):
+	    t = element.text;
+	    element.clear();
+	    element.tag = "span";
+	    element.text = t
+
+	content("a").each(filterLink)
+
         if len(self.articleRule.filters) > 0:
             for filter in self.articleRule.filters:
                 element = getElementData(content, filter, True)
@@ -287,9 +296,10 @@ class Document(object):
                 return
             content = article(self.articleRule.getContentParent())
             if content:
+		#first save
+                content = self._saveMediaToLocale(content);
                 #filter
                 content = self._filter(content);
-                content = self._saveMediaToLocale(content);
                 
                 content = content.html();
                 if content:
