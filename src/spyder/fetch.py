@@ -21,12 +21,14 @@ class Fetch(object):
         try:
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
         except urllib2.URLError, e:
+	    print (self.url, e)
 	    if isinstance(e.reason, socket.timeout):
 		if self.count <= 5:
 		    self.openSite()
 		    self.count = self.count + 1
+		else:
+		    pass
 	    else:
-		print (self.url, e)
 		pass
 	finally:
 	    pass
