@@ -20,6 +20,9 @@ class Fetch(object):
         self.request.add_header("User-Agent", "Mozilla/5.0");
         try:
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
+	except urllib2.HTTPError, e:
+	    print (e)
+	    pass
         except urllib2.URLError, e:
 	    print (self.url, e)
 	    if isinstance(e.reason, socket.timeout):
@@ -30,9 +33,6 @@ class Fetch(object):
 		    pass
 	    else:
 		pass
-	except urllib2.HTTPError, e:
-	    print (e)
-	    pass
 	finally:
 	    pass
 
