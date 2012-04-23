@@ -2,14 +2,16 @@
 
 from pyquery import PyQuery as pq
 import urllib2, urlparse, re
+import socket
 from pybits import ansicolor
 
 class Fetch(object):
     def __init__(self, url, charset, timeout = 300):
-        self.url = url;
-        self.charset = charset;
-        self.timeout = timeout;
+        self.url = url
+        self.charset = charset
+        self.timeout = timeout
         self.site = None
+	self.count = 1
 
         self.openSite();
         
@@ -19,8 +21,14 @@ class Fetch(object):
         try:
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
         except urllib2.HTTPError, e:
-            print (self.url, e)
-	except:
+	    if isinstance(e.reason, socket.timeout):
+		if self.count <= 5
+		    self.openSite()
+		    self.count = self.count + 1
+	    else:
+		print (self.url, e)
+	except urllib2.URLError, e:
+	    #url error
 	    pass
 	finally:
 	    pass
@@ -42,7 +50,6 @@ class Fetch(object):
                     # rss
                     #<?xml version="1.0" encoding="gb2312"?>
                     result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
-
                 if result:
                     charset = result.group(1)
                     try:
