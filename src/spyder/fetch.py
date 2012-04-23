@@ -20,7 +20,7 @@ class Fetch(object):
         self.request.add_header("User-Agent", "Mozilla/5.0");
         try:
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
-        except urllib2.HTTPError, e:
+        except urllib2.URLError, e:
 	    if isinstance(e.reason, socket.timeout):
 		if self.count <= 5:
 		    self.openSite()
