@@ -22,7 +22,7 @@ class Fetch(object):
             self.site = urllib2.urlopen(self.request, timeout = self.timeout)
         except urllib2.HTTPError, e:
 	    if isinstance(e.reason, socket.timeout):
-		if self.count <= 5
+		if self.count <= 5:
 		    self.openSite()
 		    self.count = self.count + 1
 	    else:
