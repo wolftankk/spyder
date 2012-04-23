@@ -27,9 +27,7 @@ class Fetch(object):
 		    self.count = self.count + 1
 	    else:
 		print (self.url, e)
-	except urllib2.URLError, e:
-	    #url error
-	    pass
+		pass
 	finally:
 	    pass
 
