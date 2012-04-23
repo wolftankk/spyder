@@ -30,6 +30,9 @@ class Fetch(object):
 		    pass
 	    else:
 		pass
+	except urllib2.HTTPError, e:
+	    print (e)
+	    pass
 	finally:
 	    pass
 
