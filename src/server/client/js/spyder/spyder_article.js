@@ -423,6 +423,20 @@ Ext.define("Spyder.apps.articles.ArticleList", {
 	})
     }
 })
+Spyder.constants.websiteServer.GetGamesFromWebsite(1, {
+    success : function(data){
+	Spyder.gameslistStore = Ext.create('Ext.data.Store', {
+	    fields: [
+		"itemid",
+		"name",
+	    ],
+	    data: Ext.JSON.decode(data)   
+	})
+    },
+    failure: function(error){
+	Ext.Error.raise(error)
+    }
+})  
 
 Ext.define("Spyder.apps.articles.PublicArticle", {
     extend: "Ext.window.Window",
@@ -496,8 +510,10 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
                     bodyStyle: "background-color: #dfe8f5",
                     defaults: {
                         bodyStyle: "background-color: #dfe8f5",
-                        width: "95%" 
+                        width: "95%",
+			height: 30
                     },
+		    height: "100%",
                     defaultType: "textfield",
                     fieldDefaults: {
                         msgTarget: "side",
@@ -536,6 +552,16 @@ Ext.define("Spyder.apps.articles.PublicArticle", {
 			    valueField: "catid",
 			    name: "websiteCatID",
 			    editable: false
+			},
+			{
+			    fieldLabel: "选择游戏分类",
+			    xtype: "combobox",
+			    store:  Spyder.gameslistStore,
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "itemid",
+			    name: "gameid",
+			    editable: true
 			},
 			{
 			    xtype: "checkboxfield",

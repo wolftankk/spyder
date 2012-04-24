@@ -31,7 +31,7 @@ class Website{
 	    "host" => "172.16.130.7",
 	    "name" => "root",
 	    "passwd"=>"",
-	    "dbname"=>"supesite"
+	    "dbname"=>"bigamer"
 	);
 	$method = $websiteData["method"];
 
@@ -43,6 +43,32 @@ class Website{
 		uses("supesite");
 		$website = new Supesite($websiteData, array(), 0);
 		$website->getCategories();
+		break;
+	    default:
+		send_ajax_response("error", "Sorry, Spyder donot support $method.");
+		exit;
+	}
+    }
+
+    public function GetGamesFromWebsite(){
+	//checkArgs("WID");
+	$websiteData = array(
+	    "method"=> "supesite",
+	    "host" => "172.16.130.7",
+	    "name" => "root",
+	    "passwd"=>"",
+	    "dbname"=>"bigamer"
+	);
+	$method = $websiteData["method"];
+
+	switch ($method){
+	    case "wordpress":
+		uses("wordpress");
+		break;
+	    case "supesite":
+		uses("supesite");
+		$website = new Supesite($websiteData, array(), 0);
+		$website->getGames();
 		break;
 	    default:
 		send_ajax_response("error", "Sorry, Spyder donot support $method.");

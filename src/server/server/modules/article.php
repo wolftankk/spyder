@@ -243,7 +243,7 @@ class Article{
             "host" => "172.16.130.7",
             "name" => "root",
             "passwd"=>"",
-            "dbname"=>"supesite"
+            "dbname"=>"bigamer"
 	);
         $method = $websiteData["method"];
 
@@ -265,6 +265,7 @@ class Article{
 	    if ($options && is_object($options)){
 		$autoConvert = $options->convertLanuage;
 		$articleCatID = $options->websiteCatID;
+		$gameid  = intval($options->gameid);
 	    }
 
 	    if ($autoConvert){
@@ -287,7 +288,7 @@ class Article{
 		case "supesite":
 		    uses("supesite");
 		    $website = new Supesite($websiteData, $errors, $articleCatID);
-		    $website->insert_article($articleData);
+		    $website->insert_article($articleData, $gameid);
 		    $errors = $website->getErrors();
 		    break;
 		default:

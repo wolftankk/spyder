@@ -5,7 +5,7 @@ class Realm{
         $this->sessionId = $sid;
         if (method_exists($this, $action)){
 	    $this->ssDB = new Crow();
-	    $this->ssDB->connect("172.16.130.7", "root", "", "supesite");
+	    $this->ssDB->connect("172.16.130.7", "root", "", "bigamer");
 	    $this->ssDB->query("SET  NAMES UTF8");
             call_user_func(array($this, $action));
         }else{

@@ -7,7 +7,7 @@ class Supesite {
     public function __construct($websiteData, $errors, $catID = null){
 	$this->connectDatabase($websiteData);
 	$this->prefix_t = "supe_";
-
+	//$this->tagsList = array();
 	$this->errors = $errors;
 	//check undefinedCategory is exist
 	if ($catID == null){
@@ -15,6 +15,7 @@ class Supesite {
 	}else{
 	    $this->defaultCatID = $catID;
 	}
+	//$this->buildTagsList();
     }
 
     private function connectDatabase($websiteData){
@@ -25,6 +26,17 @@ class Supesite {
 
     private function getTableName($tablename){
 	return ($this->prefix_t."$tablename");
+    }
+
+    public function getGames(){
+	$query = $this->ssDB->query("SELECT itemid, name FROM {$this->getTableName('gamesitems')}");
+	$list = array();
+	while ($data = $this->ssDB->fetch_array($query)){
+	    $list[] = $data;
+	}
+
+	send_ajax_response("success", $list);
+	exit;
     }
 
     private function checkUndefinedCategory(){
@@ -59,7 +71,7 @@ class Supesite {
 	exit;
     }
 
-    public function insert_article($articleData){
+    public function insert_article($articleData, $gameid=0){
 	$hash = substr(md5($articleData["url"]), 0, 10);
 
 	//check
@@ -103,6 +115,11 @@ class Supesite {
 	    'folder'  => 1,
 	    "fromtype"=> "adminpost"
 	);
+
+	if (!empty($gameid)){
+	    $setsqlarr["gameid"] = $gameid;
+	}
+
 	//styletitle 标题样式
 	$setsqlarr["haveattach"] = 0;
 	$setsqlarr["dateline"]   = time();
