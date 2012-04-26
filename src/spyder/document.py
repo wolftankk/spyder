@@ -151,7 +151,6 @@ class Grab(object):
 
 
 	    if len(self.listRule.getEntryItem()) == 0:
-		print list;
 		list.map(entry)
 	    else:	
 		list(self.listRule.getEntryItem()).map(entry)
