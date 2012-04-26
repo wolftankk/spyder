@@ -150,6 +150,7 @@ class Grab(object):
                 }
 
 
+	    print list;
 	    if self.listRule.getEntryItem() is None:
 		list.map(entry)
 	    else:	
