@@ -149,7 +149,11 @@ class Grab(object):
                     "date" : date
                 }
 
-            list(self.listRule.getEntryItem()).map(entry)
+
+	    if self.listRule.getEntryItem() is None:
+		list.map(entry)
+	    else:	
+		list(self.listRule.getEntryItem()).map(entry)
 
 r"""
     Fecth and parser Article page
