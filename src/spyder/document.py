@@ -130,7 +130,10 @@ class Grab(object):
             def entry(i, e):
                 #link
                 url = self.listRule.getItemLink()
-                link = getElementData(e, url)
+		if e.tag == "a":
+		    link = e.get("href")
+		else:
+		    link = getElementData(e, url)
                 link = urlparse.urljoin(self.prefixurl, link);
 
                 #title
@@ -149,9 +152,8 @@ class Grab(object):
                     "date" : date
                 }
 
-
 	    if len(self.listRule.getEntryItem()) == 0:
-		list.each(entry)
+		list.children().map(entry)
 	    else:	
 		list(self.listRule.getEntryItem()).map(entry)
 
@@ -170,6 +172,7 @@ class Document(object):
         self.savable = savable
         self.filterscript = self.articleRule.filterscript
 	self.lang = seed.lang
+	self.seed = seed
         
         if self.checkUrl(url) == False or not self.savable:
             print "Document %s is fetcing" % ansicolor.green(url)
@@ -318,9 +321,10 @@ class Document(object):
             #get content
             getContent();
             article = None #fetch over
-
             for purl in self.pages:
-                self.parse(purl)
+		ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
+		if ppage is not None:
+		    self.parse(ppage)
 
         getContent();
 
