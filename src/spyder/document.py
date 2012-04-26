@@ -151,7 +151,7 @@ class Grab(object):
 
 
 	    if len(self.listRule.getEntryItem()) == 0:
-		list.map(entry)
+		list.each(entry)
 	    else:	
 		list(self.listRule.getEntryItem()).map(entry)
 
