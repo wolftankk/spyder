@@ -158,7 +158,8 @@ Ext.define("Spyder.apps.articles.ArticleList", {
         var me = this, store = me.storeProxy,
             articleServer = Spyder.constants.articleServer;
         var sm = Ext.create("Ext.selection.CheckboxModel", {
-            model: "MULTI"    
+	    checkOnly: true,
+            model: "MULTI"
         })
         me.grid = Ext.create("Spyder.plugins.LiveSearch", {
             store: store,
