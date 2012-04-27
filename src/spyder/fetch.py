@@ -3,7 +3,44 @@
 from pyquery import PyQuery as pq
 import urllib2, urlparse, re
 import socket
+from gzip import GzipFile
+from StringIO import StringIO
 from pybits import ansicolor
+
+import zlib
+
+def deflate(data):
+    try:
+	return zlib.decompress(data, -zlib.MAX_WBITS)
+    except zlib.error:
+	return zlib.decompress(data)
+
+class ContentEncodingProcessor(urllib2.BaseHandler):
+    
+    #add header to request
+    def http_request(self, req):
+        req.add_header("User-Agent", "Mozilla/5.0")
+	req.add_header("Accept-Encoding", "gzip, deflate")
+	return req
+
+    def http_response(self, req, resp):
+	origin_resp = resp
+
+	if resp.headers.get("content-encoding") == "gzip":
+	    gz = GzipFile(fileobj=StringIO(resp.read()), mode="r")
+	    resp = urllib2.addinfourl(gz, origin_resp.headers, origin_resp.url, origin_resp.code)
+	    resp.msg = origin_resp.msg
+
+	if resp.headers.get("content-encoding") == "deflate":
+	    gz = StringIO(deflate(resp.read()))
+	    resp = urllib2.addinfourl(gz, origin_resp.headers, origin_resp.url, origin_resp.code)
+	    resp.msg = origin_resp.msg
+
+	return resp
+
+
+encoding_support = ContentEncodingProcessor
+opener = urllib2.build_opener(encoding_support, urllib2.HTTPHandler)
 
 class Fetch(object):
     def __init__(self, url, charset, timeout = 300):
@@ -17,14 +54,11 @@ class Fetch(object):
         
     def openSite(self):
         self.request = urllib2.Request(self.url);
-        self.request.add_header("User-Agent", "Mozilla/5.0");
         try:
-            self.site = urllib2.urlopen(self.request, timeout = self.timeout)
+            self.site = opener.open(self.request, timeout = self.timeout)
 	except urllib2.HTTPError, e:
-	    print (e)
 	    pass
         except urllib2.URLError, e:
-	    print (self.url, e)
 	    if isinstance(e.reason, socket.timeout):
 		if self.count <= 5:
 		    self.openSite()
@@ -67,4 +101,4 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    print Fetch("http://www.51wan.com/z/gl/list_34_1.html", "gbk").read()
+    print Fetch("http://www.gamer.com.tw/", "gbk").read()
