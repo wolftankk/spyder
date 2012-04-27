@@ -227,10 +227,9 @@ class Document(object):
 
 	#过滤所有文章中的a链接
 	def filterLink(i, element):
-	    t = element.text;
-	    element.clear();
+	    for k in element.attrib:
+		del element.attrib[k]
 	    element.tag = "span";
-	    element.text = t
 
 	content("a").each(filterLink)
 
