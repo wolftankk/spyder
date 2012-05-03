@@ -177,7 +177,12 @@ class Document(object):
         if self.checkUrl(url) == False or not self.savable:
             print "Document %s is fetcing" % ansicolor.green(url)
             self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
-            self.parse(self.firstPage, True)
+
+            self.fetchDocument(self.firstPage, True)
+
+	    #clean
+	    self.readability(self.content)
+
             self.contentData["content"] = self.content
 
             if self.saveArticle() > 0:
@@ -229,7 +234,7 @@ class Document(object):
 	def filterLink(i, element):
 	    for k in element.attrib:
 		del element.attrib[k]
-	    element.tag = "span";
+	    element.drop_tag()
 
 	content("a").each(filterLink)
 
@@ -293,7 +298,7 @@ class Document(object):
 
         return content
 
-    def parse(self, doc, first=False):
+    def fetchDocument(self, doc, first=False):
         doc = pq(doc);
         article = doc.find(self.articleRule.getWrapParent())
 
@@ -323,7 +328,7 @@ class Document(object):
             for purl in self.pages:
 		ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
 		if ppage is not None:
-		    self.parse(ppage)
+		    self.fetchDocument(ppage)
 
         getContent();
 
@@ -346,6 +351,34 @@ class Document(object):
                         url = urlparse.urljoin(self.url, url)
                         self.pages.append(url)
 
+    def tags(self, node, *tag_names):
+	for tag_name in tag_names:
+	    for e in node.find(tag_name):
+		yield e
+
+    def clean_attributes(self, content):
+	if content.tag == "font":
+	    content.tag = "span"
+
+	if content.tag == "center":
+	    content.tag = "div"
+
+	for att in ["color", "width", "height", "background", "style", "class", "id"]:
+	    if content.get(att) is not None:
+		del content.attrib[att]
+
+    def readability(self, content):
+	origin_content = content
+	try:
+	    content = pq(content);
+
+	    for e in self.tags(content, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
+		self.clean_attributes(e)
+
+	    self.content = content.html();
+	except:
+	    self.content = origin_content
+	    pass
 
 if __name__ == "__main__":
     r"""
