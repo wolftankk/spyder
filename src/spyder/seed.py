@@ -25,8 +25,6 @@ class Seed(object):
             self._debugMode = 0
             self.enabled = 0
 	    self.lang = "zhCN"
-
-            #List Type: html, feed, ajax
             self.type = "html" 
 
             self.__parse(seed);
@@ -77,35 +75,26 @@ class Seed(object):
 
     def getsid(self):
         return self._sid
-
     def setsid(self, value):
         self._sid = int(value)
-
     sid = property(getsid, setsid)
 
     def getname(self):
         return self._name
-
     def setname(self, name):
         self._name = name
-
     name = property(fget=getname, fset=setname, doc="Seed name");
 
     def getfrequency(self):
         return int(self._frequency)
-
     def setfrequency(self, value):
-        # sec
         self._frequency = int(value)
-
     frequency = property(getfrequency, setfrequency)
 
     def gettries(self):
         return int(self._tries)
-
     def settries(self, value):
         self._tries = int(value)
-
     tries = property(gettries, settries)
 
     def gettimeout(self):
@@ -118,13 +107,11 @@ class Seed(object):
         return self._charset
     def setcharset(self, value):
         self._charset = value
-
     charset = property(getcharset, setcharset)
 
     @property
     def starttime(self):
         return self._starttime
-    
     @starttime.setter
     def starttime(self, value):
         self._starttime = int(value)
@@ -132,7 +119,6 @@ class Seed(object):
     @property
     def finishtime(self):
         return self._finishtime
-    
     @finishtime.setter
     def finishtime(self, value):
         self._finishtime = int(value)
@@ -250,31 +236,25 @@ class RuleList(object):
 
     def getFormatedUrls(self):
         listUrls = [];
-        if self.type == "ajax":
-            r"""
-            intsall cookiejar
-            """
-        else:
-            if self.urlformat == None or self.urlformat == "":
-                raise RuleUrlInvalid
+	if self.urlformat == None or self.urlformat == "":
+	    raise RuleUrlInvalid
 
-            if self.startpage == None:
-                self.startpage = 1
+	if self.startpage == None:
+	    self.startpage = 1
 
-            if self.maxpage == None:
-                self.maxpage = 1
+	if self.maxpage == None:
+	    self.maxpage = 1
 
-            if self.step == None:
-                self.step = 1
+	if self.step == None:
+	    self.step = 1
 
-            self.startpage = int(self.startpage)
-            self.maxpage   = int(self.maxpage)
-            urlformat = string.Template(self.urlformat);
-            for i in range(self.startpage, self.maxpage+1):
-                #set step
-                url = urlformat.substitute(page=i);
-                url = urlparse.urljoin(self.prefixurl, url);
-                listUrls.append(url)
+	self.startpage = int(self.startpage)
+	self.maxpage   = int(self.maxpage)
+	urlformat = string.Template(self.urlformat);
+	for i in range(self.startpage, self.maxpage+1):
+	    url = urlformat.substitute(page=i);
+	    url = urlparse.urljoin(self.prefixurl, url);
+	    listUrls.append(url)
 
         return listUrls
 
@@ -310,8 +290,10 @@ class RuleArticle(object):
             self.filterscript  = True
 
         if "filters" in rule:
-            #self.filters = rule["filters"]
 	    self.filters = []
+	    if isinstance(rule["filters"], str):
+		rule = rule["filters"].split("|")
+
 	    for f in rule["filters"]:
 		self.filters.append(rule["filters"][f])
         else:
@@ -332,7 +314,6 @@ class RuleArticle(object):
 r"""
 Rule
 ~~~~
-
 `List rule`:
     type RSS, html, ATOM, AJAX
     ┌ urlparten, Exp: http://www.265g.com/chanye/hot/4985-(%d).html
@@ -358,4 +339,3 @@ Article rule:
     dateParten
 
 """
-
