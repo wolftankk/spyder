@@ -295,7 +295,7 @@ class Document(object):
 		    imgurl = image.set("src", new_imgurl)
 	    else:
 		#remove
-		parten.remove(image)
+		parent.remove(image)
 
     def fetchDocument(self, doc, first=False):
         doc = pq(doc);
