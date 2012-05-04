@@ -57,7 +57,7 @@ class Spyder(object):
             print "Seed %s start fetching." % ansicolor.yellow(seed)
             docData = Grab(seed, False)
 
-    def run(self):
+    def run(self, force):
         self.getSpiderList()
 
         for sid in self.spiderList:
@@ -67,7 +67,7 @@ class Spyder(object):
                 frequency  = seed.frequency
                 finishtime = seed.finishtime
                 starttime  = seed.starttime
-                if (frequency + finishtime) < now():
+                if ((frequency + finishtime) < now()) or force:
                     seed.starttime = now()
                     #if not saved in db, set false
                     docData = Grab(seed)
@@ -85,7 +85,7 @@ class Spyder(object):
 if __name__ == "__main__":
     import getopt, sys
     try:
-        opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help"]);
+        opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help", "force"]);
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
@@ -109,4 +109,7 @@ if __name__ == "__main__":
                 sys.exit(2)
             Spyder().Test(sid)
         elif o == "-r" or o == "--run":
-            Spyder().run()
+	    force = False
+	    if o == "--force":
+		force = True
+            Spyder().run(force)
