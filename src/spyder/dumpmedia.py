@@ -121,11 +121,14 @@ class DumpMedia():
 	request = urllib2.Request(config.uploadPath, datagen, headers);
 	request.add_header("User-Agent", "Python-Spyder/1.1");
 	path = urllib2.urlopen(request).read()
-	path = config.staticUrl + path;
-	self.filename = path
+	path = path.strip()
 
-	print "下载成功";
-	return True
+	if path:
+	    path = config.staticUrl + path;
+	    self.filename = path
+
+	    print "下载成功";
+	    return True
 
     def getMediaName(self):
         return self.filename

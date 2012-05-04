@@ -293,6 +293,9 @@ class Document(object):
 		if new_imgurl:
 		    print new_imgurl
 		    imgurl = image.set("src", new_imgurl)
+	    else:
+		#remove
+		parten.remove(image)
 
     def fetchDocument(self, doc, first=False):
         doc = pq(doc);
