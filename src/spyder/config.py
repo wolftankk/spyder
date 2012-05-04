@@ -11,7 +11,7 @@ DBCONFIG = {
 
 # where will these images be saved
 # Choose: locale / remote
-storeImage = False
+storeImage = True
 imageSaveMethod = "remote"
 uploadPath = "http://172.16.130.7/static/upload_image.php"
 staticUrl = "http://res.bigamer.tw/"

@@ -27,7 +27,6 @@ class DumpMedia():
             self.urlinfo = self.media.info()
 	    self.fetched = True
         finally:
-	    self.fetched = False
             return None
 
     def getPath(self, path):
