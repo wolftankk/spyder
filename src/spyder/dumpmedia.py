@@ -55,9 +55,10 @@ class DumpMedia():
 	    w, h = struct.unpack("<HH", data[6:10])
 	    width = int(w)
 	    height = int(h)
+
 	#png2
 	elif (size >= 24 and data.startswith('\211PNG\r\n\032\n') and (data[12:16] == 'IHDR')):
-	    w, h = struct.unpack(">LL". data[16:24])
+	    w, h = struct.unpack(">LL",data[16:24])
 	    width = int(w)
 	    height = int(h)
 
@@ -178,4 +179,5 @@ class DumpMedia():
         return self.urlinfo.getsubtype()
 
 if __name__ == "__main__":
-    DumpMedia("http://www.wordpress.org/", "http://codex.wordpress.org/images/9/9e/WP3.0-ERD.png")
+    m = DumpMedia("http://p2.bahamut.com.tw", "http://p2.bahamut.com.tw/B/2KU/43/0000527843.PNG")
+    m.getSize()
