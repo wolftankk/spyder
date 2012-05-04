@@ -278,15 +278,15 @@ class Document(object):
 	image.set("src", imgSrc);
 	imageInfo = DumpMedia(self.url, imgSrc)
 
-	width, height = imageInfo.getSize()
-	if width < ImageWidthThreshold:
-	    image.set("class", "asideImg")
-	#if (width > ImageWidthThreshold):
-	#    image.set("class", "blockImage")
-	#else:
-	#    image.set("class", "leftImage")
+	if imageInfo.fetched:
+	    width, height = imageInfo.getSize()
+	    if width < ImageWidthThreshold:
+		image.set("class", "asideImg")
+	    #if (width > ImageWidthThreshold):
+	    #    image.set("class", "blockImage")
+	    #else:
+	    #    image.set("class", "leftImage")
 
-	# save img
 	if config.storeImage:
 	    if imageInfo.write():
 		new_imgurl = imageInfo.getMediaName()

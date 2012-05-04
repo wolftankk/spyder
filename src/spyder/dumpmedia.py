@@ -13,7 +13,8 @@ register_openers()
 class DumpMedia():
     def __init__(self, prefixUrl, url):
         self.mediaUrl = urlparse.urljoin(prefixUrl, url)
-	self.filename = None;
+	self.filename = None
+	self.fetched = False
         self.fetch()
 
     def getMediaUrl(self):
@@ -24,7 +25,9 @@ class DumpMedia():
             self.media = urllib2.urlopen(self.mediaUrl)
 	    self.mediaData = self.media.read()
             self.urlinfo = self.media.info()
+	    self.fetched = True
         finally:
+	    self.fetched = False
             return None
 
     def getPath(self, path):
@@ -111,6 +114,9 @@ class DumpMedia():
         #return False
 
     def postMedia(self, newname):
+	if not self.fetched:
+	    return False
+
 	data = self.mediaData
 
 	datagen, headers = multipart_encode({
