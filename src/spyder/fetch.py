@@ -6,8 +6,12 @@ import socket
 from gzip import GzipFile
 from StringIO import StringIO
 from pybits import ansicolor
-
 import zlib
+
+__all__ = [
+    'Fetch',
+    'opener'
+]
 
 def deflate(data):
     try:
@@ -16,7 +20,6 @@ def deflate(data):
 	return zlib.decompress(data)
 
 class ContentEncodingProcessor(urllib2.BaseHandler):
-    
     #add header to request
     def http_request(self, req):
         req.add_header("User-Agent", "Mozilla/5.0")
@@ -37,7 +40,6 @@ class ContentEncodingProcessor(urllib2.BaseHandler):
 	    resp.msg = origin_resp.msg
 
 	return resp
-
 
 encoding_support = ContentEncodingProcessor
 opener = urllib2.build_opener(encoding_support, urllib2.HTTPHandler)
