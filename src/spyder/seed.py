@@ -291,9 +291,6 @@ class RuleArticle(object):
 
         if "filters" in rule:
 	    self.filters = []
-	    if isinstance(rule["filters"], str):
-		rule = rule["filters"].split("|")
-
 	    for f in rule["filters"]:
 		self.filters.append(rule["filters"][f])
         else:
