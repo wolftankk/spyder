@@ -4,6 +4,11 @@ import urllib2, urlparse, os, sys, io
 import config
 import hashlib, StringIO, struct
 from pybits import ansicolor
+from poster.encode import multipart_encode
+from poster.streaminghttp import register_openers
+import base64
+
+register_openers()
 
 class DumpMedia():
     def __init__(self, prefixUrl, url):
@@ -17,6 +22,7 @@ class DumpMedia():
     def fetch(self):
         try:
             self.media = urllib2.urlopen(self.mediaUrl)
+	    self.mediaData = self.media.read()
             self.urlinfo = self.media.info()
         finally:
             return None
@@ -36,7 +42,7 @@ class DumpMedia():
         return staticPath
 
     def getSize(self):
-	data = self.media.read()
+	data = self.mediaData
 	data = str(data)
 	size = len(data)
 	height = -1
@@ -83,18 +89,17 @@ class DumpMedia():
 	return width, height
 
     def write(self):
-	media = self.media
         m = hashlib.sha1(self.mediaUrl)
         newname = m.hexdigest()
 	
 	if config.imageSaveMethod == "locale":
 	    #get path
 	    path = self.getPath(newname)
-	    filename = os.path.join(path,  newname+"."+self.getFileType());
+	    filename = os.path.join(path, newname+"."+self.getFileType());
 	elif config.imageSaveMethod == "remote":
-	    return self.postMedia(media, newname)
+	    return self.postMedia(newname)
 
-	return False
+	#return False
 
         ###check has exit
         #if not os.path.exists(filename):
@@ -105,23 +110,20 @@ class DumpMedia():
         #    return filename 
         #return False
 
-    def postMedia(self, media, newname):
-	from poster.encode import multipart_encode
-	from poster.streaminghttp import register_openers
-	import base64
-	
-	register_openers()
+    def postMedia(self, newname):
+	data = self.mediaData
+
 	datagen, headers = multipart_encode({
-	    "XiMaGe" : base64.b64encode(media.read()),
+	    "XiMaGe" : base64.b64encode(data),
 	    "imageName" : newname,
 	    "imageType"    : self.getFileType()
 	})
 	request = urllib2.Request(config.uploadPath, datagen, headers);
 	request.add_header("User-Agent", "Python-Spyder/1.1");
-
 	path = urllib2.urlopen(request).read()
 	path = config.staticUrl + path;
 	self.filename = path
+
 	print "下载成功";
 	return True
 
