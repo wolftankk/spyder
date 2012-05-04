@@ -288,14 +288,11 @@ class Document(object):
 
 	# save img
 	if config.storeImage:
-	    if image.get("src"):
-		imgurl = image.get("src")
-		#save imgurl
-		if imageInfo.write():
-		    new_imgurl = imageInfo.getMediaName()
-		    if new_imgurl:
-			print new_imgurl
-			imgurl = image.set("src", new_imgurl)
+	    if imageInfo.write():
+		new_imgurl = imageInfo.getMediaName()
+		if new_imgurl:
+		    print new_imgurl
+		    imgurl = image.set("src", new_imgurl)
 
     def fetchDocument(self, doc, first=False):
         doc = pq(doc);

@@ -92,7 +92,7 @@ class DumpMedia():
 	    path = self.getPath(newname)
 	    filename = os.path.join(path,  newname+"."+self.getFileType());
 	elif config.imageSaveMethod == "remote":
-	    self.postMedia(media, newname);
+	    return self.postMedia(media, newname)
 
 	return False
 
