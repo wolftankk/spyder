@@ -2,7 +2,7 @@
 
 import urllib2, urlparse, os, sys, io
 import config
-import hashlib
+import hashlib, StringIO, struct
 from pybits import ansicolor
 
 class DumpMedia():
@@ -16,9 +16,8 @@ class DumpMedia():
 
     def fetch(self):
         try:
-            media = urllib2.urlopen(self.mediaUrl)
-            self.urlinfo = media.info()
-            self.write(media)
+            self.media = urllib2.urlopen(self.mediaUrl)
+            self.urlinfo = self.media.info()
         finally:
             return None
 
@@ -36,7 +35,55 @@ class DumpMedia():
 
         return staticPath
 
-    def write(self, media):
+    def getSize(self):
+	data = self.media.read()
+	data = str(data)
+	size = len(data)
+	height = -1
+	width = -1
+
+	#gif
+	if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+	    w, h = struct.unpack("<HH", data[6:10])
+	    width = int(w)
+	    height = int(h)
+	#png2
+	elif (size >= 24 and data.startswith('\211PNG\r\n\032\n') and (data[12:16] == 'IHDR')):
+	    w, h = struct.unpack(">LL". data[16:24])
+	    width = int(w)
+	    height = int(h)
+
+	elif (size >= 16) and data.startswith('\211PNG\r\n\032\n'):
+	    w, h = struct.unpack(">LL", data[8:16])
+	    width = int(w)
+	    height = int(h)
+	
+	elif (size >= 2) and data.startswith('\377\330'):
+	    jpeg = StringIO.StringIO(data)
+	    jpeg.read(2)
+	    b = jpeg.read(1)
+	    try:
+		while (b and ord(b) != 0xDA):
+		    while (ord(b) != 0xFF): b = jpeg.read(1)
+		    while (ord(b) == 0xFF): b = jpeg.read(1)
+		    if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
+			jpeg.read(3)
+			h, w = struct.unpack(">HH", jpeg.read(4))
+			break
+		    else:
+			jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
+		    b = jpeg.read(1)
+		width = int(w)
+		height = int(h)
+	    except struct.error:
+		pass
+	    except ValueError:
+		pass
+
+	return width, height
+
+    def write(self):
+	media = self.media
         m = hashlib.sha1(self.mediaUrl)
         newname = m.hexdigest()
 	
@@ -112,10 +159,6 @@ class DumpMedia():
         return self.urlinfo
 
     def getType(self):
-        # image jpeg png gif bmp
-        # audio 
-        # video
-        # application x-
         return self.urlinfo.gettype()
 
     def getMainType(self):

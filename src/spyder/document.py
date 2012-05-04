@@ -11,6 +11,9 @@ import feedparser
 from dumpmedia import DumpMedia
 import config, lxml
 
+ImageWidthThreshold = 700 * 0.55
+ImageHeightThreshold = 30
+
 r"""
  Get the attr or the method of the document
   @ get the attr
@@ -180,9 +183,6 @@ class Document(object):
 
             self.fetchDocument(self.firstPage, True)
 
-	    #clean
-	    self.readability(self.content)
-
             self.contentData["content"] = self.content
 
             if self.saveArticle() > 0:
@@ -253,50 +253,49 @@ class Document(object):
 
         return content
 
-    def _saveImages(self, url):
+    def getImage(self, url):
         #fetch img
-        m = DumpMedia(self.url, url)
-        return m.getMediaName()
+        return DumpMedia(self.url, url)
 
-    def _saveMediaToLocale(self, content):
-        #image, flash, mp4?
-        # IMG
-        images  = content.find("img")
-        if len(images) > 0:
-            for image in images:
-                #首先处理图片层
-                parent = image.getparent()
-                if parent is not None and parent.tag is "a":
-                    parent.tag = "p"
-                    #移除属性
-                    parentAttrs = parent.attrib
-                    for k in parentAttrs:
-                        del parentAttrs[k]
+    def processingImage(self, image):
+	#首先处理图片层
+	parent = image.getparent()
 
-                imgKW = ["src", "alt", "width", "height"];
-                imgAttrs = image.attrib
-                #remove some attrs
-                for k in imgAttrs:
-                    if k not in imgKW:
-                        del imgAttrs[k]
-		#补充img url
-		imgSrc = image.get("src");
-		imgSrc = urlparse.urljoin(self.url, imgSrc);
-		image.set("src", imgSrc);
+	if parent is not None and parent.tag is "a":
+	    parentAttrs = parent.attrib
+	    for k in parentAttrs:
+		del parentAttrs[k]
+	    parent.drop_tag()
 
-                # save img
-		if config.storeImage:
-                    if image.get("src"):
-                        imgurl = image.get("src")
-                        #save imgurl
-                        new_imgurl = self._saveImages(imgurl)
-                        if new_imgurl:
-			    print new_imgurl
-			    imgurl = image.set("src", new_imgurl)
+	imgKW = ["src", "alt", "width", "height"];
+	imgAttrs = image.attrib
+	for k in imgAttrs:
+	    if k not in imgKW:
+		del imgAttrs[k]
 
-        #find swf? 
+	imgSrc = image.get("src");
+	imgSrc = urlparse.urljoin(self.url, imgSrc);
+	image.set("src", imgSrc);
+	imageInfo = DumpMedia(self.url, imgSrc)
 
-        return content
+	width, height = imageInfo.getSize()
+	if width < ImageWidthThreshold:
+	    image.set("class", "asideImg")
+	#if (width > ImageWidthThreshold):
+	#    image.set("class", "blockImage")
+	#else:
+	#    image.set("class", "leftImage")
+
+	# save img
+	if config.storeImage:
+	    if image.get("src"):
+		imgurl = image.get("src")
+		#save imgurl
+		if imageInfo.write():
+		    new_imgurl = imageInfo.getMediaName()
+		    if new_imgurl:
+			print new_imgurl
+			imgurl = image.set("src", new_imgurl)
 
     def fetchDocument(self, doc, first=False):
         doc = pq(doc);
@@ -308,10 +307,13 @@ class Document(object):
             content = article(self.articleRule.getContentParent())
             if content:
 		#first save
-                content = self._saveMediaToLocale(content);
+		for image in content.find("img"):
+		    self.processingImage(image)
                 #filter
-                content = self._filter(content);
-                
+                content = self._filter(content)
+		
+		content = self.readability(content)
+
                 content = content.html();
                 if content:
                     self.content = self.content +  content
@@ -370,37 +372,17 @@ class Document(object):
     def readability(self, content):
 	origin_content = content
 	try:
-	    content = pq(content);
-
 	    for e in self.tags(content, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
-		self.clean_attributes(e)
+	        self.clean_attributes(e)
 
-	    self.content = content.html();
+	    return content
 	except:
-	    self.content = origin_content
+	    return origin_content
 	    pass
+
+
 
 if __name__ == "__main__":
     r"""
     html, RSS, Atom, Ajax
     """
-    #test token
-    # remove
-    #a[@href="xxxx"]
-    #a[#text="aaaa"]
-    #a[@href="oo", #text="bbb", class="xxx"]
-
-    #obj = pq('<div><a class="hello" href="xxxx">ccccc</a><a href="vvv"></a></div>')
-    ##print getElementData(obj,"a[@href,@class='hello']")
-    #print getElementData(obj,"a[#text]")
-    #print getElementData(obj,"a[@href='xxxx']")
-    #print getElementData(obj,"a[#text='cccc']")
-    ##getElementData(obj,"a[@href='xxxx',  #text='ccccc']")
-
-    obj = pq("""aaa<!--xxx-->ddd<table>
-        <tr> <td><em>test1</em></td><td><a href="asd">dad</a></td> </tr>
-        <tr> <td><em>test2</em></td><td><a href="vsa">dad</a></td> </tr>
-        <tr> <td><em>test3</em></td><td><a href="bwq">da</a></td> </tr>
-    </table>""")
-
-    print obj.html();
