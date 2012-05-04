@@ -59,7 +59,7 @@ class Spyder(object):
 
     def run(self, force):
         self.getSpiderList()
-
+	
         for sid in self.spiderList:
             seed = self.spiderList[sid]
             if seed.enabled == "1":
@@ -90,6 +90,8 @@ if __name__ == "__main__":
         print str(err)
         sys.exit(2)
 
+    isRun = False
+    isForce = False
     for o, a in opts:
         if o == "-V" or o == "--version":
             #get spyder version
@@ -109,7 +111,9 @@ if __name__ == "__main__":
                 sys.exit(2)
             Spyder().Test(sid)
         elif o == "-r" or o == "--run":
-	    force = False
-	    if o == "--force":
-		force = True
-            Spyder().run(force)
+	    isRun = True
+	elif o == "--force":
+	    isForce = True
+
+    if isRun:
+	Spyder().run(isForce)
