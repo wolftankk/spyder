@@ -96,22 +96,18 @@ class DumpMedia():
         newname = m.hexdigest()
 	
 	if config.imageSaveMethod == "locale":
-	    #get path
 	    path = self.getPath(newname)
 	    filename = os.path.join(path, newname+"."+self.getFileType());
+	    if not os.path.exists(filename):
+		f = io.open(filename, "wb")
+		f.write(self.mediaData)
+		f.close()
+		self.filename = filename
+		return True
 	elif config.imageSaveMethod == "remote":
 	    return self.postMedia(newname)
 
-	#return False
-
-        ###check has exit
-        #if not os.path.exists(filename):
-        #    #f = io.open(filename, "wb")
-        #    #f.write(media.read());
-        #    #f.close()
-        #    self.filename = filename
-        #    return filename 
-        #return False
+	return False
 
     def postMedia(self, newname):
 	if not self.fetched:
