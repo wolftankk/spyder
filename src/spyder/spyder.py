@@ -80,7 +80,7 @@ class Spyder(object):
         #300秒间隔检测
         time.sleep(self.needIdleTime);
         print "休息结束 开始重新启动抓取程序";
-        self.run();
+        self.run(force);
 
 if __name__ == "__main__":
     import getopt, sys
