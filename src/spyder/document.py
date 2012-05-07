@@ -6,7 +6,6 @@ from pybits import ansicolor
 import re, urlparse
 import _mysql
 import feedparser
-
 from db import Store
 from fetch import Fetch
 from dumpmedia import DumpMedia
@@ -17,9 +16,6 @@ __all__ = [
     "Document",
     "Grab"
 ]
-
-ImageWidthThreshold = 700 * 0.55
-ImageHeightThreshold = 30
 
 r"""
  Get the attr or the method of the document
@@ -167,6 +163,10 @@ class Grab(object):
 	    else:	
 		list(self.listRule.getEntryItem()).map(entry)
 
+
+ImageWidthThreshold = 700 * 0.55
+ImageHeightThreshold = 30
+
 r"""
     Fecth and parser Article page
 """
@@ -233,33 +233,6 @@ class Document(object):
     def getContentData(self):
         return self.contentData
 
-    def _filter(self, content):
-        if self.filterscript:
-            content = content.remove("script");
-
-	#过滤所有文章中的a链接
-	def filterLink(i, element):
-	    for k in element.attrib:
-		del element.attrib[k]
-	    element.drop_tag()
-
-	content("a").each(filterLink)
-
-        if len(self.articleRule.filters) > 0:
-            for filter in self.articleRule.filters:
-                element = getElementData(content, filter, True)
-		if element is not None:
-		    element.getparent().remove(element);
-
-	# clean html
-	def do(i, element):
-	    if (isinstance(element, lxml.html.HtmlComment)):
-		element.getparent().remove(element)
-	content.children().each(do)
-	#end clean html
-
-        return content
-
     def getImage(self, url):
         #fetch img
         return DumpMedia(self.url, url)
@@ -294,7 +267,7 @@ class Document(object):
 	    #else:
 	    #    image.set("class", "leftImage")
 
-	if config.storeImage:
+	if config.storeImage and self.savable:
 	    if imageInfo.write():
 		new_imgurl = imageInfo.getMediaName()
 		if new_imgurl:
@@ -317,11 +290,9 @@ class Document(object):
             content = article(self.articleRule.getContentParent())
             if content:
 		#first save
-		for image in content.find("img"):
+		for image in self.tags(content, "img"):
 		    self.processingImage(image)
                 #filter
-                content = self._filter(content)
-		
 		content = self.readability(content)
 
                 content = content.html();
@@ -363,10 +334,33 @@ class Document(object):
                         url = urlparse.urljoin(self.url, url)
                         self.pages.append(url)
 
+    def specialFilter(self, content):
+        if len(self.articleRule.filters) > 0:
+            for filter in self.articleRule.filters:
+                element = getElementData(content, filter, True)
+		if element is not None:
+		    element.getparent().remove(element);
+
     def tags(self, node, *tag_names):
 	for tag_name in tag_names:
 	    for e in node.find(tag_name):
 		yield e
+
+    def removeScript(self, content):
+        if self.filterscript:
+            content = content.remove("script");
+
+    def drop_anchor(self, element):
+	for k in element.attrib:
+	    del element.attrib[k]
+	element.drop_tag()
+
+    def clean_comments(self, content):
+	def clean_comment(i, element):
+	    if (isinstance(element, lxml.html.HtmlComment)):
+		element.getparent().remove(element)
+
+	content.children().each(clean_comment)
 
     def clean_attributes(self, content):
 	if content.tag == "font":
@@ -381,18 +375,21 @@ class Document(object):
 
     def readability(self, content):
 	origin_content = content
+
+	self.specialFilter(content)
+	
+	self.clean_comments(content)
+
+	self.removeScript(content)
+
 	try:
 	    for e in self.tags(content, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
 	        self.clean_attributes(e)
 
-	    return content
 	except:
-	    return origin_content
 	    pass
 
+	for e in self.tags(content, "a"):
+	    self.drop_anchor(e)
 
-
-if __name__ == "__main__":
-    r"""
-    html, RSS, Atom, Ajax
-    """
+	return content
