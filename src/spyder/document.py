@@ -287,7 +287,10 @@ class Document(object):
 
     def fetchDocument(self, doc, first=False):
 	#prehook
-	doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
+	try:
+	    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
+	except:
+	    pass
 
         doc = pq(doc);
         article = doc.find(self.articleRule.getWrapParent())
