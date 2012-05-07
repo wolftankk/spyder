@@ -171,6 +171,11 @@ r"""
     Fecth and parser Article page
 """
 class Document(object):
+    regexps = {
+	"replaceBrs" : re.compile("(<br[^>]*>[ \n\r\t]*){2,}", re.I),
+
+    }
+
     def __init__(self, url, seed, savable = True):
         self.url = url;
         self.articleRule = seed.rule.getArticleRule();
@@ -281,6 +286,9 @@ class Document(object):
 		    pass
 
     def fetchDocument(self, doc, first=False):
+	#prehook
+	doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
+
         doc = pq(doc);
         article = doc.find(self.articleRule.getWrapParent())
 
