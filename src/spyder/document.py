@@ -302,7 +302,10 @@ class Document(object):
 		    imgurl = image.set("src", new_imgurl)
 	    else:
 		#remove
-		parent.remove(image)
+		try:
+		    parent.remove(image)
+		except:
+		    pass
 
     def fetchDocument(self, doc, first=False):
         doc = pq(doc);
