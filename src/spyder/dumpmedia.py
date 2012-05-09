@@ -14,8 +14,9 @@ class DumpMedia():
     def __init__(self, prefixUrl, url):
         self.mediaUrl = urlparse.urljoin(prefixUrl, url)
 
-	#fix
-	self.mediaUrl.replace("。", ".");
+	if isinstance(self.mediaUrl, unicode):
+	    self.mediaUrl = self.mediaUrl.replace(u"。", ".")
+	    self.mediaUrl = self.mediaUrl.encode("ascii", "ignore")
 
 	self.filename = None
 	self.fetched = False
@@ -179,5 +180,5 @@ class DumpMedia():
         return self.urlinfo.getsubtype()
 
 if __name__ == "__main__":
-    m = DumpMedia("http://p2.bahamut.com.tw", "http://p2.bahamut.com.tw/B/2KU/43/0000527843.PNG")
-    m.getSize()
+    m = DumpMedia("http://p2.bahamut.com.tw", "http://p2。bahamut。com。tw/B/2KU/43/0000527843.PNG")
+    print m.getSize()
