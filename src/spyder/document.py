@@ -204,7 +204,7 @@ class Document(object):
 
     def checkUrl(self, url):
         #check url in articles
-        return Store("SELECT aid FROM spyder.articles WHERE url='%s'" % self.url).is_exists()
+        return Store("SELECT aid FROM articles WHERE url='%s'" % self.url).is_exists()
 
     def saveArticle(self):
         content = ""
@@ -226,7 +226,7 @@ class Document(object):
 
         self.url = self.url.encode("utf-8", "ignore")
 
-        sql = "INSERT INTO spyder.articles (lang, title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.url, str(self.sid), "0", str(int(time.time())))
+        sql = "INSERT INTO articles (lang, title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.url, str(self.sid), "0", str(int(time.time())))
         
         if not self.savable:
             #for test print

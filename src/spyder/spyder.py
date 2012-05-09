@@ -23,7 +23,7 @@ class Spyder(object):
 
     def getSpiderList(self):
         self.spiderList = {};
-        sql = "select * FROM spyder.seeds";
+        sql = "select * FROM seeds";
         query = self.db.query(sql);
         r = self.db.store_result();
         if r.num_rows() == 0:
@@ -45,7 +45,7 @@ class Spyder(object):
     def Test(self, sid):
         if not sid:
             return;
-        sql = "SELECT * FROM spyder.seeds WHERE sid=%s" % sid;
+        sql = "SELECT * FROM seeds WHERE sid=%s" % sid;
         query = self.db.query(sql)
         r = self.db.store_result();
         if r.num_rows() == 0:
@@ -73,7 +73,7 @@ class Spyder(object):
                     docData = Grab(seed)
                     seed.finishtime = now()
 
-                    sql = "UPDATE spyder.seeds SET starttime=%s, finishtime=%s WHERE sid=%s" % (seed.starttime, seed.finishtime, seed.sid);
+                    sql = "UPDATE seeds SET starttime=%s, finishtime=%s WHERE sid=%s" % (seed.starttime, seed.finishtime, seed.sid);
                     self.db.query(sql)
 
         print "进入休息时间";
