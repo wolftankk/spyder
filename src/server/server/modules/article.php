@@ -21,7 +21,7 @@ class Article{
             $where = " WHERE $where ";
         }
 
-        $sql = "SELECT a.aid, a.lang, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
+        $sql = "SELECT a.aid, a.lang, a.title, a.url, a.sid, b.sname, a.status, a.fetchTime FROM articles as a LEFT JOIN seeds as b ON a.sid = b.sid $where ORDER BY a.fetchTime DESC LIMIT $start, $limit";
         $query = $db->query($sql);
         $Data = array();
         $MetaData = array();
@@ -46,7 +46,7 @@ class Article{
             $Data[] = array_values($data);
         }
         
-        $count = $db->get_one("SELECT COUNT(*) as count, b.sname FROM spyder.articles as a LEFT JOIN spyder.seeds as b ON a.sid = b.sid $where");
+        $count = $db->get_one("SELECT COUNT(*) as count, b.sname FROM articles as a LEFT JOIN seeds as b ON a.sid = b.sid $where");
 
         send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
@@ -54,7 +54,7 @@ class Article{
     private function _getArticleInfo($aid){
         global $db;
 
-        $sql = "SELECT aid, lang, title, content, url, sid, status, fetchtime, lasteditor, lastupdatetime FROM spyder.articles WHERE aid = $aid";
+        $sql = "SELECT aid, lang, title, content, url, sid, status, fetchtime, lasteditor, lastupdatetime FROM articles WHERE aid = $aid";
         $data = $db->get_one($sql);
 
 	return $data;
@@ -119,7 +119,7 @@ class Article{
         $uid = $userInfo["uid"];
         $permissions = $userInfo["permissions"];
 
-        $sql = "UPDATE spyder.articles SET title='$title', content='$content', lasteditor='$uid', lastupdatetime='$now' WHERE aid = $aid";
+        $sql = "UPDATE articles SET title='$title', content='$content', lasteditor='$uid', lastupdatetime='$now' WHERE aid = $aid";
 
         $succ = $db->query($sql);
 
@@ -130,7 +130,7 @@ class Article{
         checkArgs("AID");
         $aid = post_string("AID");
         global $db;
-        $sql = "DELETE FROM spyder.articles WHERE aid =$aid";
+        $sql = "DELETE FROM articles WHERE aid =$aid";
         $succ = $db->query($sql);
 
         send_ajax_response("success", $succ);
@@ -144,7 +144,7 @@ class Article{
 	}
 	global $db;
 
-	$sql = "SELECT aid FROM spyder.articles WHERE lang='zhTW' and url = '{$data["url"]}'";
+	$sql = "SELECT aid FROM articles WHERE lang='zhTW' and url = '{$data["url"]}'";
 	$testData = $db->get_one($sql);
 	if ($testData && is_array($testData) && $testData["aid"]){
 	    return $testData["aid"];
@@ -158,7 +158,7 @@ class Article{
 	$data["lastupdatetime"] = time();
 	
 	//另存为
-	$sql = "INSERT INTO spyder.articles SET ";
+	$sql = "INSERT INTO articles SET ";
 	unset($data["aid"]);
 	$v = array();
 	foreach ($data as $key => $val){
@@ -224,7 +224,7 @@ class Article{
 	}
 
         //get website
-        #$websiteData = $db->get_one("SELECT * FROM spyder.website_extra WHERE wid = '$wid'");
+        #$websiteData = $db->get_one("SELECT * FROM website_extra WHERE wid = '$wid'");
         #if (empty($websiteData) || !is_array($websiteData) || count($websiteData)){
         #    send_ajax_response("error", "This website #$wid is not found.");
         #}
@@ -255,7 +255,7 @@ class Article{
 		$errors[] = "#aid非法!";
 		continue;
 	    }
-	    $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+	    $articleData = $db->get_one("SELECT * FROM articles WHERE aid = '$aid'");
 	    if (empty($articleData) || !is_array($articleData) || count($articleData) == 0){
 		$errors[] = "This article #$aid is not found.";
 		continue;
@@ -271,7 +271,7 @@ class Article{
 	    if ($autoConvert){
 		$aid = $this->_convertLanguge($aid);
 		if ($aid > 0){
-		    $articleData = $db->get_one("SELECT * FROM spyder.articles WHERE aid = '$aid'");
+		    $articleData = $db->get_one("SELECT * FROM articles WHERE aid = '$aid'");
 		}
 	    }
 

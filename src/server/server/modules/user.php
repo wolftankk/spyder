@@ -27,7 +27,7 @@ Class User{
 		$passwd = post_string("passwd");
 
 		$user = mysql_escape_string($user);
-		$sql = "SELECT uid, passwd, permissions, salt FROM spyder.users WHERE uname = '$user'";
+		$sql = "SELECT uid, passwd, permissions, salt FROM users WHERE uname = '$user'";
 		$data = $db->get_one($sql);
 		if (!is_array($data) || sizeof($data) == 0){
 			send_ajax_response("error", "用户不存在");
@@ -49,7 +49,7 @@ Class User{
 					$sid = session_id();
 					setcookie("sid", $sid, 0, "/");
 					if ($M->add($sid, serialize(array("uid"=>$uid, "permissions"=>$permissions)), false, 6000)){
-						$db->query("UPDATE spyder.users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
+						$db->query("UPDATE users SET lastlogintime = '" . time() . "' WHERE uid = $uid");
 						send_ajax_response("success", array("uid"=>$uid, "permissions"=>$permissions, "sid"=>$sid));
 					}
 				//}	
@@ -91,7 +91,7 @@ Class User{
 		//select uid data
 		global $db;
 		$uid = mysql_escape_string($uid);
-		$sql = "SELECT uname, email, permissions, createtime, lastlogintime FROM spyder.users WHERE uid = $uid";
+		$sql = "SELECT uname, email, permissions, createtime, lastlogintime FROM users WHERE uid = $uid";
 		$data = $db->get_one($sql);
 		if (!is_array($data) || sizeof($data) == 0){
 			send_ajax_response("errors",  "用户不存在");

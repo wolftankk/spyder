@@ -70,7 +70,7 @@ class Seed{
         $permissions = $userInfo["permissions"];
 
         global $db;
-        $sql = ("INSERT INTO spyder.seeds (sname, cid, url, charset, lang, enabled, listtype, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$lang' , '$enabled', '$listtype', '" . mysql_escape_string(serialize($rule)) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
+        $sql = ("INSERT INTO seeds (sname, cid, url, charset, lang, enabled, listtype, rule, frequency, timeout, tries, uid, createdtime) VALUES ('$sname','$cid', '$url', '$charset', '$lang' , '$enabled', '$listtype', '" . mysql_escape_string(serialize($rule)) . "', '$frequency', '$timeout', '$tries', $uid, $createdTime)");
         $db->query($sql);
         $sid = $db->insert_id();
         send_ajax_response("success", $sid);
@@ -136,7 +136,7 @@ class Seed{
         $permissions = $userInfo["permissions"];
 
         global $db;
-        $sql = "UPDATE spyder.seeds SET sname='$sname', cid='$cid', url='$url', charset='$charset', lang = '$lang', enabled='$enabled', listtype='$listtype', rule='".mysql_escape_string(serialize($rule))."', frequency='$frequency', timeout='$timeout', tries='$tries', uid='$uid', lastUpdateTime='$lastupdatetime' WHERE sid='$sid'";
+        $sql = "UPDATE seeds SET sname='$sname', cid='$cid', url='$url', charset='$charset', lang = '$lang', enabled='$enabled', listtype='$listtype', rule='".mysql_escape_string(serialize($rule))."', frequency='$frequency', timeout='$timeout', tries='$tries', uid='$uid', lastUpdateTime='$lastupdatetime' WHERE sid='$sid'";
         $succ = $db->query($sql);
         send_ajax_response("success", $succ);
     }
@@ -149,7 +149,7 @@ class Seed{
         checkArgs("SID");
         $sid = post_string("SID");
         global $db;
-        $sql = "DELETE FROM spyder.seeds WHERE sid='$sid'";
+        $sql = "DELETE FROM seeds WHERE sid='$sid'";
         $succ = $db->query($sql);
 
         send_ajax_response("success", $succ);
@@ -170,7 +170,7 @@ class Seed{
 	$sid = post_string("SID");
 
 	global $db;
-	$sql = "SELECT rule FROM spyder.seeds WHERE sid = '$sid'";
+	$sql = "SELECT rule FROM seeds WHERE sid = '$sid'";
 	$result = $db->get_one($sql);
 	$rule = $result["rule"];
 	$rule = unserialize($rule);
@@ -194,7 +194,7 @@ class Seed{
             $where = "WHERE $where";
         }
 
-        $sql = "SELECT a.sid, a.sname, a.cid, b.cname, a.url, a.charset, a.lang, a.enabled, a.listtype, a.frequency, a.timeout, a.tries, a.uid, c.uname, a.createdtime, a.lastupdatetime, a.starttime, a.finishtime FROM spyder.seeds as a LEFT JOIN spyder.seed_category as b ON a.cid = b.cid LEFT JOIN spyder.users as c ON a.uid = c.uid $where LIMIT $start, $limit";
+        $sql = "SELECT a.sid, a.sname, a.cid, b.cname, a.url, a.charset, a.lang, a.enabled, a.listtype, a.frequency, a.timeout, a.tries, a.uid, c.uname, a.createdtime, a.lastupdatetime, a.starttime, a.finishtime FROM seeds as a LEFT JOIN seed_category as b ON a.cid = b.cid LEFT JOIN users as c ON a.uid = c.uid $where LIMIT $start, $limit";
         $query = $db->query($sql);
         $Data = array();
         $MetaData = array();
@@ -219,7 +219,7 @@ class Seed{
             $Data[] = array_values($data);
         }
         
-        $count = $db->get_one("SELECT COUNT(*) as count FROM spyder.seeds $where");
+        $count = $db->get_one("SELECT COUNT(*) as count FROM seeds $where");
 
         send_ajax_response("success", array("TotalCount"=>$count["count"], "Data"=>$Data, "MetaData"=>$MetaData));
     }
@@ -246,7 +246,7 @@ class Seed{
 
         $name = mysql_escape_string($name);
         global $db;
-        $db->query("INSERT INTO spyder.seed_category (pid, cname) VALUES ('$parentId','$name')");
+        $db->query("INSERT INTO seed_category (pid, cname) VALUES ('$parentId','$name')");
         $cid = $db->insert_id();
         send_ajax_response("success", $cid);
     }
@@ -276,7 +276,7 @@ class Seed{
 
         $name = mysql_escape_string($name);
         global $db;
-        $succ = $db->query("UPDATE spyder.seed_category SET pid='$parentId', cname='$name' WHERE cid='$cid'");
+        $succ = $db->query("UPDATE seed_category SET pid='$parentId', cname='$name' WHERE cid='$cid'");
         send_ajax_response("success", $succ);
     }
 
@@ -288,7 +288,7 @@ class Seed{
         checkArgs("CID");
         $cid = post_string("CID");
         global $db;
-        $sql = "DELETE FROM spyder.seed_category WHERE cid='$cid'";
+        $sql = "DELETE FROM seed_category WHERE cid='$cid'";
         $succ = $db->query($sql);
 
         send_ajax_response("success", $succ);
@@ -296,7 +296,7 @@ class Seed{
 
     public function GetSeedCategoryList(){
 	global $db;
-	$sql = "SELECT cid, pid, cname FROM spyder.seed_category ORDER BY pid ASC";
+	$sql = "SELECT cid, pid, cname FROM seed_category ORDER BY pid ASC";
 	$query = $db->query($sql);
 	$data = array();
 	while ($d = $db->fetch_array($query)){
