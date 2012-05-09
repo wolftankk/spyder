@@ -13,6 +13,10 @@ register_openers()
 class DumpMedia():
     def __init__(self, prefixUrl, url):
         self.mediaUrl = urlparse.urljoin(prefixUrl, url)
+
+	#fix
+	self.mediaUrl.replace("。", ".");
+
 	self.filename = None
 	self.fetched = False
         self.fetch()
