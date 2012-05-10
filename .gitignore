@@ -4,3 +4,6 @@ vendor/
 *~
 static/
 temp/
+src/spyder/config.py
+src/spyder/games.py
+doc/permissions
