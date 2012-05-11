@@ -239,13 +239,13 @@ class RuleList(object):
 	if self.urlformat == None or self.urlformat == "":
 	    raise RuleUrlInvalid
 
-	if self.startpage == None:
+	if not self.startpage:
 	    self.startpage = 1
 
-	if self.maxpage == None:
+	if not self.maxpage:
 	    self.maxpage = 1
 
-	if self.step == None:
+	if not self.step:
 	    self.step = 1
 
 	self.startpage = int(self.startpage)
