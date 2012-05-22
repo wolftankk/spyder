@@ -3,6 +3,7 @@
 import time
 from pyquery import PyQuery as pq
 from pybits import ansicolor
+import phpserialize
 import re, urlparse
 import _mysql
 import feedparser
@@ -183,6 +184,7 @@ class Document(object):
         self.content = ""
         self.pages   = []
         self.contentData = {}
+	self.images = []
         self.sid = seed.sid
         self.savable = savable
         self.filterscript = self.articleRule.filterscript
@@ -225,8 +227,9 @@ class Document(object):
             title = _mysql.escape_string(title.encode("utf-8", "ignore"))
 
         self.url = self.url.encode("utf-8", "ignore")
+	self.images = phpserialize.serialize(self.images)
 
-        sql = "INSERT INTO articles (lang, title, content, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.url, str(self.sid), "0", str(int(time.time())))
+        sql = "INSERT INTO articles (lang, title, content, images, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.images, self.url, str(self.sid), "0", str(int(time.time())))
         
         if not self.savable:
             #for test print
@@ -277,6 +280,7 @@ class Document(object):
 		new_imgurl = imageInfo.getMediaName()
 		if new_imgurl:
 		    print new_imgurl
+		    self.images.push(imgurl)
 		    imgurl = image.set("src", new_imgurl)
 	    else:
 		#remove
