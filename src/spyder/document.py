@@ -280,7 +280,7 @@ class Document(object):
 		new_imgurl = imageInfo.getMediaName()
 		if new_imgurl:
 		    print new_imgurl
-		    self.images.push(imgurl)
+		    self.images.append(imgurl)
 		    imgurl = image.set("src", new_imgurl)
 	    else:
 		#remove
