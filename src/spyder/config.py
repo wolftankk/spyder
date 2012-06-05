@@ -4,7 +4,7 @@ DBCONFIG = {
     "host" : "172.16.130.7",
     "user" : "root",
     "passwd" : "",
-    "dbname" : "wow_spyder"
+    "dbname" : "spyder"
 }
 
 #staticPath = "/Users/wolftankk/home/workspace/spyder/static"

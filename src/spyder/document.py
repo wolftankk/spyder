@@ -128,7 +128,7 @@ class Grab(object):
     def fetchArticles(self):
         if len(self.items.items()) > 0:
             for url in self.items:
-                self.items[url]["article"] = Document(url, self.seed, self.savable)
+                self.items[url]["article"] = Document(url, self.seed, self.savable, self.items[url])
     
     def parserHtml(self, doc):
         doc = pq(doc);
@@ -177,7 +177,7 @@ class Document(object):
 
     }
 
-    def __init__(self, url, seed, savable = True):
+    def __init__(self, url, seed, savable = True, info = None):
         self.url = url;
         self.articleRule = seed.rule.getArticleRule();
 
@@ -190,6 +190,7 @@ class Document(object):
         self.filterscript = self.articleRule.filterscript
 	self.lang = seed.lang
 	self.seed = seed
+	self.info = info
         
         if self.checkUrl(url) == False or not self.savable:
             print "Document %s is fetcing" % ansicolor.green(url)
@@ -223,7 +224,16 @@ class Document(object):
             content = _mysql.escape_string( content )
 
         if "title" in self.contentData:
-            title = self.contentData["title"].strip()
+            title = self.contentData["title"];
+	    if title is None:
+		if self.info and self.info["title"]:
+		    title = self.info["title"]
+
+	    if title is None:
+		print self.url + " is broken, SKIP!";
+		return
+
+	    title = title.strip()
             title = _mysql.escape_string(title.encode("utf-8", "ignore"))
 
         self.url = self.url.encode("utf-8", "ignore")
