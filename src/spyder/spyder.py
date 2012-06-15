@@ -1,5 +1,5 @@
 #coding: utf-8
-#/usr/bin/env python
+#!/usr/bin/env python
 
 import threading
 import io, time
@@ -89,6 +89,9 @@ if __name__ == "__main__":
     except getopt.GetoptError, err:
         print str(err)
         sys.exit(2)
+
+    if len(opts) == 0 :
+	opts = [('--run', '')]
 
     isRun = False
     isForce = False

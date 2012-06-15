@@ -15,3 +15,4 @@ storeImage = False
 imageSaveMethod = "remote"
 uploadPath = "http://172.16.130.7/static/upload_image.php"
 staticUrl = "http://res.bigamer.tw/"
+autoPublicPost = True

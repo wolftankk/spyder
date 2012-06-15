@@ -152,21 +152,26 @@ function get_normal_path($path){
         }
     }
 
-    global $M;
-    $_sid = null;
-    //check session id
-    if ($method == "user" && ($action == "Login")){
-        //continue;
+    $ua = $_SERVER["HTTP_USER_AGENT"];
+    if ($ua == "Python-Spyder/1.1") {
+
     }else{
-        $_sid = $_COOKIE["sid"] ? $_COOKIE["sid"] : $data->id;
-        if (!$_sid || ($_sid && !$M->get($_sid))){
-            send_ajax_response("error", "Session $sid could not be found");
-            exit();
-        }elseif ($M->get($_sid)){
-            //refresh expire
-            $data = $M->get($_sid);
-            $M->replace($_sid, $data, false, 6000);
-        }
+	global $M;
+	$_sid = null;
+	//check session id
+	if ($method == "user" && ($action == "Login")){
+	    //continue;
+	}else{
+	    $_sid = $_COOKIE["sid"] ? $_COOKIE["sid"] : $data->id;
+	    if (!$_sid || ($_sid && !$M->get($_sid))){
+		send_ajax_response("error", "Session $sid could not be found");
+		exit();
+	    }elseif ($M->get($_sid)){
+		//refresh expire
+		$data = $M->get($_sid);
+		$M->replace($_sid, $data, false, 6000);
+	    }
+	}
     }
 
     $module = $method.".php";

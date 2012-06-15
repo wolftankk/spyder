@@ -11,12 +11,38 @@ from db import Store
 from fetch import Fetch
 from dumpmedia import DumpMedia
 import config, lxml
+import urllib2, urllib
+import json
 
 __all__ = [
     "getElementData",
     "Document",
     "Grab"
 ]
+
+def public_article(aid):
+    datagen = {
+	"data" : json.dumps({
+	    "method" : "article.PublicArticleToSite",
+	    "params" : {
+		"AID" : [aid],
+		"WID" : 1,
+		"Options" : {
+		    "convertLanuage" : "true",
+		    "websiteCatID"   : 17
+		}
+	    }
+	})
+    }
+
+    datagen = urllib.urlencode(datagen)
+
+    request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
+    request.add_header("User-Agent", "Python-Spyder/1.1");
+    site = urllib2.urlopen(request, datagen)
+    msg = site.read();
+    j = json.loads(msg)
+    return j
 
 r"""
  Get the attr or the method of the document
@@ -246,7 +272,12 @@ class Document(object):
             print title, self.url, content
             return
 
-        return Store(sql).insert_id()
+        itemid = Store(sql).insert_id()
+
+	if config.autoPublicPost:
+	    public_article(itemid)
+	
+	return itemid;
 
     def getContentData(self):
         return self.contentData
