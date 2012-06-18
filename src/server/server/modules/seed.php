@@ -34,7 +34,8 @@ class Seed{
         $data = get_object_vars($data);
 
         //0 undefined category
-        $cid = $data["cid"] ? $data["cid"] : 0;
+	$cid = $data["cid"] ? $data["cid"] : 0;
+	$gameid = intval($data["gameid"]);
         $list = array(
             "urlformat" => $data["list[urlformat]"],
             "startpage" => $data["list[startpage]"],
@@ -44,7 +45,8 @@ class Seed{
             "entryparent" => $data["list[entryparent]"],
             "articleparent" => $data["list[articleparent]"],
             "titleparent" => $data["list[titleparent]"],
-            "dateparent" => $data["list[dateparent]"]
+	    "dateparent" => $data["list[dateparent]"],
+	    "gameid" => $gameid
         ); 
         $article = array(
             "articleparent" => $data["article[articleparent]"],
@@ -102,6 +104,7 @@ class Seed{
         $data = get_object_vars($data);
 
         $cid = $data["cid"] ? $data["cid"] : 0;
+	$gameid = intval($data["gameid"]);
         $list = array(
             "urlformat" => $data["list[urlformat]"],
             "startpage" => $data["list[startpage]"],
@@ -111,7 +114,8 @@ class Seed{
             "entryparent" => $data["list[entryparent]"],
             "articleparent" => $data["list[articleparent]"],
             "titleparent" => $data["list[titleparent]"],
-            "dateparent" => $data["list[dateparent]"]
+            "dateparent" => $data["list[dateparent]"],
+	    "gameid" => $gameid
         ); 
         $article = array(
             "articleparent" => $data["article[articleparent]"],

@@ -25,7 +25,7 @@ class Seed(object):
             self._debugMode = 0
             self.enabled = 0
 	    self.lang = "zhCN"
-            self.type = "html" 
+            self.type = "html"
 
             self.__parse(seed);
         else:

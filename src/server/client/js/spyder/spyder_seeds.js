@@ -53,6 +53,22 @@ Spyder.apps.seeds.seedFListType = Ext.create("Ext.data.Store", {
     ]    
 });
 
+Spyder.constants.websiteServer.GetCategoriesFromWebsite(1, {
+    success : function(data){
+	Spyder.websiteStore = Ext.create('Ext.data.Store', {
+	    fields: [
+		"catid",
+		"name",
+	    ],
+	    data: Ext.JSON.decode(data)   
+	});
+    },
+    failure: function(error){
+	Ext.Error.raise(error)
+    }
+});
+
+
 Ext.define("Spyder.apps.seeds.AddSeed", {
     extend: "Ext.panel.Panel",
     layout: "anchor",
@@ -73,7 +89,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
         me.callParent();
 
 
-        me.createMainPanel();
+	me.createMainPanel();
     },
     createMainPanel: function(){
         var me = this;
@@ -126,7 +142,13 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                         },
                         {
                             fieldLabel: "所属类别",
-                            name : "cid"
+                            name : "cid",
+			    xtype: "combobox",
+			    store:  Spyder.websiteStore,
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "catid",
+			    editable: false
                         },
                         {
                             fieldLabel: "采集URL",
@@ -163,7 +185,18 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
                             name: "tries",
                             value: 5,
 			    tips: "自动尝试次数"
-                        }
+                        },
+			{
+			    fieldLabel: "游戏ID",
+			    allowBlank: true,
+			    xtype: "combobox",
+			    store:  Spyder.gameslistStore,
+			    queryMode: "local",
+			    displayField: "name",
+			    valueField: "itemid",
+			    name: "gameid",
+			    editable: true
+			}
                     ]
                 },
                 {
@@ -335,6 +368,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 	var me = this, form = me.form.getForm(), fKeys = form.getValues();
 	me.selectedSID = data.sid;
 	var list = data["list"], article = data["article"];
+	data["gameid"] = list["gameid"];
 	for (var k in list){
 	    data["list["+k+"]"] = list[k]
 	}

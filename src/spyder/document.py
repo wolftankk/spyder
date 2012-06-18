@@ -11,6 +11,7 @@ from db import Store
 from fetch import Fetch
 from dumpmedia import DumpMedia
 import config, lxml
+
 import urllib2, urllib
 import json
 
@@ -20,29 +21,41 @@ __all__ = [
     "Grab"
 ]
 
-def public_article(aid):
-    datagen = {
-	"data" : json.dumps({
-	    "method" : "article.PublicArticleToSite",
-	    "params" : {
-		"AID" : [aid],
-		"WID" : 1,
-		"Options" : {
-		    "convertLanuage" : "true",
-		    "websiteCatID"   : 17
-		}
-	    }
-	})
-    }
+def public_article(aid, catid = -1, gameid = -1):
+    options = {};
+    catid = int(catid);
+    gameid = int(gameid);
 
-    datagen = urllib.urlencode(datagen)
+    if catid > -1:
+	options["catid"] = catid
 
-    request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
-    request.add_header("User-Agent", "Python-Spyder/1.1");
-    site = urllib2.urlopen(request, datagen)
-    msg = site.read();
-    j = json.loads(msg)
-    return j
+    if gameid > -1:
+	options["gameid"] = gameid
+
+    #datagen = {
+    #    "data" : json.dumps({
+    #        "method" : "article.PublicArticleToSite",
+    #        "params" : {
+    #    	"AID" : [aid],
+    #    	"WID" : 1,
+    #    	"Options" : {
+    #    	    "convertLanuage" : "true",
+    #    	    "websiteCatID"   : 17,
+    #		    "gameid"
+    #    	}
+    #        }
+    #    })
+    #}
+
+    #datagen = urllib.urlencode(datagen)
+
+    #request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
+    #request.add_header("User-Agent", "Python-Spyder/1.1");
+    #site = urllib2.urlopen(request, datagen)
+    #msg = site.read();
+    #j = json.loads(msg)
+    #return j
+
 
 r"""
  Get the attr or the method of the document
