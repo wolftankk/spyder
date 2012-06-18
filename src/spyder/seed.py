@@ -26,6 +26,8 @@ class Seed(object):
             self.enabled = 0
 	    self.lang = "zhCN"
             self.type = "html"
+	    self.cid = 0
+	    self.gameid = 0
 
             self.__parse(seed);
         else:
@@ -59,6 +61,9 @@ class Seed(object):
         if seedData["url"] != None:
             self.prefixurl = seedData["url"]
 
+	if seedData["cid"] > 0:
+	    self.cid = int(seedData["cid"])
+
         if "enabled" in seedData:
             self.enabled = seedData["enabled"];
 
@@ -72,6 +77,9 @@ class Seed(object):
         if seedData["rule"] != "":
             self._rule = seedData["rule"]
             self.rule = Rule(self._rule)
+	    list = self.rule.getListRule()
+	    if list:
+		self.gameid = list.gameid
 
     def getsid(self):
         return self._sid
@@ -203,6 +211,9 @@ class RuleList(object):
         self.titleparent = rule["titleparent"]
         #获取link元素
         self.linkparent = rule["articleparent"]
+	self.gameid = 0;
+	if "gameid" in rule:
+	    self.gameid = int(rule["gameid"])
 
     def setPrefixUrl(self, url):
         self.prefixurl = url

@@ -22,7 +22,9 @@ __all__ = [
 ]
 
 def public_article(aid, catid = -1, gameid = -1):
-    options = {};
+    options = {
+	"convertLanuage" : "true"	    
+    };
     catid = int(catid);
     gameid = int(gameid);
 
@@ -32,29 +34,25 @@ def public_article(aid, catid = -1, gameid = -1):
     if gameid > -1:
 	options["gameid"] = gameid
 
-    #datagen = {
-    #    "data" : json.dumps({
-    #        "method" : "article.PublicArticleToSite",
-    #        "params" : {
-    #    	"AID" : [aid],
-    #    	"WID" : 1,
-    #    	"Options" : {
-    #    	    "convertLanuage" : "true",
-    #    	    "websiteCatID"   : 17,
-    #		    "gameid"
-    #    	}
-    #        }
-    #    })
-    #}
+    datagen = {
+        "data" : json.dumps({
+            "method" : "article.PublicArticleToSite",
+            "params" : {
+        	"AID" : [aid],
+        	"WID" : 1,
+        	"Options" : options
+            }
+        })
+    }
 
-    #datagen = urllib.urlencode(datagen)
+    datagen = urllib.urlencode(datagen)
 
-    #request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
-    #request.add_header("User-Agent", "Python-Spyder/1.1");
-    #site = urllib2.urlopen(request, datagen)
-    #msg = site.read();
-    #j = json.loads(msg)
-    #return j
+    request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
+    request.add_header("User-Agent", "Python-Spyder/1.1");
+    site = urllib2.urlopen(request, datagen)
+    msg = site.read();
+    j = json.loads(msg)
+    return j
 
 
 r"""
@@ -288,7 +286,7 @@ class Document(object):
         itemid = Store(sql).insert_id()
 
 	if config.autoPublicPost:
-	    public_article(itemid)
+	    public_article(itemid, self.seed.cid, self.seed.gameid)
 	
 	return itemid;
 
