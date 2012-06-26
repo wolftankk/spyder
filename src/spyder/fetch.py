@@ -69,6 +69,12 @@ class Fetch(object):
 		    pass
 	    else:
 		pass
+	except socket.error, e:
+	    if self.count <= 5:
+		self.openSite()
+		self.count = self.count + 1
+	    else:
+		pass
 	finally:
 	    pass
 
