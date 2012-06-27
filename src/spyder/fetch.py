@@ -101,7 +101,7 @@ class Fetch(object):
             try:
                 doc = doc.decode(self.charset);
                 return doc
-            except UnicodeDecodeError:
+            except UnicodeDecodeError, e:
                 #读取里面的metadata
                 content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
                 result = None
@@ -126,6 +126,5 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    f = Fetch("https://wow.178.com/", "utf-8")
-    print f.getError()
-    #print f.read() if f.isReady() else "111"
+    f = Fetch("http://wow.178.com/", "gbk")
+    print f.read() if f.isReady() else "111"
