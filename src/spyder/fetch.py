@@ -45,12 +45,13 @@ encoding_support = ContentEncodingProcessor
 opener = urllib2.build_opener(encoding_support, urllib2.HTTPHandler)
 
 class Fetch(object):
-    def __init__(self, url, charset, timeout = 300):
+    def __init__(self, url, charset="utf-8", timeout = 300):
         self.url = url
         self.charset = charset
         self.timeout = timeout
         self.site = None
 	self.count = 1
+	self.error = None
 
         self.openSite();
 
@@ -68,17 +69,26 @@ class Fetch(object):
     def isReady(self):
 	return self.site.msg == "OK" if self.site else False
 
+    def reset(self):
+	self.count = 1
+	self.site = None
+
+    def getError(self):
+	return self.error
+
     def openSite(self):
         self.request = urllib2.Request(self.url);
         try:
 	    #code, url, headers, msg
             self.site = opener.open(self.request, timeout = self.timeout)
 	except urllib2.HTTPError, e:
+	    self.error = e
 	    pass
         except urllib2.URLError, e:
 	    if isinstance(e.reason, socket.timeout):
 		self.retryConnection();
 	    else:
+		self.error = e
 		pass
 	except socket.error, e:
 	    self.retryConnection();
@@ -116,5 +126,6 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    f = Fetch("http://wow.178.com/", "utf-8")
-    print f.read() if f.isReady() else "111"
+    f = Fetch("https://wow.178.com/", "utf-8")
+    print f.getError()
+    #print f.read() if f.isReady() else "111"
