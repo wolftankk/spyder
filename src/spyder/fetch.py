@@ -53,28 +53,35 @@ class Fetch(object):
 	self.count = 1
 
         self.openSite();
+
+    def retryConnection(self):
+	if self.count <= 5:
+	    self.openSite();
+	    self.count = self.count + 1
+	    print "Retry connection %s, now Count %s" % (self.site, self.count)
+	else:
+	    return
         
+    def getCode(self):
+	return self.site.getcode()
+
+    def isReady(self):
+	return self.site.msg == "OK" if self.site else False
+
     def openSite(self):
         self.request = urllib2.Request(self.url);
         try:
+	    #code, url, headers, msg
             self.site = opener.open(self.request, timeout = self.timeout)
 	except urllib2.HTTPError, e:
 	    pass
         except urllib2.URLError, e:
 	    if isinstance(e.reason, socket.timeout):
-		if self.count <= 5:
-		    self.openSite()
-		    self.count = self.count + 1
-		else:
-		    pass
+		self.retryConnection();
 	    else:
 		pass
 	except socket.error, e:
-	    if self.count <= 5:
-		self.openSite()
-		self.count = self.count + 1
-	    else:
-		pass
+	    self.retryConnection();
 	finally:
 	    pass
 
@@ -109,4 +116,5 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    print Fetch("http://www.gamer.com.tw/", "gbk").read()
+    f = Fetch("http://wow.178.com/", "utf-8")
+    print f.read() if f.isReady() else "111"
