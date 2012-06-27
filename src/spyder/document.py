@@ -436,7 +436,7 @@ class Document(object):
 	if content.tag == "center":
 	    content.tag = "div"
 
-	for att in ["color", "width", "height", "background", "style", "class", "id"]:
+	for att in ["color", "width", "height", "background", "style", "class", "id", "face"]:
 	    if content.get(att) is not None:
 		del content.attrib[att]
 
