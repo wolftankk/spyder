@@ -428,7 +428,7 @@ Spyder.constants.websiteServer.GetGamesFromWebsite(1, {
     success : function(data){
 	Spyder.gameslistStore = Ext.create('Ext.data.Store', {
 	    fields: [
-		"itemid",
+		"id",
 		"name",
 	    ],
 	    data: Ext.JSON.decode(data)   

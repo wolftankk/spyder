@@ -193,7 +193,7 @@ Ext.define("Spyder.apps.seeds.AddSeed", {
 			    store:  Spyder.gameslistStore,
 			    queryMode: "local",
 			    displayField: "name",
-			    valueField: "itemid",
+			    valueField: "id",
 			    name: "gameid",
 			    editable: true
 			}

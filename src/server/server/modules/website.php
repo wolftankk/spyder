@@ -27,11 +27,11 @@ class Website{
     public function GetCategoriesFromWebsite(){
 	//checkArgs("WID");
 	$websiteData = array(
-	    "method"=> "supesite",
+	    "method"=> "phpcms",
 	    "host" => "172.16.130.7",
 	    "name" => "root",
 	    "passwd"=>"",
-	    "dbname"=>"bigamer"
+	    "dbname"=>"bigamer2"
 	);
 	$method = $websiteData["method"];
 
@@ -44,6 +44,10 @@ class Website{
 		$website = new Supesite($websiteData, array(), 0);
 		$website->getCategories();
 		break;
+	    case "phpcms":
+		uses("phpcms");
+		$website = new Phpcms($websiteData, array(), 0);
+		$website->getCategories();
 	    default:
 		send_ajax_response("error", "Sorry, Spyder donot support $method.");
 		exit;
@@ -53,11 +57,11 @@ class Website{
     public function GetGamesFromWebsite(){
 	//checkArgs("WID");
 	$websiteData = array(
-	    "method"=> "supesite",
+	    "method"=> "phpcms",
 	    "host" => "172.16.130.7",
 	    "name" => "root",
 	    "passwd"=>"",
-	    "dbname"=>"bigamer"
+	    "dbname"=>"bigamer2"
 	);
 	$method = $websiteData["method"];
 
@@ -68,6 +72,11 @@ class Website{
 	    case "supesite":
 		uses("supesite");
 		$website = new Supesite($websiteData, array(), 0);
+		$website->getGames();
+		break;
+	    case "phpcms":
+		uses("phpcms");
+		$website = new Phpcms($websiteData, array(), 0);
 		$website->getGames();
 		break;
 	    default:

@@ -1,5 +1,5 @@
 <?php
-class Article{
+class Article {
     private $sessionId;
     public function __construct($action, $sid){
 	$this->sessionId = $sid;
@@ -239,11 +239,11 @@ class Article{
 	//);
 	#supesite
         $websiteData = array(
-            "method"=> "supesite",
+            "method"=> "phpcms",
             "host" => "172.16.130.7",
             "name" => "root",
             "passwd"=>"",
-            "dbname"=>"bigamer"
+            "dbname"=>"bigamer2"
 	);
         $method = $websiteData["method"];
 
@@ -288,6 +288,12 @@ class Article{
 		case "supesite":
 		    uses("supesite");
 		    $website = new Supesite($websiteData, $errors, $articleCatID);
+		    $website->insert_article($articleData, $gameid);
+		    $errors = $website->getErrors();
+		    break;
+		case "phpcms":
+		    uses("phpcms");
+		    $website = new Phpcms($websiteData, $errors, $articleCatID);
 		    $website->insert_article($articleData, $gameid);
 		    $errors = $website->getErrors();
 		    break;

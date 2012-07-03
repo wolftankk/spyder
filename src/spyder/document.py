@@ -29,7 +29,7 @@ def public_article(aid, catid = -1, gameid = -1):
     gameid = int(gameid);
 
     if catid > -1:
-	options["catid"] = catid
+	options["websiteCatID"] = catid
 
     if gameid > -1:
 	options["gameid"] = gameid
