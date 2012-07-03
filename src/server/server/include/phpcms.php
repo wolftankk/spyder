@@ -147,7 +147,7 @@ class Phpcms {
 	    $setsqlarr["gameid"] = $gameid;
 	}
 
-	$content = stripslashes($articleData["content"]);
+	$content = strip_tags(stripslashes($articleData["content"]));
 	if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
 	    $setsqlarr["thumb"] = $matches[3][0];
 	}
