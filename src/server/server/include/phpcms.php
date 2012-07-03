@@ -136,7 +136,7 @@ class Phpcms {
 	    'title' => mysql_escape_string($articleData["title"]),
 	    'hash'    => $hash,
 	    'username'=> $pUsername, 
-	    'description' => str_cut(strip_tags(stripslashes($articleData['content'], 200))),
+	    'description' => str_cut(strip_tags(stripslashes($articleData['content'])), 200),
 	    'status' => 1,
 	    'sysadd' => 1,
 	    'inputtime' => time(),
