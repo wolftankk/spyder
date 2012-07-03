@@ -136,7 +136,7 @@ class Phpcms {
 	    'title' => mysql_escape_string($articleData["title"]),
 	    'hash'    => $hash,
 	    'username'=> $pUsername, 
-	    'description' => str_cut($articleData['content'], 200),
+	    'description' => str_cut(strip_tags(stripslashes($articleData['content'], 200))),
 	    'status' => 1,
 	    'sysadd' => 1,
 	    'inputtime' => time(),
@@ -147,7 +147,7 @@ class Phpcms {
 	    $setsqlarr["gameid"] = $gameid;
 	}
 
-	$content = strip_tags(stripslashes($articleData["content"]));
+	$content = stripslashes($articleData["content"]);
 	if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
 	    $setsqlarr["thumb"] = $matches[3][0];
 	}
