@@ -21,6 +21,8 @@ __all__ = [
     "Grab"
 ]
 
+spp_reg = re.compile(u"""[　]*""", re.I|re.M|re.S)
+
 def public_article(aid, catid = -1, gameid = -1):
     options = {
 	"convertLanuage" : "true"	    
@@ -364,6 +366,12 @@ class Document(object):
 
                 content = content.html();
                 if content:
+		    #strip
+		    try:
+			content = content.strip()
+			content = spp_reg.sub("", content)
+		    except:
+			pass
                     self.content = self.content +  content
 
         if first:
