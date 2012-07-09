@@ -146,6 +146,7 @@ class Phpcms {
 		'inputtime' => $articleData["fetchtime"],
 		'updatetime' => $articleData["lastupdatetime"],
 	    );
+
 	    $content = stripslashes($articleData["content"]);
 	    if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
 		$setsqlarr["thumb"] = $matches[3][0];
@@ -186,11 +187,11 @@ class Phpcms {
 		'title' => mysql_escape_string($articleData["title"]),
 		'hash'    => $hash,
 		'username'=> $pUsername, 
-		'description' => addslashes(str_cut($content, 200));
+		'description' => addslashes(str_cut($content, 200)),
 		'status' => 1,
 		'sysadd' => 1,
 		'inputtime' => $articleData["fetchtime"],
-		'updatetime'=> $articleData["lastupdatetime"]
+		'updatetime' => $articleData["lastupdatetime"]
 	    );
 
 	    if (!empty($gameid)){
