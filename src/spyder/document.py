@@ -428,7 +428,10 @@ class Document(object):
     def drop_anchor(self, element):
 	for k in element.attrib:
 	    del element.attrib[k]
-	element.drop_tag()
+	try:
+	    element.drop_tag()
+	except:
+	    pass
 
     def clean_comments(self, content):
 	def clean_comment(i, element):
