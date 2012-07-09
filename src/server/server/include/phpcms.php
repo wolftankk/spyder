@@ -135,7 +135,7 @@ class Phpcms {
 	$content = stripslashes($content);
 	$content = strip_tags($content);
 	$sid = $articleData["sid"];
-	if ($sid == 5 || $sid == 8) {
+	if ($sid == 5 || $sid == 7) {
 	    $setsqlarr = array(
 		'catid' => 32, //digg
 		'title' => mysql_escape_string($articleData['title']),
@@ -143,8 +143,8 @@ class Phpcms {
 		'description' => addslashes(str_cut($content, 200)),
 		'status' => 1,
 		'sysadd' => 1,
-		'inputtime' => $articleData["fetchtime"],
-		'updatetime' => $articleData["lastupdatetime"],
+		'inputtime' => time(),
+		'updatetime' => time(),
 	    );
 
 	    $content = stripslashes($articleData["content"]);
@@ -164,7 +164,7 @@ class Phpcms {
 	    $data = array(
 		'hitsid' => $hitsid,
 		'catid' => 32,
-		'updatetime' => $articleData["fetchtime"]
+		'updatetime' => time()
 	    );
 	    $this->inserttable("hits", $data);
 
@@ -176,7 +176,7 @@ class Phpcms {
 		'siteid' => 1,
 		'title' => mysql_escape_string($articleData['title']),
 		'username' => $pUsername,
-		'inputtime' => $articleData["fetchtime"],
+		'inputtime' => time(),
 		'status' => 1
 	    );
 	    $this->inserttable('content_check', $data);
@@ -190,8 +190,8 @@ class Phpcms {
 		'description' => addslashes(str_cut($content, 200)),
 		'status' => 1,
 		'sysadd' => 1,
-		'inputtime' => $articleData["fetchtime"],
-		'updatetime' => $articleData["lastupdatetime"]
+		'inputtime' => time(),
+		'updatetime' => time()
 	    );
 
 	    if (!empty($gameid)){
