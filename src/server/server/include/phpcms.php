@@ -130,56 +130,107 @@ class Phpcms {
 	    $pUsername = "Nobody";
 	}
 
-	//插入到news
-	$setsqlarr = array(
-	    'catid'   => $this->defaultCatID,
-	    'title' => mysql_escape_string($articleData["title"]),
-	    'hash'    => $hash,
-	    'username'=> $pUsername, 
-	    'description' => str_cut(strip_tags(stripslashes($articleData['content'])), 200),
-	    'status' => 1,
-	    'sysadd' => 1,
-	    'inputtime' => time(),
-	    'updatetime'=> time(),
-	);
 
-	if (!empty($gameid)){
-	    $setsqlarr["gameid"] = $gameid;
+	$content = $articleData["content"];
+	$content = stripslashes($content);
+	$content = strip_tags($content);
+	$sid = $articleData["sid"];
+	if ($sid == 5 || $sid == 8) {
+	    $setsqlarr = array(
+		'catid' => 32, //digg
+		'title' => mysql_escape_string($articleData['title']),
+		'keywords'=> mysql_escape_string($articleData['title']),
+		'description' => addslashes(str_cut($content, 200)),
+		'status' => 1,
+		'sysadd' => 1,
+		'inputtime' => $articleData["fetchtime"],
+		'updatetime' => $articleData["lastupdatetime"],
+	    );
+	    $content = stripslashes($articleData["content"]);
+	    if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
+		$setsqlarr["thumb"] = $matches[3][0];
+	    }
+	    
+	    $itemid = $this->inserttable("digg", $setsqlarr, 1);
+
+	    $data = array(
+		'id' => $itemid,
+		'sourceURL' => mysql_escape_string($articleData["url"])
+	    );
+	    $this->inserttable("digg_data", $data);
+
+	    $hitsid = 'c-14-'.$itemid;
+	    $data = array(
+		'hitsid' => $hitsid,
+		'catid' => 32,
+		'updatetime' => $articleData["fetchtime"]
+	    );
+	    $this->inserttable("hits", $data);
+
+	    $this->pc_db->query("UPDATE bg_category set items=items+1 where catid=32");
+
+	    $data = array(
+		'checkid' => 'c-'.$itemid.'-1',
+		'catid' => 32,
+		'siteid' => 1,
+		'title' => mysql_escape_string($articleData['title']),
+		'username' => $pUsername,
+		'inputtime' => $articleData["fetchtime"],
+		'status' => 1
+	    );
+	    $this->inserttable('content_check', $data);
+	}else {	    
+	    //插入到news
+	    $setsqlarr = array(
+		'catid'   => $this->defaultCatID,
+		'title' => mysql_escape_string($articleData["title"]),
+		'hash'    => $hash,
+		'username'=> $pUsername, 
+		'description' => addslashes(str_cut($content, 200));
+		'status' => 1,
+		'sysadd' => 1,
+		'inputtime' => $articleData["fetchtime"],
+		'updatetime'=> $articleData["lastupdatetime"]
+	    );
+
+	    if (!empty($gameid)){
+		$setsqlarr["gameid"] = $gameid;
+	    }
+
+	    $content = stripslashes($articleData["content"]);
+	    if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
+		$setsqlarr["thumb"] = $matches[3][0];
+	    }
+
+	    $itemid = $this->inserttable("news", $setsqlarr, 1);
+
+	    $data = array(
+		'id' => $itemid,
+		'content' => mysql_escape_string($articleData["content"])
+	    );
+	    $this->inserttable("news_data", $data, 1);
+
+	    $hitsid = 'c-1-'.$itemid;
+	    $data = array(
+		'hitsid' => $hitsid,
+		'catid' => $this->defaultCatID,
+		'updatetime' => time()
+	    );
+	    $this->inserttable("hits", $data);
+
+	    $this->pc_db->query("UPDATE bg_category set items=items+1 where catid=".$this->defaultCatID);
+
+	    $data = array(
+		'checkid' => 'c-'.$itemid.'-1',
+		'catid' => $this->defaultCatID,
+		'siteid' => 1,
+		'title' => mysql_escape_string($articleData['title']),
+		'username' => $pUsername,
+		'inputtime' => time(),
+		'status' => 1
+	    );
+	    $this->inserttable('content_check', $data);
 	}
-
-	$content = stripslashes($articleData["content"]);
-	if (preg_match_all("/(src=)([\"|']?)([^ \"']+\.(gif|jpg|png|jpeg))\\2/i", $content, $matches)) {
-	    $setsqlarr["thumb"] = $matches[3][0];
-	}
-
-	$itemid = $this->inserttable("news", $setsqlarr, 1);
-
-	$data = array(
-	    'id' => $itemid,
-	    'content' => mysql_escape_string($articleData["content"])
-	);
-	$this->inserttable("news_data", $data, 1);
-
-	$hitsid = 'c-1-'.$itemid;
-	$data = array(
-	    'hitsid' => $hitsid,
-	    'catid' => $this->defaultCatID,
-	    'updatetime' => time()
-	);
-	$this->inserttable("hits", $data);
-
-	$this->pc_db->query("UPDATE bg_category set items=items+1 where catid=".$this->defaultCatID);
-
-	$data = array(
-	    'checkid' => 'c-'.$itemid.'-1',
-	    'catid' => $this->defaultCatID,
-	    'siteid' => 1,
-	    'title' => mysql_escape_string($articleData['title']),
-	    'username' => $pUsername,
-	    'inputtime' => time(),
-	    'status' => 1
-	);
-	$this->inserttable('content_check', $data);
 
 	if ($itemid > 0){
 	    #send_ajax_response("success", true);
