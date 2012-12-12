@@ -1,7 +1,7 @@
 #coding=utf-8
 
 DBCONFIG = {
-    "host" : "172.16.130.7",
+    "host" : "127.0.0.1",
     "user" : "root",
     "passwd" : "",
     "dbname" : "spyder"
