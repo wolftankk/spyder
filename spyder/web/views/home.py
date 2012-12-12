@@ -1,5 +1,6 @@
 #coding: utf-8;
 from flask import Module, url_for, redirect, g, flash, request, current_app
+from flask import render_template
 
 home = Module(__name__);
 

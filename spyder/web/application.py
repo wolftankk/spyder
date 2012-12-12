@@ -1,21 +1,26 @@
 #coding: utf-8
 
 import os;
+from flask import Flask, g
+import views
 
-from flask import Flask, Response, request, g, jsonify, redirect, url_for, flash
+class spyder_web:
+    DEFAULT_APP_NAME = "spyder_web"
+    MODULES = (
+	(views.home, ""),
+    );
+    
+    def __init__(self, config=None):
+	self.app = Flask(self.DEFAULT_APP_NAME)
+	self.configure_modules()
 
-import views;
+    def configure_modules(self):
+	for module, url_prefix in self.MODULES:
+	    self.app.register_module(module, url_prefix=url_prefix)
 
-#DEFAULT_MODULES = (
-#    (views.home, "")
-#);
-#
-#DEFAULT_APP_NAME = "spyder_web"
-#
-#def create_webserver():
-#    app = Flask(DEFAULT_APP_NAME);
-#
-#    return app;
-#    
-#if __name__ == "__main__":
-#    create_webserver();
+    def run(self):
+	self.app.run();
+
+if __name__ == "__main__":
+    application = spyder_web();
+    application.run();
