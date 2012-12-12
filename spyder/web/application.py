@@ -11,6 +11,7 @@ class spyder_web:
     MODULES = (
 	(views.home, ""),
 	(views.seed, "/seed"),
+	(views.seeds, "/seeds"),
 	(views.article, "/article"),
 	(views.site, "/site"),
 	(views.user, "/user"),
