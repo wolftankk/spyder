@@ -1,10 +1,13 @@
 #coding: utf-8
 
-import os
+import os, sys
 from flask import Flask, g
 
-import views
-from config import DefaultConfig
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0,parentdir) 
+
+from web import views
+from web.config import DefaultConfig
 
 class spyder_web:
     DEFAULT_APP_NAME = "spyder_web"
