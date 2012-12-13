@@ -1,0 +1,10 @@
+.hidden { display: none; }
+.typecho-post-area input.text2 { width: 250px; }
+.description { color: #999;margin-top: 5px; }
+.typecho-listtype-option { display: inline; }
+.typecho-listtype-option li { display: inline-block; overflow: hidden; *zoom:1; height: 20px;line-height: 20px;border: none;font-size: 12px;padding: 4px;background: #EFF5D9; margin-right: 10px; }
+.typecho-listtype-option li:hover, .typecho-listtype-option li.focus { background: #E3EEBD; }
+.typecho-option-tabArea { padding: 0 10px; }
+.typecho-addlink input.text { width: 450px; }
+
+*[rel='replace'] { cursor: pointer; }
