@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}登录{% endblock %}
+{% block scripts %}{% endblock %}
+
+{% block main %}
+  <div class="body body-950">
+    <div class="container">
+      <div class="column-07 start-09 typecho-login">
+        <h2 class="logo-dark">typecho</h2>
+        <form action="/login" method="post" name="login">
+          <fieldset>
+            <p><label for="name">用户名:</label> <input type="text" id="name" name="name" value="" class="text" /></p>
+            <p><label for="password">密码:</label> <input type="password" id="password" name="password" class="text" /></p>
+            <p class="submit">
+            <label for="remember"><input type="checkbox" name="remember" class="checkbox" value="1" id="remember" /> 记住我</label>
+            <button type="submit">登录</button>
+            <input type="hidden" name="referer" value="" />
+            </p>
+          </fieldset>
+        </form>
+      </div>
+    </div>
+  </div>
+  <script type="text/javascript">
+  (function () {
+    var _form = document.login.name;
+    _form.focus();
+  })();
+  </script>
+{% endblock %}

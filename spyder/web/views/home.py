@@ -5,5 +5,8 @@ from flask import render_template
 home = Module(__name__);
 
 @home.route("/")
-def index(page=1):
+def index():
     return render_template("index.html")
+@home.route("/login")
+def login():
+    return render_template("login.html")

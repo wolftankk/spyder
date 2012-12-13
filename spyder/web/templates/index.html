@@ -1,1 +1,14 @@
-<h1>Hello world!</h1>
+{% extends "layout.html" %}
+
+{% block title %}网站概要{% endblock %}
+
+{% block body %}
+<div class="container typecho-page-main">
+  <h3>统计信息</h3>
+  <div class="status">
+    <p>目前有 <em>1</em> 个 种子，对应 <em>1</em> 个网站，今天采集了 <em>1</em> 条信息。</p>
+                    
+    <p>最后登录: 20分钟前</p>
+  </div>
+</div>
+{% endblock %}
