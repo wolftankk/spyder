@@ -1,0 +1,117 @@
+{% extends "layout.html" %}
+
+{% block title %}添加种子{% endblock %}
+
+{% block body %}
+<div class="container typecho-page-main typecho-post-option typecho-post-area">
+  <form action="/seed/add" method="post" name="write_post">
+    <div class="column-18 suffix" id="test">
+      <div class="column-18">
+        <label for="seed_name" class="typecho-label">名称</label>
+        <p><input type="text" id="seed_name" name="seed_name" value="" class="text" /></p>
+        <label for="base_url" class="typecho-label">链接 <ul class="typecho-listtype-option">
+          <li class="focus"><label for="listtype_html"><input id="listtype_html" name="listtype" type="radio" value="html" checked="true" /> 普通 HTML 格式</label></li>
+          <li><label for="listtype_feed"><input id="listtype_feed" name="listtype" type="radio" value="feed" /> 标准 RSS Feed 格式</label></li>
+        </ul> (<a href="#">?</a>)</label>
+        <p><input type="text" id="urlformat" name="urlformat" value="" class="text" /></p>
+        <div id="forHTML">
+          <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
+          <label for="seed_name" class="typecho-label">网址区域节点</label>
+          <p><input type="text" name="list[listparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">网址节点</label>
+          <p><input type="text" name="list[entryParent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章URL节点</label>
+          <p><input type="text" name="list[articleurl]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章标题节点</label>
+          <p><input type="text" name="list[titleparent]" value="" class="text" /></p>
+        </div>
+        <div id="forArticle">
+          <label for="seed_name" class="typecho-label">文章区域节点</label>
+          <p><input type="text" name="article[articleparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章标题节点</label>
+          <p><input type="text" name="article[titleparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">tags正则</label>
+          <p><input type="text" name="article[tagparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">作者正则</label>
+          <p><input type="text" name="article[authorparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章正文正则</label>
+          <p><input type="text" name="article[contextparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章页数正则</label>
+          <p><input type="text" name="article[pageparent]" value="" class="text" /></p>
+          <label for="seed_name" class="typecho-label">文章过滤正则</label>
+          <p>
+            <label for=""><input type="checkbox" name="article[filterscript]" /> 过滤script</label>
+            <label for=""><input type="checkbox" name="article[filterstyle]" /> 过滤style</label>
+            <label for=""><input type="checkbox" name="article[filterlink]" /> 过滤a标签</label>
+            <label for=""><input type="checkbox" name="article[filtertrim]" /> 去首尾空白字符</label>
+            <label for=""><input type="checkbox" name="article[readability]" checked="true" /> 格式整理</label>
+          </p>
+          <p><textarea style="width:700px;height: 100px" autocomplete="off" name="filters"></textarea></p>
+        </div>
+        <label for="tags" class="typecho-label">标签</label>
+        <p><input id="tags" name="tags" type="text" value="" class="text" /></p>
+        <p class="submit">
+          <span class="right">
+            <input type="hidden" name="cid" value="" />
+            <input type="hidden" name="do" value="publish" />
+            <button type="button" id="btn-save">保存草稿</button>
+            <button type="button" id="btn-submit">发布种子 &raquo;</button>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="column-06">
+      <ul class="typecho-post-option">
+        <li>
+          <label for="lang" class="typecho-label">页面语言</label>
+          <p>
+            <select class="typecho-charset" name="lang" id="lang">
+              <option value="zhCN">中文简体</option>
+              <option value="zhTW">中文繁体</option>
+              <option value="en">英语</option>
+            </select>
+          </p>
+          <p class="description">请选择页面的语言</p>
+        </li>
+        <li>
+          <label for="autoCharset" class="typecho-label">页面编码 <input type="checkbox" id="autoCharset" checked="true" /> 自动识别</label>
+          <p>
+            <select disabled class="typecho-charset" name="charset" id="charset">
+              <option value="gb2312">Chinese Simplified (GB2312)</option>
+              <option value="utf-8">Universal Alphabet (UTF-8)</option>
+              <option value="big5">Chinese Traditional (Big5)</option>
+              <option value="shift-jis">Japanese (Shift-JIS)</option>
+              <option value="x-euc">Japanese (EUC)</option>
+              <option value="euc-kr">Korean (EUC)</option>
+              <option value="iso-8859-1">Western Alphabet</option>
+              <option value="iso-8859-3">Latin 3 Alphabet (ISO)</option>
+              <option value="iso-8859-4">Baltic Alphabet (ISO)</option>
+              <option value="iso-8859-5">Cyrillic Alphabet (ISO)</option>
+              <option value="iso-8859-6">Arabic Alphabet (ISO)</option>
+              <option value="iso-8859-7">Greek Alphabet (ISO)</option>
+              <option value="iso-8859-8">Hebrew Alphabet (ISO)</option>
+              <option value="koi8-r">Cyrillic Alphabet (KOI8-R)</option>
+            </select>
+          </p>
+          <p class="description">请选择页面的编码格式</p>
+        </li>
+        <li>
+          <label for="frequency" class="typecho-label">采集频率</label>
+          <p><input class="typecho-date" size="4" maxlength="2" type="text" name="_hour" value="0">:<input class="typecho-date" size="4" maxlength="2" type="text" name="_min" value="00"></p>
+          <p class="description">种子的自动采集的间隔时间(小时:分钟)</p>
+        </li>
+        <li>
+          <label for="timeout" class="typecho-label">超时时间</label>
+          <p><input type="text" id="timeout" name="timeout" value="30" class="mini" /></p>
+          <p class="description">设定采集源链接的抓取超时时间(秒)</p>
+        </li>
+        <li>
+          <label for="tries" class="typecho-label">尝试次数</label>
+          <p><input type="text" id="tries" name="tries" value="" class="mini" /></p>
+          <p class="description">抓取超时之后自动尝试的次数</p>
+        </li>
+      </ul>
+    </div>
+  </form>
+</div>
+{% endblock %}
