@@ -1,11 +1,15 @@
 #coding: utf-8
 
-from web.model import Model
+from web.model import Model, current_app
 
 class User(Model):
     uid = 0;
     def __init__(self):
-	self.tablename = 'user';
+	self.db_config = current_app.config.get('DBS')
+	self.db_setting = 'default'
+	self._table_name = 'user'
+
+	Model.__init__(self)
 
     def validate_username(self, username):
 	'''

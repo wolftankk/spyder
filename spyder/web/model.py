@@ -41,13 +41,12 @@ class Model(object):
 	'''
 	'''
 
-    def query(sql):
+    def query(self, sql):
 	'''
 	'''
 
-    def insert():
-	'''
-	'''
+    def insert(self, seqname=None, _test=False, **values):
+	return self.db.insert(self._table_name, seqname=seqname, _test=_test, **values);
 
     def insert_id():
 	'''
@@ -77,15 +76,19 @@ class Model(object):
 	'''
 	'''
 
-    def get_field():
-	'''
-	'''
+    def get_fields(self, table_name = None):
+	if table_name is None:
+	    table_name = self._table_name
+	else:
+	    table_name = self.table_prefix + self._table_name;
 
-    def table_exists():
-	'''
-	'''
+	out = self.db.select(table_name);
+	return out.fields
 
-    def field_exists():
+    def field_exists(self, field):
+	return field in self.get_fields()
+
+    def table_exists(self, field):
 	'''
 	'''
 
@@ -105,14 +108,16 @@ if __name__ == "__main__":
 		"table_prefix" : "",
 		"db" : "spyder",
 		'user' : "root",
-		"passwd" : "passwd",
+		"passwd" : "",
 		"host" : "localhost"
 	    }	    
 	}
 
 	def __init__(self):
+	    self.db_setting = 'default'
+	    self._table_name = 'users'
 	    Model.__init__(self)
 
 
     t = Test()
-    print dir(t)
+    print t.insert(_test=True, username="wolftankk", passwd='111111')

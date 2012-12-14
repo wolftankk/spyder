@@ -2,7 +2,7 @@
 
 import itertools
 
-__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters']
+__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters', 'iterbetter', 'IterBetter']
 
 import sys
 from threading import local as threadlocal
@@ -177,3 +177,45 @@ def safeunicode(obj, encoding='utf-8'):
 	return unicode(obj)
     else:
 	return str(obj).decode(encoding)
+
+
+class IterBetter:
+    def __init__(self, iterator):
+        self.i, self.c = iterator, 0
+
+    def __iter__(self):
+        if hasattr(self, "_head"):
+            yield self._head
+
+        while 1:
+            yield self.i.next()
+            self.c += 1
+
+    def __getitem__(self, i):
+        #todo: slices
+        if i < self.c:
+            raise IndexError, "already passed "+str(i)
+        try:
+            while i > self.c:
+                self.i.next()
+                self.c += 1
+            # now self.c == i
+            self.c += 1
+            return self.i.next()
+        except StopIteration:
+            raise IndexError, str(i)
+            
+    def __nonzero__(self):
+        if hasattr(self, "__len__"):
+            return len(self) != 0
+        elif hasattr(self, "_head"):
+            return True
+        else:
+            try:
+                self._head = self.i.next()
+            except StopIteration:
+                return False
+            else:
+                return True
+
+iterbetter = IterBetter

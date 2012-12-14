@@ -3,7 +3,7 @@
 Database API
 """
 import time, os, urllib
-from utils import safestr, safeunicode, threadeddict, storage, iters
+from utils import safestr, safeunicode, threadeddict, storage, iters, iterbetter
 
 __all__ = ['UnknowDB', 'UnknowParamstyle', 'SQLParam', 'sqlparam', 'SQLQuery', 'sqlquery',
 	    'SQLLiteral', 'MySQLDB', 'sqlify', 'sqllist']
@@ -78,7 +78,7 @@ class SQLQuery(object):
 
     def __init__(self, items=None):
 	if items is None:
-	    items = []
+	    self.items = []
 	elif isinstance(items, list):
 	    self.items = items
 	elif isinstance(items, SQLParam):
@@ -146,7 +146,7 @@ class SQLQuery(object):
     def values(self):
 	return [i.value for i in self.items if isinstance(i, SQLParam)];
 
-    def join(items, sep='', prefix=None, suffix=None, target=None):
+    def join(items, sep=' ', prefix=None, suffix=None, target=None):
 	if target is None:
 	    target = SQLQuery()
 
@@ -157,7 +157,7 @@ class SQLQuery(object):
 
 	for i, item in enumerate(items):
 	    if i != 0:
-		target_items.append(item)
+		target_items.append(sep)
 	    if isinstance(item, SQLQuery):
 		target_items.extend(item.items)
 	    else:
@@ -402,7 +402,6 @@ class DB:
 	if not hasattr(ctx.db, 'rollback'):
 	    ctx.db.rollback = lambda: None
 
-
 	def commit(unload=True):
 	    ctx.db.commit()
 	
@@ -487,8 +486,13 @@ class DB:
 		    row = db_cursor.fetchone()
 	    out = iterbetter(iterwrapper())
 	    out.__len__ = lambda: int(db_cursor.rowcount)
+	    
+	    # data, fields
 	    out.list = lambda: [storage(dict(zip(names, x))) \
 		    for x in db_cursor.fetchall()]
+
+	    #table fields
+	    out.fields = names
 	else:
 	    out = db_cursor.rowcount
 
@@ -752,6 +756,75 @@ class MySQLDB(DB):
 
     def _get_insert_default_values_query(self, table):
 	return "INSERT INTO %s () VALUES()" % table
+
+def _interpolate(format):
+    """
+    Takes a format string and returns a list of 2-tuples of the form
+    (boolean, string) where boolean says whether string should be evaled
+    or not.
+
+    from <http://lfw.org/python/Itpl.py> (public domain, Ka-Ping Yee)
+    """
+    from tokenize import tokenprog
+
+    def matchorfail(text, pos):
+	match = tokenprog.match(text, pos)
+	if match is None:
+	    raise _ItplError(text, pos)
+	return match, match.end()
+
+    namechars = "abcdefghijklmnopqrstuvwxyz" \
+	    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_";
+    chunks = []
+    pos = 0
+
+    while 1:
+	dollar = format.find("$", pos)
+	if dollar < 0:
+	    break
+	nextchar = format[dollar + 1]
+
+	if nextchar == "{":
+	    chunks.append((0, format[pos:dollar]))
+	    pos, level = dollar + 2, 1
+	    while level:
+		match, pos = matchorfail(format, pos)
+		tstart, tend = match.regs[3]
+		token = format[tstart:tend]
+		if token == "{":
+		    level = level + 1
+		elif token == "}":
+		    level = level - 1
+	    chunks.append((1, format[dollar + 2:pos - 1]))
+
+	elif nextchar in namechars:
+	    chunks.append((0, format[pos:dollar]))
+	    match, pos = matchorfail(format, dollar + 1)
+	    while pos < len(format):
+		if format[pos] == "." and \
+			pos + 1 < len(format) and format[pos + 1] in namechars:
+			    match, pos = matchorfail(format, pos + 1)
+		elif format[pos] in "([":
+		    pos, level = pos + 1, 1
+		    while level:
+			match, pos = matchorfail(format, pos)
+			tstart, tend = match.regs[3]
+			token = format[tstart:tend]
+			if token[0] in "([":
+			    level = level + 1
+			elif token[0] in ")]":
+			    level = level - 1
+		else:
+		    break
+	    chunks.append((1, format[dollar + 1:pos]))
+	else:
+	    chunks.append((0, format[pos:dollar + 1]))
+	    pos = dollar + 1 + (nextchar == "$")
+
+    if pos < len(format):
+	chunks.append((0, format[pos:]))
+    return chunks
+
 
 
 
