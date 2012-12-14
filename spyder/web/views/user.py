@@ -1,7 +1,11 @@
-from flask import Module
+#coding: utf-8
+from flask import Module, url_for, g, redirect, flash
 from flask import render_template
 
+#from web.models import User
+
 user = Module(__name__)
+
 
 @user.route("/add/", methods=("GET", "POST"))
 #@auth.require(401)
