@@ -48,8 +48,6 @@
           </p>
           <p><textarea style="width:700px;height: 100px" autocomplete="off" name="filters"></textarea></p>
         </div>
-        <label for="tags" class="typecho-label">标签</label>
-        <p><input id="tags" name="tags" type="text" value="" class="text" /></p>
         <p class="submit">
           <span class="right">
             <input type="hidden" name="cid" value="" />
@@ -62,6 +60,15 @@
     </div>
     <div class="column-06">
       <ul class="typecho-post-option">
+        <li>
+          <label for="site" class="typecho-label">所属站点</label>
+          <p>
+            <select class="typecho-charset" name="site" id="site">
+              <option value="1">CMDP</option>
+            </select>
+          </p>
+          <p class="description">请选择种子入库的站点</p>
+        </li>
         <li>
           <label for="lang" class="typecho-label">页面语言</label>
           <p>
@@ -109,6 +116,11 @@
           <label for="tries" class="typecho-label">尝试次数</label>
           <p><input type="text" id="tries" name="tries" value="" class="mini" /></p>
           <p class="description">抓取超时之后自动尝试的次数</p>
+        </li>
+        <li>
+          <label for="tags" class="typecho-label">标签</label>
+          <p><input id="tags" name="tags" type="text" value="" class="mini" /></p>
+          <p class="description">标签，种子多的时候方便更好进行筛选</p>
         </li>
       </ul>
     </div>
