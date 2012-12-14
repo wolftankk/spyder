@@ -8,6 +8,7 @@
 <div class="container typecho-page-main">
   <div class="column-22 start-02">
     <form action="." method="post" name="add_user">
+      {% if error %}<p class="message error">{{ error }}</p>{% endif %}
       <ul class="typecho-option" id="typecho-option-item-name-0">
       <li>
       <label class="typecho-label" for="name-0-1">
@@ -26,16 +27,6 @@
       <p class="description">
       电子邮箱地址将作为此用户的主要联系方式.<br />
               请不要与系统中现有的电子邮箱地址重复.</p>
-      </li>
-      </ul>
-      <ul class="typecho-option" id="typecho-option-item-screenName-2">
-      <li>
-      <label class="typecho-label" for="screenName-0-3">
-      用户昵称</label>
-      <input id="screenName-0-3" name="screenName" type="text" class="text" />
-      <p class="description">
-      用户昵称可以与用户名不同, 用于显示.<br />
-              如果你将此项留空,将默认使用用户名.</p>
       </li>
       </ul>
       <ul class="typecho-option" id="typecho-option-item-password-3">

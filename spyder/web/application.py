@@ -9,6 +9,7 @@ sys.path.insert(0,parentdir)
 from web import views
 from web.config import DefaultConfig
 from web import model
+from web import helpers
 
 __all__ = ['spyder_web']
 
@@ -40,6 +41,10 @@ class spyder_web:
 	self.app.config.from_object(DefaultConfig());
 	self.configure_modules()
 	self.app.secret_key = self.app.config.get("SECRET_KEY", "A0Zr98j/3yX R~XHH!jmN]LWX/,?RT")
+
+	@self.app.template_filter()
+	def timesince(value):
+		return helpers.timesince(value)
 
     def configure_modules(self):
 	"""

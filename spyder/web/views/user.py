@@ -1,7 +1,7 @@
 #coding: utf-8
 from flask import Module, url_for, g, redirect, flash, request, session, current_app
 from flask import render_template
-from web.helpers import auth
+from web.helpers import auth, getPermissions
 
 from web.models import User
 
@@ -10,16 +10,23 @@ user = Module(__name__)
 @user.route("/add/", methods=("GET", "POST"))
 @auth
 def add():
+    error = None
     if request.method == 'POST':
-	print request.form
-	user = User(current_app)
-	#valide
-	#user.is_register
-	#uid = user.add(name, password, email)
-	#
-	return redirect(url_for('users.index'))
+    	uname = request.form.get("name")
+        password = request.form.get("password")
+        mail = request.form.get("mail")
+        group = getPermissions(request.form.get("group"))
+        user = User(current_app)
+        #valide
+        #user.is_register
+        uid = user.add(username=uname, passwd=password, email=mail, permissions=group)
+        #
+        if uid > 0:
+            return redirect(url_for('users.index'))
+        else:
+            error = "error"
 
-    return render_template("user/add.html")
+    return render_template("user/add.html", error=error)
 
 @user.route("/view/<int:user_id>/")
 @auth

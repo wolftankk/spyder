@@ -4,12 +4,11 @@ from web.model import Model
 class User(Model):
     uid = 0;
     def __init__(self, app):
-	self.app = app
-	self.db_config = self.app.config.get('DBS')
-	self.db_setting = 'default'
-	self._table_name = 'user'
-
-	Model.__init__(self)
+        self.app = app
+        self.db_config = self.app.config.get('DBS')
+        self.db_setting = 'default'
+        self._table_name = 'users'
+        Model.__init__(self)
 
     def validate_username(self, username):
 	'''
@@ -21,6 +20,8 @@ class User(Model):
 	'''
 	return True
 
-    def add(self, **profile):
-	'''
-	'''
+    def add(self, **args):
+	return self.insert(**args)
+    
+    def list(self, page):
+	return self.select()

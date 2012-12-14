@@ -1,10 +1,10 @@
 #coding: utf-8
 
 import re, urlparse
+from datetime import datetime
 
 from flask import current_app, g, session, redirect, url_for
 import functools
-
 #from flaskext.themes import static_file_url, render_theme_template
 #
 #_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -33,3 +33,47 @@ def auth(func):
             return redirect(url_for('user.login', error=error))
         return func(*args, **kwargs)
     return wrap
+    
+def getPermissions(group):
+    if group is "visitor":
+        return 1
+    elif group is "editor":
+        return 2
+    else:
+        return 3
+    
+    return 1
+
+def timesince(dt, default=None):
+    """
+    Returns string representing "time since" e.g.
+    3 days ago, 5 hours ago etc.
+    """
+    
+    if default is None:
+        default = "刚刚"
+
+    dt = datetime.fromtimestamp(dt);
+    now = datetime.now()
+    diff = now - dt
+    
+    periods = (
+        (diff.days / 365, u"年"),
+        (diff.days / 30, u"个月"),
+        (diff.days / 7, u"星期"),
+        (diff.days, u"天"),
+        (diff.seconds / 3600, u"小时"),
+        (diff.seconds / 60, u"分钟"),
+        (diff.seconds, u"秒"),
+    )
+
+    for period, singular in periods:
+        
+        if period <= 0:
+            continue
+
+        singular = u"%d%s前" % (period, singular)
+
+        return singular
+
+    return default

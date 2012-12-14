@@ -38,7 +38,7 @@
         <tr>
           <th class="typecho-radius-topleft"> </th>
           <th>用户名</th>
-          <th>昵称</th>
+          <th></th>
           <th> </th>
           <th>电子邮件</th>
           <th>最后登录</th>
@@ -46,16 +46,18 @@
         </tr>
       </thead>
       <tbody>
-  	    <tr class="even " id="post-1">
-          <td><input type="checkbox" value="1" name="uid[]"/></td>
-          <td><a href="/user/edit/1">admin</a></td>
-          <td>admin</td>
+        {% for user in users %}
+  	    <tr class="even">
+          <td><input type="checkbox" value="{{ user.uid }}" name="uid[]"/></td>
+          <td><a href="/user/edit/{{ user.uid }}">{{ user.username }}</a></td>
+          <td></td>
           <td>
-          <a class="right hidden-by-mouse" href="/user/view/1"><img src="/static/images/view.gif" title="浏览 admin" width="16" height="16" alt="view" /></a>
+          <a class="right hidden-by-mouse" href="/user/view/{{ user.uid }}"><img src="/static/images/view.gif" title="浏览 {{ user.username }}" width="16" height="16" alt="view" /></a>
           </td>
-          <td><a href="mailto:webmaster@yourdomain.com">webmaster@yourdomain.com</a></td>
-          <td colspan="2">1小时前</td>
+          <td><a href="mailto:{{ user.email }}">{{ user.email }}</a></td>
+          <td colspan="2">{{ user.lastlogintime|timesince }}</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
     <input type="hidden" name="do" value="delete">
