@@ -6,7 +6,7 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-from libs.db import MySQLDB
+from libs.db import MySQLDB, sqlquote
 from flask import g, current_app
 
 class Model(object):
@@ -31,9 +31,8 @@ class Model(object):
 	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
-	#if (isinstance(where, dict)):
-	#    where = self._sqls(where)
-	#def select(self, tables, vars=None, what='*', where=None, order=None, group=None, limit=None, offset=None, _test=False):
+	if (isinstance(where, dict)):
+	    where = self._sqls(where)
 	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=None, order=None, group=None, offset=None, _test=False)
 
     def get_one(self):
@@ -64,7 +63,7 @@ class Model(object):
 	'''
 
     def _sqls(self, where, front=' AND '):
-	print dir(where)
+	return front.join(['%s=%s' % (key, sqlquote(value)) for (key, value) in where.items() ])
 
     def affected_rows():
 	'''
@@ -119,8 +118,8 @@ if __name__ == "__main__":
 
     t = Test()
     #print t.insert(_test=True, username="wolftankk", passwd='111111')
-    a = t.select()
+    a = t.select({"username" : "fireyy"})
     #get data list
     l = a.list()
-    print l[0]["username"]
+    #print l[0]["username"]
     #print a.list()["username"]
