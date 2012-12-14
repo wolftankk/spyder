@@ -30,12 +30,11 @@ class Model(object):
 
 	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
 
-    def select(self, where, data='*', limit = None, order = None, group = None, key = ''):
-	if isinstance(where, list):
-	    where = self._sqls(where)
-	
+    def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
+	#if (isinstance(where, dict)):
+	#    where = self._sqls(where)
 	#def select(self, tables, vars=None, what='*', where=None, order=None, group=None, limit=None, offset=None, _test=False):
-	return self.db.select();
+	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=None, order=None, group=None, offset=None, _test=False)
 
     def get_one(self):
 	'''
@@ -65,8 +64,7 @@ class Model(object):
 	'''
 
     def _sqls(self, where, front=' AND '):
-	'''
-	'''
+	print dir(where)
 
     def affected_rows():
 	'''
@@ -103,13 +101,13 @@ class Model(object):
 
 if __name__ == "__main__":
     class Test(Model):
-	_db_config = {
+	db_config = {
 	    'default' : {
 		"table_prefix" : "",
 		"db" : "spyder",
 		'user' : "root",
 		"passwd" : "",
-		"host" : "localhost"
+		"host" : "192.168.1.136"
 	    }	    
 	}
 
@@ -120,4 +118,9 @@ if __name__ == "__main__":
 
 
     t = Test()
-    print t.insert(_test=True, username="wolftankk", passwd='111111')
+    #print t.insert(_test=True, username="wolftankk", passwd='111111')
+    a = t.select()
+    #get data list
+    l = a.list()
+    print l[0]["username"]
+    #print a.list()["username"]
