@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
-{% block title %}管理用户<a href="/site/add">新增</a>{% endblock %}
+{% block title %}管理用户{% endblock %}
+{% block title_add %}<a href="/user/add">新增</a>{% endblock %}
+{% set current_page="user" %}
+{% set current_action="users" %}
 
 {% block body %}
 <div class="container typecho-page-main">

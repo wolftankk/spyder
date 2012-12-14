@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
-{% block title %}管理种子<a href="/seed/add">新增</a>{% endblock %}
+{% block title %}管理种子{% endblock %}
+{% block title_add %}<a href="/seed/add">新增</a>{% endblock %}
+{% set current_page="seed" %}
+{% set current_action="seeds" %}
 
 {% block body %}
 <div class="container typecho-page-main">
