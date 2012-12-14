@@ -3,13 +3,20 @@
 {% block title %}登录{% endblock %}
 {% block scripts %}{% endblock %}
 
-{% block main %}
+{% block html %}
   <div class="body body-950">
     <div class="container">
       <div class="column-07 start-09 typecho-login">
         <h2 class="logo-dark">typecho</h2>
-        <form action="/login" method="post" name="login">
+        <form action="." method="post" name="login">
           <fieldset>
+            {% if error %}
+            <div class="message error typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright">
+              <ul>
+                <li>{{ error }}</li>
+              </ul>
+            </div>
+            {% endif %}
             <p><label for="name">用户名:</label> <input type="text" id="name" name="name" value="" class="text" /></p>
             <p><label for="password">密码:</label> <input type="password" id="password" name="password" class="text" /></p>
             <p class="submit">

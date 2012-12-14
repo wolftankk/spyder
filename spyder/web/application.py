@@ -39,6 +39,7 @@ class spyder_web:
 	#load config
 	self.app.config.from_object(DefaultConfig());
 	self.configure_modules()
+	self.app.secret_key = self.app.config.get("SECRET_KEY", "A0Zr98j/3yX R~XHH!jmN]LWX/,?RT")
 
     def configure_modules(self):
 	"""
@@ -59,7 +60,6 @@ class spyder_web:
 	"""
 	debug = self.app.config.get("DEBUG", False);
 	self.app.run(host, port, debug, **options);
-
 
 if __name__ == "__main__":
     application = spyder_web();

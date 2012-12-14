@@ -1,6 +1,9 @@
 {% extends "layout.html" %}
 
-{% block title %}管理站点<a href="/site/add">新增</a>{% endblock %}
+{% block title %}管理站点{% endblock %}
+{% block title_add %}<a href="/site/add">新增</a>{% endblock %}
+{% set current_page="site" %}
+{% set current_action="sites" %}
 
 {% block body %}
 <div class="container typecho-page-main">

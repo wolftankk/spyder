@@ -6,9 +6,7 @@
     <title>{% block title %}{% endblock %} - Spinne</title>
         
     {% block css %}
-    <link rel="stylesheet" type="text/css" href="/static/css/reset.source.css?v=0.1" /> 
-    <link rel="stylesheet" type="text/css" href="/static/css/grid.source.css?v=0.1" /> 
-    <link rel="stylesheet" type="text/css" href="/static/css/typecho.source.css?v=0.1" />
+    <link rel="stylesheet" type="text/css" href="/static/css/base.css?v=0.1" />
     <link rel="stylesheet" type="text/css" href="/static/css/app.css?v=0.1" />
     {% endblock %}
     {% block scripts %}
@@ -25,14 +23,36 @@
   <body>
   {% block html %}
     {% block header %}
-      {% include "header.html" %}
+    {% set navigation = [
+      [('/', 'home', '控制台'), ('/', 'home', '网站概要'), ('/setting', 'setting', '设置')], 
+      [('/seeds/', 'seed', '种子管理'), ('/seeds/', 'seeds', '种子列表'), ('/seed/add/', 'seed_add', '种子添加')],
+      [('/sites/', 'site', '站点管理'), ('/sites/', 'sites', '站点列表'), ('/site/add/', 'site_add', '添加站点')],
+      [('/users/', 'user', '用户管理'), ('/users/', 'users', '用户列表'), ('/user/add/', 'user_add', '添加用户')]
+    ] %}
+
+    <div class="typecho-head-guid body-950">
+      <dl id="typecho:guid">
+        {% for navs in navigation %}
+        <dt {% if navs[0][1] == current_page %}class="focus"{% endif %}><a href="{{ navs[0][0] }}" title="{{ navs[0][2] }}">{{ navs[0][2] }}</a></dt>
+        <dd>
+          <ul>
+            {% for nav in navs[1:] %}
+            <li {% if nav[1] == current_action %}class="focus"{% endif %}><a href="{{ nav[0] }}" title="{{ nav[2] }}">{{ nav[2] }}</a></li>
+            {% endfor %}
+          </ul>
+        </dd>
+        {% endfor %}
+      </dl>
+      <p class="operate">欢迎, <a href="/user/view/1" class="author important">admin</a>
+              <a class="exit" href="/user/logout/" title="登出">登出</a></p>
+    </div>
     {% endblock %}
     {% block main %}
     <div class="main">
       <div class="body body-950">
         <div class="container typecho-page-title">
           <div class="column-24">
-            <h2>{{ self.title() }}</h2>
+            <h2>{{ self.title() }}{% block title_add %}{% endblock %}</h2>
             <p><a href="#">查看站点</a></p>
           </div>
         </div>
