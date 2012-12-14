@@ -17,7 +17,9 @@ class spyder_web:
 	(views.seeds, "/seeds"),
 	(views.article, "/article"),
 	(views.site, "/site"),
+    (views.sites, "/sites"),
 	(views.user, "/user"),
+    (views.users, "/users"),
 	(views.status, "/status")
     );
     

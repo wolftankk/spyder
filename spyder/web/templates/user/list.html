@@ -1,0 +1,72 @@
+{% extends "layout.html" %}
+
+{% block title %}管理用户<a href="/site/add">新增</a>{% endblock %}
+
+{% block body %}
+<div class="container typecho-page-main">
+  <div class="column-24 start-01 typecho-list">
+    <div class="typecho-list-operate">
+    <form method="get">
+      <p class="operate">操作: 
+        <span class="operate-button typecho-table-select-all">全选</span>, 
+        <span class="operate-button typecho-table-select-none">不选</span>&nbsp;&nbsp;&nbsp;
+        选中项: 
+        <span rel="delete" lang="你确认要删除这些站点吗?" class="operate-button operate-delete typecho-table-select-submit">删除</span>
+      </p>
+      <p class="search">
+                          <input type="text" value="请输入关键字" onclick="value='';name='keywords';">
+      <button type="submit">筛选</button>
+      </p>
+    </form>
+    </div>
+
+    <form method="post" name="manage_users" class="operate-form" action="/sites/">
+    <table class="typecho-list-table">
+      <colgroup>
+        <col width="25"/>
+        <col width="150"/>
+        <col width="150"/>
+        <col width="30"/>
+        <col width="300"/>
+        <col width="165"/>
+        <col width="70"/>
+      </colgroup>
+      <thead>
+        <tr>
+          <th class="typecho-radius-topleft"> </th>
+          <th>用户名</th>
+          <th>昵称</th>
+          <th> </th>
+          <th>电子邮件</th>
+          <th>最后登录</th>
+          <th class="typecho-radius-topright"></th>
+        </tr>
+      </thead>
+      <tbody>
+  	    <tr class="even " id="post-1">
+          <td><input type="checkbox" value="1" name="uid[]"/></td>
+          <td><a href="/user/edit/1">admin</a></td>
+          <td>admin</td>
+          <td>
+          <a class="right hidden-by-mouse" href="/user/view/1"><img src="/static/images/view.gif" title="浏览 admin" width="16" height="16" alt="view" /></a>
+          </td>
+          <td><a href="mailto:webmaster@yourdomain.com">webmaster@yourdomain.com</a></td>
+          <td colspan="2">1小时前</td>
+        </tr>
+      </tbody>
+    </table>
+    <input type="hidden" name="do" value="delete">
+    </form>
+    <div class="typecho-pager">
+      <div class="typecho-pager-content">
+        <ul>
+          <li class="current"><a href="#">1</a></li>
+          <li><a href="#">2</a></li>
+          <li><a href="#">3</a></li>
+          <li><a href="#">4</a></li>
+        </ul>
+      </div>
+    </div>              
+  </div>
+</div>
+{% endblock %}

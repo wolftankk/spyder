@@ -1,0 +1,53 @@
+{% extends "layout.html" %}
+
+{% block title %}添加站点{% endblock %}
+
+{% block body %}
+<div class="container typecho-page-main typecho-post-option typecho-post-area">
+  <form action="/site/add" method="post" name="write_post">
+    <div class="column-18 suffix" id="test">
+      <div class="column-18">
+        <label for="seed_name" class="typecho-label">名称</label>
+        <p><input type="text" id="name" name="name" value="" class="text" /></p>
+        <label for="base_url" class="typecho-label">链接</label>
+        <p><input type="text" id="url" name="url" value="" class="text" /></p>
+        <label for="" class="typecho-label">备注</label>
+        <p><textarea style="width:700px;height: 200px" autocomplete="off" name="filters"></textarea></p>
+        <p class="submit">
+          <span class="right">
+            <input type="hidden" name="do" value="publish" />
+            <button type="button" id="btn-submit">保存站点 &raquo;</button>
+          </span>
+        </p>
+      </div>
+    </div>
+    <div class="column-06">
+      <ul class="typecho-post-option">
+        <li>
+          <label for="sync_type" class="typecho-label">入库方式</label>
+          <p>
+            <select class="typecho-charset" name="sync_type" id="sync_type">
+              <option value="1">MySQL数据库</option>
+              <option value="2">API接口</option>
+            </select>
+          </p>
+          <p class="description">请选择采集数据入库的方式</p>
+        </li>
+        <li>
+          <label for="timeout" class="typecho-label">MySQL配置</label>
+          <p>服务器：<input type="text" id="mysql_server" name="mysql_server" value="" size="20" /></p>
+          <p>数据库：<input type="text" id="mysql_dbname" name="mysql_dbname" value="" size="20" /></p>
+          <p>用户名：<input type="text" id="mysql_username" name="mysql_username" value="" size="20" /></p>
+          <p>密&nbsp;&nbsp;&nbsp;码：<input type="text" id="mysql_password" name="mysql_password" value="" size="20" /></p>
+          <p class="description">设定MySQL数据库的基本配置 <input type="button" value="测试连接"></p>
+        </li>
+        <li>
+          <label for="tries" class="typecho-label">API接口地址</label>
+          <p><input type="text" id="api_url" name="api_url" value="" class="mini" /></p>
+          <p class="description">采用API方式入库请设定接口地址</p>
+        </li>
+      </ul>
+    </div>
+  </form>
+</div>
+{% endblock %}
