@@ -8,6 +8,7 @@ sys.path.insert(0,parentdir)
 
 from web import views
 from web.config import DefaultConfig
+from web import model
 
 __all__ = ['spyder_web']
 
