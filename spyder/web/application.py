@@ -9,6 +9,8 @@ sys.path.insert(0,parentdir)
 from web import views
 from web.config import DefaultConfig
 
+__all__ = ['spyder_web']
+
 class spyder_web:
     DEFAULT_APP_NAME = "spyder_web"
     MODULES = (
