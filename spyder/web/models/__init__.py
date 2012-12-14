@@ -1,3 +1,3 @@
 #coding: utf-8
 
-import .users import User
+from .users import User

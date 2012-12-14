@@ -1,22 +1,28 @@
 #coding: utf-8
-from flask import Module, url_for, g, redirect, flash
+from flask import Module, url_for, g, redirect, flash, request
 from flask import render_template
 
-#from web.models import User
+from web.models import User
 
 user = Module(__name__)
 
-
 @user.route("/add/", methods=("GET", "POST"))
-#@auth.require(401)
 def add():
-    """
+    print dir(request), request.args
+    if request.method == 'POST':
+	print request.form
+	user = User
+	#valide
+	#user.is_register
+	#uid = user.add(name, password, email)
+	#
+	return redirect(url_for('users.index'))
 
-    """
     return render_template("user/add.html")
-    
+
 @user.route("/view/<int:user_id>/")
 def view(user_id):
+    #user.view(uid)
     #return user_id
     return render_template("user/view.html")
 
