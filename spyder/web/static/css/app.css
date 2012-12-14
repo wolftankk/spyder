@@ -8,3 +8,8 @@
 .typecho-addlink input.text { width: 450px; }
 
 *[rel='replace'] { cursor: pointer; }
+
+.st0 { background: green !important; }
+.st1 { background: orange !important; }
+.st2 { background: red !important; }
+.st3 { background: gray !important; }

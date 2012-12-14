@@ -12,7 +12,7 @@ def add():
     return render_template("seed/add.html")
     
 @seed.route("/view/<int:seed_id>/")
-def view(action, seed_id):
+def view(seed_id):
     return seed_id
 
 @seed.route("/addlink/")
@@ -20,9 +20,9 @@ def add_link():
     return render_template("seed/add_link.html")
 
 @seed.route("/edit/<int:seed_id>/")
-def edit(action, seed_id):
+def edit(seed_id):
     return render_template("seed/edit.html")
 
 @seed.route("/delete/<int:seed_id>")
-def delete(action, seed_id):
+def delete(seed_id):
     return seed_id
