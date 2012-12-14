@@ -7,23 +7,23 @@ if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 from libs.db import MySQLDB
-#from flask import g, current_app
+from flask import g, current_app
 
 class Model(object):
     """
     custom user model
     """
-    _db_config = {}
-    _db = None
-    _db_setting = 'default'
+    db_config = {}
+    db = None
+    db_setting = 'default'
     _table_name = ''
     table_prefix = ''
 
     def __init__(self):
-	if (self._db_setting not in self._db_config):
-	    self._db_setting = 'default'
+	if (self.db_setting not in self.db_config):
+	    self.db_setting = 'default'
 
-	config = self._db_config[self._db_setting]
+	config = self.db_config[self.db_setting]
 
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name

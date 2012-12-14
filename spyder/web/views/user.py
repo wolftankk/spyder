@@ -1,5 +1,5 @@
 #coding: utf-8
-from flask import Module, url_for, g, redirect, flash, request, session
+from flask import Module, url_for, g, redirect, flash, request, session, current_app
 from flask import render_template
 from web.helpers import auth
 
@@ -10,10 +10,9 @@ user = Module(__name__)
 @user.route("/add/", methods=("GET", "POST"))
 @auth
 def add():
-    print dir(request), request.args
     if request.method == 'POST':
 	print request.form
-	user = User
+	user = User(current_app)
 	#valide
 	#user.is_register
 	#uid = user.add(name, password, email)

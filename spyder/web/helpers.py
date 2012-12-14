@@ -28,7 +28,7 @@ def auth(func):
         
     def wrap(*args, **kwargs):
         error = None
-        if session["logged_in"] is not True:
+        if ("logged_in" in session and session["logged_in"] is not True) or ("logged_in" not in session):
             error = 'You must logged in'
             return redirect(url_for('user.login', error=error))
         return func(*args, **kwargs)

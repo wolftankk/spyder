@@ -1,11 +1,11 @@
 #coding: utf-8
-
-from web.model import Model, current_app
+from web.model import Model
 
 class User(Model):
     uid = 0;
-    def __init__(self):
-	self.db_config = current_app.config.get('DBS')
+    def __init__(self, app):
+	self.app = app
+	self.db_config = self.app.config.get('DBS')
 	self.db_setting = 'default'
 	self._table_name = 'user'
 
