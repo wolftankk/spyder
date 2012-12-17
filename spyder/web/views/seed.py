@@ -1,6 +1,8 @@
-from flask import Module, url_for, g, session
+from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
 from web.helpers import auth
+from web.models import Seed
+from web.models import Site
 
 seed = Module(__name__)
 
@@ -10,7 +12,9 @@ def add():
     """
 
     """
-    return render_template("seed/add.html")
+    site = Site(current_app)
+    sites = site.getlist()
+    return render_template("seed/add.html", sites=sites)
     
 @seed.route("/view/<int:seed_id>/")
 @auth

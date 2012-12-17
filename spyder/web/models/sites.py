@@ -29,5 +29,13 @@ class Site(Model):
     def view(self, id):
 	return self.select("id="+str(id))
     
-    def list(self, page):
-	return self.select()
+    def list(self, page, per_page):
+        start = (page - 1) * per_page
+        end = per_page
+	return self.select(limit=str(end), offset=start)
+    
+    def count(self):
+	return len(self.select())
+    
+    def getlist(self, **args):
+	return self.select(**args)

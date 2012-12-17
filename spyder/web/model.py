@@ -33,7 +33,7 @@ class Model(object):
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
 	if (isinstance(where, dict)):
 	    where = self._sqls(where)
-	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=None, order=None, group=None, offset=None, _test=False)
+	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=limit, order=order, group=group, offset=offset, _test=False)
 
     def get_one(self):
 	'''

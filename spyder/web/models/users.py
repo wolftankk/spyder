@@ -29,5 +29,10 @@ class User(Model):
     def view(self, uid):
 	return self.select("uid="+str(uid))
     
-    def list(self, page):
-	return self.select()
+    def list(self, page, per_page):
+        start = (page - 1) * per_page
+        end = per_page
+	return self.select(limit=str(end), offset=start)
+    
+    def count(self):
+	return len(self.select())

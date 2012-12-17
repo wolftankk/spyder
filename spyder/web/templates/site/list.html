@@ -62,13 +62,8 @@
     </table>
     <input type="hidden" name="do" value="delete">
     </form>
-    <div class="typecho-pager">
-      <div class="typecho-pager-content">
-        <ul>
-          <li class="current"><a href="#">1</a></li>
-        </ul>
-      </div>
-    </div>              
+    {% import './ui.html' as ui %}
+    {{ ui.render_pagination(pagination) }}           
   </div>
 </div>
 {% endblock %}

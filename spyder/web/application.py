@@ -46,6 +46,12 @@ class spyder_web:
 	def timesince(value):
 		return helpers.timesince(value)
 
+	@self.app.context_processor
+	def utility_processor():
+		def somefunc(name):
+			return helpers.somefunc(name)
+		return dict(somefunc=somefunc)
+
     def configure_modules(self):
 	"""
 	Mapping the module url rules

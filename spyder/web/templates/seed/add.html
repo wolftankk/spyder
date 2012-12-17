@@ -66,7 +66,9 @@
           <label for="site" class="typecho-label">所属站点</label>
           <p>
             <select class="typecho-charset" name="site" id="site">
-              <option value="1">CMDP</option>
+              {% for site in sites %}
+              <option value="{{ site.id }}">{{ site.name }}</option>
+              {% endfor %}
             </select>
           </p>
           <p class="description">请选择种子入库的站点</p>
@@ -116,7 +118,7 @@
         </li>
         <li>
           <label for="tries" class="typecho-label">尝试次数</label>
-          <p><input type="text" id="tries" name="tries" value="" class="mini" /></p>
+          <p><input type="text" id="tries" name="tries" value="5" class="mini" /></p>
           <p class="description">抓取超时之后自动尝试的次数</p>
         </li>
         <li>

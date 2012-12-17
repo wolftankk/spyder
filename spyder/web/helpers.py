@@ -3,7 +3,7 @@
 import re, urlparse
 from datetime import datetime
 
-from flask import current_app, g, session, redirect, url_for
+from flask import current_app, g, session, redirect, url_for, request
 import functools
 #from flaskext.themes import static_file_url, render_theme_template
 #
@@ -77,3 +77,8 @@ def timesince(dt, default=None):
         return singular
 
     return default
+
+def somefunc(name):
+    """
+    """
+    return True

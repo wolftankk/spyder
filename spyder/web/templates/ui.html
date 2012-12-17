@@ -1,0 +1,17 @@
+{% macro render_pagination(pagination) %}
+<div class="typecho-pager">
+  <div class="typecho-pager-content">
+    <ul>
+  {%- for page in pagination.iter_pages() %}
+    {% if page %}
+      {% if page != pagination.page %}
+        <li><a href="{{ pagination.url_for_other_page(page) }}">{{ page }}</a></li>
+      {% else %}
+        <li class="current"><a href="{{ pagination.url_for_other_page(page) }}">{{ page }}</a></li>
+      {% endif %}
+    {% endif %}
+  {%- endfor %}
+    </ul>
+  </div>
+</div>
+{% endmacro %}
