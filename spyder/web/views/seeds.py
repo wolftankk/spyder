@@ -13,6 +13,7 @@ seeds = Module(__name__)
 @auth
 def index(page=1):
     seed = Seed(current_app)
+    filte = None
     if request.method == "POST":
         error = None
         action = request.form.get("do")
@@ -26,7 +27,9 @@ def index(page=1):
             else:
                 error = "请选择要删除的数据"
         return error
-    seeds = seed.list(page, PER_PAGE)
+    if request.args.get("keywords"):
+        filte = "seed_name='"+request.args.get("keywords")+"'"
+    seeds = seed.list(page, PER_PAGE, filte)
     if not seeds and page != 1:
         abort(404)
     count = seed.count()

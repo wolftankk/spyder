@@ -26,12 +26,12 @@
         <span rel="delete" lang="你确认要删除这些种子吗?" class="operate-button operate-delete typecho-table-select-submit">删除</span>
       </p>
       <p class="search">
-                          <input type="text" value="请输入关键字" onclick="value='';name='keywords';">
-      <select name="tag">
-      	<option value="">所有标签</option>
-      	                    	                    	<option value="1">默认</option>
-      	                    </select>
-      <button type="submit">筛选</button>
+        <input type="text" value="请输入关键字" onclick="value='';name='keywords';">
+        <select name="tag">
+        	<option value="">所有标签</option>
+        	<option value="1">默认</option>
+        </select>
+        <button type="submit">筛选</button>
       </p>
     </form>
     </div>
@@ -75,13 +75,8 @@
     </table>
     <input type="hidden" name="do" value="delete">
     </form>
-    <div class="typecho-pager">
-      <div class="typecho-pager-content">
-        <ul>
-          <li class="current"><a href="#">1</a></li>
-        </ul>
-      </div>
-    </div>              
+    {% import './ui.html' as ui %}
+    {{ ui.render_pagination(pagination) }}
   </div>
 </div>
 {% endblock %}
