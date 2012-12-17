@@ -40,8 +40,7 @@ class Model(object):
 	'''
 
     def query(self, sql):
-	'''
-	'''
+	return self.db.query(self._table_name, processed=True);
 
     def insert(self, seqname=None, _test=False, **values):
 	return self.db.insert(self._table_name, seqname=seqname, _test=_test, **values);
@@ -50,13 +49,28 @@ class Model(object):
 	'''
 	'''
 
-    def update(self):
-	'''
-	'''
+    def update(self, where, vars=None, _test=False, **values):
+        """
+	>>> name = 'Joseph'
+	>>> q = db.update('foo', where='name = $name', name='bob', age=2,
+	... created=SQLLiteral('NOW()'), vars=locals(), _test=True)
+	>>> q
+	<sql: "UPDATE foo SET age = 2, name = 'bob', created = NOW() WHERE name = 'Joseph'">
+	>>> q.query()
+	'UPDATE foo SET age = %s, name = %s, created = NOW() WHERE name = %s'
+	>>> q.values()
+	[2, 'bob', 'Joseph']
+	"""
+	return self.db.update(self._table_name, where=where, vars=vars,_test=_test, **values)
 
-    def delete():
-	'''
-	'''
+    def delete(self, where, using=None, vars=None, _test=False):
+        """
+	>>> name = 'Joe'
+	>>> db.delete('foo', where='name = $name', vars=locals(), _test=True)
+	<sql: "DELETE FROM foo WHERE name = 'Joe'">
+	"""
+	return self.db.delete(self._table_name, where=where, vars=vars, _test=_test)
+
 
     def count():
 	'''
