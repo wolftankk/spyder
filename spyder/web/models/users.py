@@ -23,5 +23,11 @@ class User(Model):
     def add(self, **args):
 	return self.insert(**args)
     
+    def remove(self, uid):
+	return self.delete("uid="+str(uid))
+    
+    def view(self, uid):
+	return self.select("uid="+str(uid))
+    
     def list(self, page):
 	return self.select()

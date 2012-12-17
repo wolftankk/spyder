@@ -8,7 +8,7 @@
 <div class="container typecho-page-main">
   <div class="column-16 suffix typecho-content-panel">
     <h4>
-      admin<cite>(admin)</cite>
+      {{ user.username }}
     </h4>
     <p>最后登录: 昨天 22:34</p>
     <h3 id="change-password">设置密码</h3>
@@ -47,16 +47,6 @@
   </div>
   <div class="column-08 typecho-mini-panel typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright">
     <form action="/user/edit" method="post" enctype="application/x-www-form-urlencoded">
-    <ul class="typecho-option" id="typecho-option-item-screenName-8">
-    <li>
-    <label class="typecho-label" for="screenName-0-9">
-    昵称</label>
-    <input id="screenName-0-9" name="screenName" type="text" class="text" value="admin" />
-    <p class="description">
-    用户昵称可以与用户名不同, 用于显示.<br />
-            如果你将此项留空,将默认使用用户名.</p>
-    </li>
-    </ul>
     <ul class="typecho-option" id="typecho-option-item-group-6">
     <li>
     <label class="typecho-label" for="group-0-7">
@@ -77,7 +67,7 @@
     <li>
     <label class="typecho-label" for="mail-0-11">
     电子邮箱地址*</label>
-    <input id="mail-0-11" name="mail" type="text" class="text" value="webmaster@yourdomain.com" />
+    <input id="mail-0-11" name="mail" type="text" class="text" value="{{ user.email }}" />
     <p class="description">
     电子邮箱地址将作为此用户的主要联系方式.<br />
             请不要与系统中现有的电子邮箱地址重复.</p>

@@ -14,7 +14,7 @@
         <span class="operate-button typecho-table-select-all">全选</span>, 
         <span class="operate-button typecho-table-select-none">不选</span>&nbsp;&nbsp;&nbsp;
         选中项: 
-        <span rel="delete" lang="你确认要删除这些站点吗?" class="operate-button operate-delete typecho-table-select-submit">删除</span>
+        <span rel="delete" lang="你确认要删除这些用户吗?" class="operate-button operate-delete typecho-table-select-submit">删除</span>
       </p>
       <p class="search">
                           <input type="text" value="请输入关键字" onclick="value='';name='keywords';">
@@ -23,7 +23,7 @@
     </form>
     </div>
 
-    <form method="post" name="manage_users" class="operate-form" action="/sites/">
+    <form method="post" name="manage_users" class="operate-form" action=".">
     <table class="typecho-list-table">
       <colgroup>
         <col width="25"/>
@@ -49,7 +49,7 @@
         {% for user in users %}
   	    <tr class="even">
           <td><input type="checkbox" value="{{ user.uid }}" name="uid[]"/></td>
-          <td><a href="/user/edit/{{ user.uid }}">{{ user.username }}</a></td>
+          <td><a href="/user/view/{{ user.uid }}">{{ user.username }}</a></td>
           <td></td>
           <td>
           <a class="right hidden-by-mouse" href="/user/view/{{ user.uid }}"><img src="/static/images/view.gif" title="浏览 {{ user.username }}" width="16" height="16" alt="view" /></a>
@@ -66,9 +66,6 @@
       <div class="typecho-pager-content">
         <ul>
           <li class="current"><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">4</a></li>
         </ul>
       </div>
     </div>              

@@ -6,19 +6,20 @@
 
 {% block body %}
 <div class="container typecho-page-main typecho-post-option typecho-post-area">
-  <form action="/site/add" method="post" name="write_post">
+  <form action="." method="post" name="add_site">
+    {% if error %}<p class="message error">{{ error }}</p>{% endif %}
     <div class="column-18 suffix" id="test">
       <div class="column-18">
         <label for="seed_name" class="typecho-label">名称</label>
-        <p><input type="text" id="name" name="name" value="" class="text" /></p>
+        <p><input type="text" id="name" name="name" value="{{ site.name }}" class="text" /></p>
         <label for="base_url" class="typecho-label">链接</label>
-        <p><input type="text" id="url" name="url" value="" class="text" /></p>
+        <p><input type="text" id="url" name="url" value="{{ site.url }}" class="text" /></p>
         <label for="" class="typecho-label">备注</label>
-        <p><textarea style="width:700px;height: 200px" autocomplete="off" name="filters"></textarea></p>
+        <p><textarea style="width:700px;height: 200px" autocomplete="off" name="descript">{{ site.descript }}</textarea></p>
         <p class="submit">
           <span class="right">
             <input type="hidden" name="do" value="publish" />
-            <button type="button" id="btn-submit">保存站点 &raquo;</button>
+            <button type="submit" id="btn-submit">保存站点 &raquo;</button>
           </span>
         </p>
       </div>

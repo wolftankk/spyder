@@ -31,9 +31,10 @@ def add():
 @user.route("/view/<int:user_id>/")
 @auth
 def view(user_id):
-    #user.view(uid)
+    user = User(current_app)
+    per = user.view(user_id)
     #return user_id
-    return render_template("user/view.html")
+    return render_template("user/view.html", user=per.list()[0])
 
 @user.route("/edit/<int:user_id>/")
 @auth

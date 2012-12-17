@@ -9,6 +9,6 @@ class DefaultConfig(object):
 	    "db" : "spyder",
 	    'user' : "root",
 	    "passwd" : "",
-	    "host" : "192.168.1.136"
+	    "host" : "127.0.0.1"
 	}	    
     }

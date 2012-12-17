@@ -23,7 +23,7 @@
     </form>
     </div>
 
-    <form method="post" name="manage_posts" class="operate-form" action="/sites/">
+    <form method="post" name="manage_sites" class="operate-form" action=".">
     <table class="typecho-list-table">
       <colgroup>
         <col width="25">
@@ -48,14 +48,16 @@
         </tr>
       </thead>
       <tbody>
-  	    <tr class="even " id="post-1">
-          <td><input type="checkbox" value="1" name="cid[]"></td>
-          <td colspan="3"><a href="/site/edit/1">CMDP:http://www.dbplay.com</a></td>
-          <td><a class="right hidden-by-mouse" href="http://www.dbplay.com" target="_blank"><img src="/static/images/view.gif" title="浏览站点" width="16" height="16" alt="view"></a></td>
+        {% for site in sites %}
+  	    <tr class="even">
+          <td><input type="checkbox" value="{{ site.id }}" name="id[]"></td>
+          <td colspan="3"><a href="/site/edit/{{ site.id }}">{{ site.name }}:{{ site.url }}</a></td>
+          <td><a class="right hidden-by-mouse" href="{{ site.url }}" target="_blank"><img src="/static/images/view.gif" title="浏览站点" width="16" height="16" alt="view"></a></td>
           <td><a href="#" class="balloon-button size-10" title="查看相关种子">1</a></td>
           <td><span class="balloon st0">正常</span></td>
           <td>1小时前</td>
         </tr>
+        {% endfor %}
       </tbody>
     </table>
     <input type="hidden" name="do" value="delete">
@@ -64,9 +66,6 @@
       <div class="typecho-pager-content">
         <ul>
           <li class="current"><a href="#">1</a></li>
-          <li><a href="#">2</a></li>
-          <li><a href="#">3</a></li>
-          <li><a href="#">4</a></li>
         </ul>
       </div>
     </div>              
