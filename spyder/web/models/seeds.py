@@ -29,5 +29,10 @@ class Seed(Model):
     def view(self, sid):
 	return self.select("sid="+str(sid))
     
-    def list(self, page):
-	return self.select()
+    def list(self, page, per_page):
+        start = (page - 1) * per_page
+        end = per_page
+	return self.select(limit=str(end), offset=start)
+    
+    def count(self):
+	return len(self.select())

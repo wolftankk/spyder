@@ -1,0 +1,1 @@
+var c=Typecho.Table.table.getParent("form").getElements("input:checked");

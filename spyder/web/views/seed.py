@@ -1,3 +1,4 @@
+#coding: utf-8
 from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
 from web.helpers import auth
