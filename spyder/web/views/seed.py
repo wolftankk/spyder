@@ -1,8 +1,8 @@
 #coding: utf-8
 from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
-from libs.phpserialize import dumps
-from web.helpers import auth
+from libs import phpserialize
+from web.helpers import auth, getSeedFieldsBySid
 from web.models import Seed, Field, Seed_fields
 
 seed = Module(__name__)
@@ -10,40 +10,43 @@ seed = Module(__name__)
 @seed.route("/add/", methods=("GET", "POST"))
 @auth
 def add():
-    """
-
-    """
     field = Field(current_app)
     if request.method == "POST":
-        type = request.form.get("type")
-        list = {
+        list1 = {
             "urlformat": request.form.get("urlformat"),
             "startpage": request.form.get("startpage"),
             "maxpage": request.form.get("maxpage"),
             "step": request.form.get("step"),
             "listparent": request.form.get("listparent"),
-            "entryparent": request.form.get("entryparent")
+            "entryparent": request.form.get("entryparent"),
+            "pageparent": request.form.get("pageparent"),
+            "filters": request.form.get("filters")
         }
         save = {
+            "type": request.form.get("type"),
             "seed_name": request.form.get("seed_name"),
             "charset": request.form.get("charset"),
-            "frequency": request.form.get("frequency"),
+            "frequency": (request.form.get("frequency")*3600),
             "timeout": request.form.get("timeout"),
             "tries": request.form.get("tries"),
-            "enabled": request.form.get("enabled"),
+            "enabled": request.form.get("enabled") is 1 and 1 or 0,
             "listtype": request.form.get("listtype"),
             "lang": request.form.get("lang"),
-            "rule": dumps(list)
+            "rule": phpserialize.dumps(list1)
         }
+        print save
         seed = Seed(current_app)
-        sid = seed.add(save)
+        sid = seed.add(**save)
         if sid:
             seed_field = Seed_fields(current_app)
-            for form in request.form:
+            fields = field.list(save["type"])
+            for field in fields:
                 seed_value = {}
-                if form.find("field_") == 0:
-                    seed_value[form] = request.form.get(form)
-                    seed_field.add(seed_value)
+                if request.form.get(field.name) != "":
+                    seed_value["seed_id"] = sid
+                    seed_value["field_id"] = field.id
+                    seed_value["value"] = request.form.get(field.name)
+                    seed_field.add(**seed_value)
         return redirect(url_for("seeds.index"));
     fields = field.getSeedType()
     if request.method == "GET" and request.args.get("type"):
@@ -62,10 +65,17 @@ def view(seed_id):
 def add_link():
     return render_template("seed/add_link.html")
 
-@seed.route("/edit/<int:seed_id>/")
+@seed.route("/edit/<int:seed_id>/", methods=("GET", "POST"))
 @auth
 def edit(seed_id):
-    return render_template("seed/edit.html")
+    if request.method == "GET" and seed_id > 0:
+        seed = Seed(current_app)
+        seed_data = seed.view(seed_id)[0]
+        seed_field = getSeedFieldsBySid(seed_id)
+        seed_type = seed_data["type"]
+        seed_data["rule"] = phpserialize.loads(seed_data["rule"])
+        seed_data["frequency"] = seed_data["frequency"]/3600
+    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data)
 
 @seed.route("/delete/<int:seed_id>")
 @auth

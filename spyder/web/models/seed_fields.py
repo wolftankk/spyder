@@ -2,7 +2,7 @@
 from web.model import Model
 
 class Seed_fields(Model):
-    id = 0;
+    seed_id = 0;
     def __init__(self, app):
         self.app = app
         self.db_config = self.app.config.get('DBS')
@@ -23,14 +23,14 @@ class Seed_fields(Model):
     def add(self, **args):
 	return self.insert(**args)
     
-    def remove(self, id):
-	return self.delete({"id":id})
+    def remove(self, seed_id):
+	return self.delete({"seed_id":seed_id})
     
-    def view(self, id):
-	return self.select({"id":id})
+    def view(self, seed_id):
+	return self.select({"seed_id":seed_id})
     
-    def list(self, type):
-	return self.select({"type":type})
+    def list(self, seed_id):
+	return self.select({"seed_id":seed_id})
     
     def totalcount(self):
 	return self.count()

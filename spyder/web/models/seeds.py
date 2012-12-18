@@ -21,6 +21,7 @@ class Seed(Model):
 	return True
 
     def add(self, **args):
+        print args
 	return self.insert(**args)
     
     def remove(self, sid):

@@ -61,7 +61,7 @@
         {% for seed in seeds %}
   	    <tr class="even " id="post-1">
           <td><input type="checkbox" value="{{ seed.sid }}" name="sid[]"></td>
-          <td colspan="3"><a href="/seed/edit/{{ seed.sid }}">{{ seed.name }}</a></td>
+          <td colspan="3"><a href="/seed/edit/{{ seed.sid }}">{{ seed.seed_name }}</a></td>
           <td><a class="right hidden-by-mouse" href="{{ seed.base_url }}" target="_blank"><img src="/static/images/view.gif" title="浏览采集源" width="16" height="16" alt="view"></a></td>
           <td><a href="#" class="balloon-button size-10" title="测试采集">0</a></td>
           <td><a href="#">网页游戏</a>,<a href="#">开服网</a></td>

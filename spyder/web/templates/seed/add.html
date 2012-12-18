@@ -10,39 +10,39 @@
     <div class="column-18 suffix" id="test">
       <div class="column-18">
         <label for="seed_name" class="typecho-label">名称</label>
-        <p><input type="text" id="seed_name" name="seed_name" value="" class="text" /></p>
+        <p><input type="text" id="seed_name" name="seed_name" value="{{ seed_data.seed_name|default('',true) }}" class="text" /></p>
         <label for="base_url" class="typecho-label">链接 (<a href="#">?</a>)</label>
-        <p><input type="text" id="urlformat" name="urlformat" value="" class="text" /></p>
+        <p><input type="text" id="urlformat" name="urlformat" value="{{ seed_data.rule.urlformat|default('',true) }}" class="text" /></p>
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <div id="forHTML">
           <label for="" class="typecho-label">采集区域节点</label>
-          <p><input type="text" name="listparent" value="" class="text" /></p>
+          <p><input type="text" name="listparent" value="{{ seed_data.rule.listparent|default('',true) }}" class="text" /></p>
           <label for="" class="typecho-label">采集目标节点</label>
-          <p><input type="text" name="entryParent" value="" class="text" /></p>
+          <p><input type="text" name="entryparent" value="{{ seed_data.rule.entryparent|default('',true) }}" class="text" /></p>
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
-          <p><input type="text" id="field_{{ field.name }}" name="field_{{ field.name }}" value="" class="text" /></p>
+          <p><input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" class="text" /></p>
           {% endfor %}
         </div>
         <div id="forArticle">
           <label for="" class="typecho-label">页数区域节点</label>
-          <p><input type="text" name="article[pageparent]" value="" class="text" /></p>
+          <p><input type="text" name="pageparent" value="{{ seed_data.rule.pageparent|default('',true) }}" class="text" /></p>
           <label for="" class="typecho-label">内容处理</label>
           <p>
-            <label for=""><input type="checkbox" name="article[filterscript]" /> 过滤script</label>
-            <label for=""><input type="checkbox" name="article[filterstyle]" /> 过滤style</label>
-            <label for=""><input type="checkbox" name="article[filterlink]" /> 过滤a标签</label>
-            <label for=""><input type="checkbox" name="article[filtertrim]" /> 去首尾空白字符</label>
-            <label for=""><input type="checkbox" name="article[readability]" checked="true" /> 格式整理</label>
+            <label for=""><input type="checkbox" name="filterscript" /> 过滤script</label>
+            <label for=""><input type="checkbox" name="filterstyle" /> 过滤style</label>
+            <label for=""><input type="checkbox" name="filterlink" /> 过滤a标签</label>
+            <label for=""><input type="checkbox" name="filtertrim" /> 去首尾空白字符</label>
+            <label for=""><input type="checkbox" name="readability" checked="true" /> 格式整理</label>
           </p>
-          <p><textarea style="width:700px;height: 100px" autocomplete="off" name="filters"></textarea></p>
+          <p><textarea style="width:700px;height: 100px" autocomplete="off" name="filters">{{ seed_data.rule.filters|default('',true) }}</textarea></p>
         </div>
         <p class="submit">
           <span class="right">
-            <input type="hidden" name="type" value="{{ seed_type }}" />
-            <input type="hidden" name="type" value="startpage" />
-            <input type="hidden" name="type" value="maxpage" />
-            <input type="hidden" name="type" value="step" />
+            <input type="hidden" name="type" value="{{ seed_type|default('',true) }}" />
+            <input type="hidden" name="startpage" value="{{ seed_data.rule.startpage|default('',true) }}" />
+            <input type="hidden" name="maxpage" value="{{ seed_data.rule.maxpage|default('',true) }}" />
+            <input type="hidden" name="step" value="{{ seed_data.rule.step|default('',true) }}" />
             <input type="hidden" name="do" value="publish" />
             <button type="submit" id="btn-submit">保存种子 &raquo;</button>
           </span>
@@ -54,7 +54,7 @@
         <li>
           <label for="listtype" class="typecho-label">是否启用</label>
           <p>
-            <input type="checkbox" name="enabled" />
+            <input type="checkbox" name="enabled" value="1" {% if seed_data.enabled == 1 %}checked="true"{% endif %} />
           </p>
           <p class="description">是否启用该种子</p>
         </li>
@@ -80,9 +80,9 @@
           <p class="description">请选择页面的语言</p>
         </li>
         <li>
-          <label for="autoCharset" class="typecho-label">页面编码 <input type="checkbox" id="autoCharset" checked="true" /> 自动识别</label>
+          <label for="autoCharset" class="typecho-label">页面编码 <input type="checkbox" id="autoCharset" /> 自动识别</label>
           <p>
-            <select disabled class="typecho-charset" name="charset" id="charset">
+            <select class="typecho-charset" name="charset" id="charset">
               <option value="gb2312">Chinese Simplified (GB2312)</option>
               <option value="utf-8">Universal Alphabet (UTF-8)</option>
               <option value="big5">Chinese Traditional (Big5)</option>
@@ -103,17 +103,17 @@
         </li>
         <li>
           <label for="frequency" class="typecho-label">采集频率</label>
-          <p><input class="typecho-date" size="4" maxlength="2" type="text" name="_hour" value="0">:<input class="typecho-date" size="4" maxlength="2" type="text" name="_min" value="00"></p>
-          <p class="description">种子的自动采集的间隔时间(小时:分钟)</p>
+          <p><input class="typecho-date" class="mini" type="text" name="frequency" value="{{ seed_data.frequency|default(1,true) }}"></p>
+          <p class="description">种子的自动采集的间隔时间(小时)</p>
         </li>
         <li>
           <label for="timeout" class="typecho-label">超时时间</label>
-          <p><input type="text" id="timeout" name="timeout" value="30" class="mini" /></p>
+          <p><input type="text" id="timeout" name="timeout" value="{{ seed_data.timeout|default(30,true) }}" class="mini" /></p>
           <p class="description">设定采集源链接的抓取超时时间(秒)</p>
         </li>
         <li>
           <label for="tries" class="typecho-label">尝试次数</label>
-          <p><input type="text" id="tries" name="tries" value="5" class="mini" /></p>
+          <p><input type="text" id="tries" name="tries" value="{{ seed_data.tries|default(5,true) }}" class="mini" /></p>
           <p class="description">抓取超时之后自动尝试的次数</p>
         </li>
         <li>

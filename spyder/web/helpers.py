@@ -5,6 +5,7 @@ from datetime import datetime
 
 from flask import current_app, g, session, redirect, url_for, request
 import functools
+from web.models import Field, Seed_fields
 #from flaskext.themes import static_file_url, render_theme_template
 #
 #_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -92,3 +93,18 @@ def somefunc(name):
     """
     """
     return True
+    
+def getSeedFieldsBySid(sid):
+    seed_fields = Seed_fields(current_app)
+    field = Field(current_app)
+    fields = seed_fields.list(sid)
+    new = []
+    for data in fields:
+        new2 = {}
+        tmp = field.view(data.field_id)[0]
+        new2["name"] = tmp["name"]
+        new2["title"] = tmp["title"]
+        new2["type"] = tmp["type"]
+        new2["value"] = data["value"]
+        new.append(new2)
+    return new
