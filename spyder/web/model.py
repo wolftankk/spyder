@@ -6,7 +6,7 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-from libs.db import MySQLDB, sqlquote
+from libs.db import MySQLDB, sqlquote, sqlwhere, SQLQuery
 from flask import g, current_app
 
 class Model(object):
@@ -24,30 +24,39 @@ class Model(object):
 	    self.db_setting = 'default'
 
 	config = self.db_config[self.db_setting]
-
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name
-
 	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
+	'''
+	Selects `what` from `tables` with clauses `where`, `order`,
+	`group`, `limit`, and `offset`. Uses vars to interpolate.
+	Otherwise, each clause can be a SQLQuery.
+	>>> db.select('foo', _test=True)
+	<sql: 'SELECT * FROM foo'>
+	>>> db.select(['foo', 'bar'], where="foo.bar_id = bar.id", limit=5, _test=True)
+	<sql: 'SELECT * FROM foo, bar WHERE foo.bar_id = bar.id LIMIT 5'>
+	'''
 	if (isinstance(where, dict)):
-	    where = self._sqls(where)
+	    where = sqlwhere(where)
 	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=limit, order=order, group=group, offset=offset, _test=False)
 
-    def get_one(self):
-	'''
-	'''
+    def get_one(self, where=None, vars=None, what='*', limit=None, order=None, group=None, offset=None):
+	if (isinstance(where, dict)):
+	    where = sqlwhere(where)
+	query = self.db.select(self._table_name, where=where, vars=vars, what=what, limit=1, order=order, group=group, offset=0);
+	if query and len(query) > 0 :
+	    return query.list().pop()
+	else:
+	    return None
 
     def query(self, sql):
-	return self.db.query(self._table_name, processed=True);
+	query = SQLQuery(sql)
+	return self.db.query(query, processed=True);
 
     def insert(self, seqname=None, _test=False, **values):
 	return self.db.insert(self._table_name, seqname=seqname, _test=_test, **values);
-
-    def insert_id():
-	'''
-	'''
 
     def update(self, where, vars=None, _test=False, **values):
         """
@@ -72,20 +81,28 @@ class Model(object):
 	return self.db.delete(self._table_name, where=where, vars=vars, _test=_test)
 
 
-    def count():
-	'''
-	'''
-
-    def _sqls(self, where, front=' AND '):
-	return front.join(['%s=%s' % (key, sqlquote(value)) for (key, value) in where.items() ])
+    def count(self, where=None):
+	query = self.get_one(where, what="COUNT(*) AS NUM");
+	if query:
+	    return query["NUM"];
+	else:
+	    return 0;
 
     def affected_rows():
 	'''
 	'''
 
-    def get_primary():
-	'''
-	'''
+    def get_primary(self, table_name=None):
+	if table_name is None:
+	    table_name = self._table_name
+	else:
+	    table_name = self.table_prefix + self._table_name;
+	sql = SQLQuery(["SHOW COLUMNS FROM ", table_name])
+	query = self.db.query(sql, processed=True)
+	list = query.list();
+	for r in list:
+	    if r['Key'] == u'PRI':
+		return r['Field']
 
     def get_fields(self, table_name = None):
 	if table_name is None:
@@ -96,18 +113,26 @@ class Model(object):
 	out = self.db.select(table_name);
 	return out.fields
 
+    def get_field_list(self, field, table_name=None):
+	if table_name is None:
+	    table_name = self._table_name
+	else:
+	    table_name = self.table_prefix + self._table_name;
+	sql = SQLQuery(["SHOW COLUMNS FROM ", table_name, " WHERE Field=", sqlquote(field)])
+	query = self.db.query(sql, processed=True)
+	if query and hasattr(query, "list"):
+	    fields = query.list().pop();
+	    list = fields["Type"]
+	    #类型有两种, 一种是多选, 一种是单选
+	    list = list.replace("enum", '');
+	    list = list.replace("SET", '');
+	    return eval(list)
+
+
     def field_exists(self, field):
 	return field in self.get_fields()
 
     def table_exists(self, field):
-	'''
-	'''
-
-    def fetch_array():
-	'''
-	'''
-
-    def version():
 	'''
 	'''
 
@@ -126,14 +151,15 @@ if __name__ == "__main__":
 
 	def __init__(self):
 	    self.db_setting = 'default'
-	    self._table_name = 'users'
+	    self._table_name = 'field_template'
 	    Model.__init__(self)
 
 
     t = Test()
-    #print t.insert(_test=True, username="wolftankk", passwd='111111')
-    a = t.select({"username" : "fireyy"})
-    #get data list
-    l = a.list()
-    #print l[0]["username"]
-    #print a.list()["username"]
+    l = t.get_primary()
+    print l
+    #a = t.count('1')
+    #print a
+    #l = a.list()
+    #print l
+    #print test_query.list()
