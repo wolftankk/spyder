@@ -18,18 +18,17 @@
         <p><input type="text" id="urlformat" name="urlformat" value="" class="text" /></p>
         <div id="forHTML">
           <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
-          <label for="" class="typecho-label">网址区域节点</label>
+          <label for="" class="typecho-label">采集区域节点</label>
           <p><input type="text" name="list[listparent]" value="" class="text" /></p>
-          <label for="" class="typecho-label">网址节点</label>
+          <label for="" class="typecho-label">采集目标节点</label>
           <p><input type="text" name="list[entryParent]" value="" class="text" /></p>
-          <label for="" class="typecho-label">文章URL节点</label>
-          <p><input type="text" name="list[articleurl]" value="" class="text" /></p>
-          <label for="" class="typecho-label">文章标题节点</label>
-          <p><input type="text" name="list[titleparent]" value="" class="text" /></p>
+          {% for field in fields %}
+          <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
+          <p><input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="" class="text" /></p>
+          {% endfor %}
         </div>
         <div id="forArticle">
-          <label for="" class="typecho-label">文章区域节点</label>
-          <p><input type="text" name="article[articleparent]" value="" class="text" /></p>
+          
           <label for="" class="typecho-label">文章标题节点</label>
           <p><input type="text" name="article[titleparent]" value="" class="text" /></p>
           <label for="" class="typecho-label">tags正则</label>

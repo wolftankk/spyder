@@ -32,6 +32,6 @@ def index(page=1):
     seeds = seed.list(page, PER_PAGE, filte)
     if not seeds and page != 1:
         abort(404)
-    count = seed.count()
+    count = seed.totalcount()
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("seed/list.html", pagination=pagination, seeds=seeds)

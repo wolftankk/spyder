@@ -34,7 +34,7 @@ class Site(Model):
         end = per_page
 	return self.select(where=filte, limit=str(end), offset=start)
     
-    def count(self):
+    def totalcount(self):
 	return self.count()
     
     def getlist(self, **args):

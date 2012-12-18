@@ -32,6 +32,6 @@ def index(page=1):
     sites = site.list(page, PER_PAGE, filte)
     if not sites and page != 1:
         abort(404)
-    count = site.count()
+    count = site.totalcount()
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("site/list.html", pagination=pagination, sites=sites)

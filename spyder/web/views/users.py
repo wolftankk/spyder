@@ -34,6 +34,6 @@ def index(page=1):
     users = user.list(page, PER_PAGE, filte)
     if not users and page != 1:
         abort(404)
-    count = user.count()
+    count = user.totalcount()
     pagination = Pagination(page, PER_PAGE, count)
     return render_template("user/list.html", pagination=pagination, users=users)
