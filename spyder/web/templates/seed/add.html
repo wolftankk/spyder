@@ -16,12 +16,12 @@
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <div id="forHTML">
           <label for="" class="typecho-label">采集区域节点</label>
-          <p><input type="text" name="list[listparent]" value="" class="text" /></p>
+          <p><input type="text" name="listparent" value="" class="text" /></p>
           <label for="" class="typecho-label">采集目标节点</label>
-          <p><input type="text" name="list[entryParent]" value="" class="text" /></p>
+          <p><input type="text" name="entryParent" value="" class="text" /></p>
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
-          <p><input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="" class="text" /></p>
+          <p><input type="text" id="field_{{ field.name }}" name="field_{{ field.name }}" value="" class="text" /></p>
           {% endfor %}
         </div>
         <div id="forArticle">
@@ -40,15 +40,24 @@
         <p class="submit">
           <span class="right">
             <input type="hidden" name="type" value="{{ seed_type }}" />
+            <input type="hidden" name="type" value="startpage" />
+            <input type="hidden" name="type" value="maxpage" />
+            <input type="hidden" name="type" value="step" />
             <input type="hidden" name="do" value="publish" />
-            <button type="button" id="btn-save">保存草稿</button>
-            <button type="button" id="btn-submit">发布种子 &raquo;</button>
+            <button type="submit" id="btn-submit">保存种子 &raquo;</button>
           </span>
         </p>
       </div>
     </div>
     <div class="column-06">
       <ul class="typecho-post-option">
+        <li>
+          <label for="listtype" class="typecho-label">是否启用</label>
+          <p>
+            <input type="checkbox" name="enabled" />
+          </p>
+          <p class="description">是否启用该种子</p>
+        </li>
         <li>
           <label for="listtype" class="typecho-label">采集链接格式</label>
           <p>
