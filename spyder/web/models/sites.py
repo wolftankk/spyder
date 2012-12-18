@@ -35,7 +35,7 @@ class Site(Model):
 	return self.select(where=filte, limit=str(end), offset=start)
     
     def count(self):
-	return len(self.select())
+	return self.count()
     
     def getlist(self, **args):
 	return self.select(**args)
