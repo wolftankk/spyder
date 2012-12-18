@@ -24,10 +24,10 @@ class Seed(Model):
 	return self.insert(**args)
     
     def remove(self, sid):
-	return self.delete("sid="+str(sid))
+	return self.delete({"sid":sid})
     
     def view(self, sid):
-	return self.select("sid="+str(sid))
+	return self.select({"sid":sid})
     
     def list(self, page, per_page, filte):
         start = (page - 1) * per_page

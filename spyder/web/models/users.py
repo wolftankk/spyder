@@ -24,10 +24,10 @@ class User(Model):
 	return self.insert(**args)
     
     def remove(self, uid):
-	return self.delete("uid="+str(uid))
+	return self.delete({"uid":uid})
     
     def view(self, uid):
-	return self.select("uid="+str(uid))
+	return self.select({"uid":uid})
     
     def list(self, page, per_page, filte):
         start = (page - 1) * per_page

@@ -1,21 +1,21 @@
 #coding: utf-8
 from web.model import Model
 
-class Site(Model):
+class Field(Model):
     id = 0;
     def __init__(self, app):
         self.app = app
         self.db_config = self.app.config.get('DBS')
         self.db_setting = 'default'
-        self._table_name = 'websites'
+        self._table_name = 'field_template'
         Model.__init__(self)
 
-    def validate_sitename(self, sitename):
+    def validate_name(self, name):
 	'''
 	'''
 	return True
     
-    def validate_api(self, api):
+    def validate_title(self, title):
 	'''
 	'''
 	return True
@@ -29,13 +29,11 @@ class Site(Model):
     def view(self, id):
 	return self.select({"id":id})
     
-    def list(self, page, per_page, filte):
-        start = (page - 1) * per_page
-        end = per_page
-	return self.select(where=filte, limit=str(end), offset=start)
+    def list(self, type):
+	return self.select({"type":type})
     
     def totalcount(self):
 	return self.count()
-    
-    def getlist(self, **args):
-	return self.select(**args)
+
+    def getSeedType(self):
+	return self.get_field_list(field="type")

@@ -13,3 +13,6 @@
 .st1 { background: orange !important; }
 .st2 { background: red !important; }
 .st3 { background: gray !important; }
+
+.select_type { float: none; display: block; }
+.select_type a { float: none; display: block; padding: 10px 0; margin: 5px 0; text-indent: 20px; }

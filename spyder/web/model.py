@@ -40,6 +40,9 @@ class Model(object):
 	'''
 	if (isinstance(where, dict)):
 	    where = sqlwhere(where)
+
+	if not where:
+	    where = None
 	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=limit, order=order, group=group, offset=offset, _test=False)
 
     def get_one(self, where=None, vars=None, what='*', limit=None, order=None, group=None, offset=None):
