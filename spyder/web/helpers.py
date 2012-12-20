@@ -110,6 +110,11 @@ def getSeedFieldsBySid(sid):
         new.append(new2)
     return new
 
+def getSeedFieldsByType(t):
+    field = Field(current_app)
+    fields = field.list(t)
+    return fields
+
 def checkboxVal(v):
     if v is None: v = 0
     return v

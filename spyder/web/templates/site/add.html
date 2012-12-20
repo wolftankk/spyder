@@ -18,7 +18,15 @@
         <p><input type="text" id="staticUrl" name="staticUrl" value="{{ site.sync_profile.staticUrl|default('',true) }}" class="text" /></p>
         <label for="" class="typecho-label">备注</label>
         <p><textarea style="width:700px;height: 200px" autocomplete="off" name="descript">{{ site.descript }}</textarea></p>
-        {% if site.id %}<p><a href="javascript:openWin('/site_map/select/{{ site.id }}/');">关联种子</a></p>{% endif %}
+        {% if site.id %}<p>
+          <label for="seed_name" class="typecho-label">已配置入库规则</label>
+          <select class="typecho-charset" name="type" id="type">
+            {% for type1 in types %}
+            <option value="{{ type1 }}">{{ type1 }}</option>
+            {% endfor %}
+          </select> 
+          <a href="javascript:;" id="add_seed">配置入库规则</a>
+        </p>{% endif %}
         <p class="submit">
           <span class="right">
             <input type="hidden" name="do" value="publish" />
@@ -78,7 +86,12 @@
       }
     }).send();
   }
+  function addSeed(){
+    var type = $("type").get("value");
+    openWin('/site_map/add/?type='+type+"&site_id={{ site.id }}");
+  }
   window.addEvent('domready', function() {
+    $("add_seed").addEvent("click", addSeed);
     $("test_mysql").addEvent("click", testMysql);
   })
 })();

@@ -7,7 +7,7 @@ class Site_map(Model):
         self.app = app
         self.db_config = self.app.config.get('DBS')
         self.db_setting = 'default'
-        self._table_name = 'websites'
+        self._table_name = 'website_map'
         Model.__init__(self)
 
     def validate_sitename(self, sitename):

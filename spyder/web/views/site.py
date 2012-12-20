@@ -4,7 +4,7 @@ from flask import render_template
 
 from libs import phpserialize
 from web.helpers import auth
-from web.models import Site
+from web.models import Site, Field
 
 import MySQLdb
 
@@ -98,7 +98,9 @@ def edit(site_id):
     per = site.view(site_id)[0]
     if per["sync_profile"]:
         per["sync_profile"] = phpserialize.loads(per["sync_profile"])
-    return render_template("site/add.html", site=per)
+    field = Field(current_app)
+    types = field.getSeedType()
+    return render_template("site/add.html", site=per, types=types)
 
 @site.route("/delete/<int:site_id>")
 @auth
