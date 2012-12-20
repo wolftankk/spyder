@@ -1,6 +1,6 @@
 #coding: utf-8
 
-import re, urlparse
+import re, urlparse, random
 from datetime import datetime
 
 from flask import current_app, g, session, redirect, url_for, request
@@ -29,8 +29,8 @@ def auth(func):
         
     def wrap(*args, **kwargs):
         error = None
-        if ("logged_in" in session and session["logged_in"] is not True) or ("logged_in" not in session):
-            error = 'You must logged in'
+        if ("logged_in" in session and not isinstance(session["logged_in"], int) and session["logged_in"] <= 0) or ("logged_in" not in session):
+            error = u'请登录'
             return redirect(url_for('user.login', error=error))
         return func(*args, **kwargs)
     return wrap
@@ -105,6 +105,18 @@ def getSeedFieldsBySid(sid):
         new2["name"] = tmp["name"]
         new2["title"] = tmp["title"]
         new2["type"] = tmp["type"]
+        new2["id"] = tmp["id"]
         new2["value"] = data["value"]
         new.append(new2)
     return new
+
+def checkboxVal(v):
+    if v is None: v = 0
+    return v
+
+def createSalt():
+    ALPHABET = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    chars=[]
+    for i in range(4):
+        chars.append(random.choice(ALPHABET))
+    return "".join(chars)

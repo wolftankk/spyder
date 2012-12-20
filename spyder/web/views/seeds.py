@@ -2,7 +2,7 @@
 from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
 from web.helpers import auth
-from web.models import Seed, Pagination, Field
+from web.models import Seed, Pagination, Field, Seed_fields
 
 PER_PAGE = 10
 
@@ -14,18 +14,20 @@ seeds = Module(__name__)
 def index(page=1):
     seed = Seed(current_app)
     field = Field(current_app)
+    seed_fields = Seed_fields(current_app)
     filte = {}
     seed_type = None
     if request.method == "POST":
         error = None
         action = request.form.get("do")
         if action == "delete":
-            uids = request.form.getlist("uid[]")
-            if len(uids) > 0:
-                for uid in uids:
-                    if uid:
-                        user.remove(uid)
-                return redirect(url_for('users.index'))
+            sids = request.form.getlist("sid[]")
+            if len(sids) > 0:
+                for sid in sids:
+                    if sid:
+                        seed.remove(sid)
+                        seed_fields.remove(sid)
+                return redirect(url_for('seeds.index'))
             else:
                 error = "请选择要删除的数据"
         return error

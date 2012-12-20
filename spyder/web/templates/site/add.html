@@ -12,10 +12,13 @@
       <div class="column-18">
         <label for="seed_name" class="typecho-label">名称</label>
         <p><input type="text" id="name" name="name" value="{{ site.name }}" class="text" /></p>
-        <label for="base_url" class="typecho-label">链接</label>
+        <label for="base_url" class="typecho-label">网站地址</label>
         <p><input type="text" id="url" name="url" value="{{ site.url }}" class="text" /></p>
+        <label for="base_url" class="typecho-label">图片服务器地址</label>
+        <p><input type="text" id="staticUrl" name="staticUrl" value="{{ site.sync_profile.staticUrl|default('',true) }}" class="text" /></p>
         <label for="" class="typecho-label">备注</label>
         <p><textarea style="width:700px;height: 200px" autocomplete="off" name="descript">{{ site.descript }}</textarea></p>
+        {% if site.id %}<p><a href="javascript:openWin('/site_map/select/{{ site.id }}/');">关联种子</a></p>{% endif %}
         <p class="submit">
           <span class="right">
             <input type="hidden" name="do" value="publish" />
@@ -36,21 +39,48 @@
           </p>
           <p class="description">请选择采集数据入库的方式</p>
         </li>
-        <li>
-          <label for="timeout" class="typecho-label">MySQL配置</label>
-          <p>服务器：<input type="text" id="mysql_server" name="mysql_server" value="" size="20" /></p>
-          <p>数据库：<input type="text" id="mysql_dbname" name="mysql_dbname" value="" size="20" /></p>
-          <p>用户名：<input type="text" id="mysql_username" name="mysql_username" value="" size="20" /></p>
-          <p>密&nbsp;&nbsp;&nbsp;码：<input type="text" id="mysql_password" name="mysql_password" value="" size="20" /></p>
-          <p class="description">设定MySQL数据库的基本配置 <input type="button" value="测试连接"></p>
+        <li id="mysql_form">
+          <label for="" class="typecho-label">MySQL配置</label>
+          <p>服务器：<input type="text" id="mysql_server" name="mysql_server" value="{{ site.sync_profile.mysql_server|default('',true) }}" size="20" /></p>
+          <p>数据库：<input type="text" id="mysql_dbname" name="mysql_dbname" value="{{ site.sync_profile.mysql_dbname|default('',true) }}" size="20" /></p>
+          <p>表前缀：<input type="text" id="mysql_prefix" name="mysql_prefix" value="{{ site.sync_profile.mysql_prefix|default('',true) }}" size="20" /></p>
+          <p>用户名：<input type="text" id="mysql_username" name="mysql_username" value="{{ site.sync_profile.mysql_username|default('',true) }}" size="20" /></p>
+          <p>密&nbsp;&nbsp;&nbsp;码：<input type="text" id="mysql_password" name="mysql_password" value="{{ site.sync_profile.mysql_password|default('',true) }}" size="20" /></p>
+          <p class="description">设定MySQL数据库的基本配置 <input type="button" id="test_mysql" value="测试连接"></p>
         </li>
         <li>
-          <label for="tries" class="typecho-label">API接口地址</label>
-          <p><input type="text" id="api_url" name="api_url" value="" class="mini" /></p>
+          <label for="api_url" class="typecho-label">API接口地址</label>
+          <p><input type="text" id="api_url" name="api_url" value="{{ site.sync_profile.api_url|default('',true) }}" class="mini" /></p>
           <p class="description">采用API方式入库请设定接口地址</p>
         </li>
       </ul>
     </div>
   </form>
 </div>
+<script type="text/javascript">
+(function(){
+  function testMysql(){
+    new Request({
+      "url": "{{ url_for('site.test_mysql') }}",
+      "data": $('mysql_form').toQueryString(),
+      "onRequest": function(){
+        $("test_mysql").set("value","正在连接中...").set("disabled", true);
+      },
+      "onComplete": function(){
+        $("test_mysql").set("value","测试连接").erase("disabled");
+      },
+      "onSuccess": function(t,x){
+        if(t=="1"){
+          alert("数据库连接成功！")
+        }else{
+          alert("数据库连接失败！")
+        }
+      }
+    }).send();
+  }
+  window.addEvent('domready', function() {
+    $("test_mysql").addEvent("click", testMysql);
+  })
+})();
+</script>
 {% endblock %}

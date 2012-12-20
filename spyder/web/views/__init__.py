@@ -2,6 +2,8 @@
 
 #import views all module
 from .home import home
+from .settings import settings
+from .site_map import site_map
 from .article import article
 from .seed import seed
 from .seeds import seeds

@@ -1,0 +1,31 @@
+{% extends "layout.html" %}
+
+{% block title %}关联种子{% endblock %}
+
+{% block html %}
+<div class="main">
+  <div class="body">
+    <div class="container typecho-page-main typecho-post-option typecho-post-area">
+      <div class="column-24 start-01 typecho-list typecho-tabs">
+        <form action="{{ url_for('site_map.add') }}" method="post" name="com_seed" style="padding: 0 10px;">
+          <label for="type" class="typecho-label">种子类型</label>
+          <p>
+            <select class="typecho-charset" name="type" id="type">
+              {% for type1 in types %}
+              <option value="{{ type1 }}">{{ type1 }}</option>
+              {% endfor %}
+            </select>
+          </p>
+          <p class="submit">
+            <input type="hidden" id="site_id" name="site_id" value="{{ site_id }}" />
+            <span class="right"><button type="submit" id="btn-submit">添加 &raquo;</button></span>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  
+</script>
+{% endblock %}

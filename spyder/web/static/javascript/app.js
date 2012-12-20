@@ -37,11 +37,11 @@ function previewcreateLink() {
   $("createLinkPane").getElementById("createLinkText").set("value", data);
 }
 function previewdateLink() {
-  var step = $("dateLinkPane").getElement("[name=step]").get("value")*1,
+  var max = $("dateLinkPane").getElement("[name=max]").get("value")*1,
   date_style = $("dateLinkPane").getElement("[name=date_style]").get("value"),
   link = $("dateLinkPane").getElement("[name=date_link]").get("value"),
   data = "";
-  for (var i=0; i <= step; i++) {
+  for (var i=0; i <= max; i++) {
     var b = moment().add('hours', 24*i).format(date_style);
     data += link.replace("(*)", b)+"\n";
   };
@@ -227,7 +227,6 @@ Typecho.Tab = {
             
       Typecho.Table.init('.typecho-list-table');
       Typecho.Table.init('.typecho-list-notable');
-      Typecho.Tab.init('.typecho-tabs');
       Typecho.replaceText.init();
   });
 })();

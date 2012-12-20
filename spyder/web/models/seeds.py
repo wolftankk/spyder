@@ -21,11 +21,13 @@ class Seed(Model):
 	return True
 
     def add(self, **args):
-        print args
 	return self.insert(**args)
     
     def remove(self, sid):
-	return self.delete({"sid":sid})
+	return self.delete("sid="+str(sid))
+    
+    def edit(self, sid, **args):
+	return self.update(where="sid="+str(sid), **args)
     
     def view(self, sid):
 	return self.select({"sid":sid})

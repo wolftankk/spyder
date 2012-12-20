@@ -2,6 +2,7 @@
 
 from .users import User
 from .sites import Site
+from .site_map import Site_map
 from .seeds import Seed
 from .pages import Pagination
 from .field import Field

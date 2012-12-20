@@ -24,7 +24,10 @@ class Site(Model):
 	return self.insert(**args)
     
     def remove(self, id):
-	return self.delete({"id":id})
+	return self.delete("id="+str(id))
+    
+    def edit(self, id, **args):
+	return self.update(where="id="+str(id), **args)
     
     def view(self, id):
 	return self.select({"id":id})

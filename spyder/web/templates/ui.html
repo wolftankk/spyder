@@ -15,3 +15,10 @@
   </div>
 </div>
 {% endmacro %}
+
+{% macro render_charset(current) %}
+  {% set charsets = [("gb2312", "Chinese Simplified (GB2312)"), ("utf-8", "Universal Alphabet (UTF-8)"), ("big5", "Chinese Traditional (Big5)"), ("shift-jis", "Japanese (Shift-JIS)"), ("euc-kr", "Korean (EUC)"), ("iso-8859-1", "Western Europe (ISO)")] %}
+  {%- for charset in charsets %}
+  <option value="{{ charset[0] }}"{% if charset[0] == current %} selected="true"{% endif %}>{{ charset[1] }}</option>
+  {%- endfor %}
+{% endmacro %}

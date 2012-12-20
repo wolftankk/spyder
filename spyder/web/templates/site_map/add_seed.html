@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+
+{% block title %}关联种子{% endblock %}
+
+{% block html %}
+<div class="main">
+  <div class="body">
+    <div class="container typecho-page-main typecho-post-option typecho-post-area">
+      <div class="column-24 start-01 typecho-list typecho-tabs">
+        <form action="." method="post" name="com_seed" style="padding: 0 10px;">
+          <label for="link_name" class="typecho-label">入库的数据表名</label>
+          <p><input type="text" id="table_name" name="table_name" value="" class="mini" /></p>
+          <table class="typecho-list-table">
+            <colgroup>
+              <col width="150">
+              <col width="150">
+              <col width="150">
+            </colgroup>
+            <thead>
+              <tr>
+                <th class="typecho-radius-topleft">字段名</th>
+                <th>采集字段</th>
+                <th class="typecho-radius-topright">入库字段</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for field in fields %}
+              <tr>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p class="submit">
+            <input type="hidden" id="urltype" name="urltype" value="" />
+            <span class="right"><button type="submit" id="btn-submit">添加 &raquo;</button></span>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+<script type="text/javascript">
+  
+</script>
+{% endblock %}

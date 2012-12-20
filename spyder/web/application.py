@@ -17,6 +17,8 @@ class spyder_web:
     DEFAULT_APP_NAME = "spyder_web"
     MODULES = (
 	(views.home, ""),
+    (views.settings, "/settings"),
+    (views.site_map, "/site_map"),
 	(views.seed, "/seed"),
 	(views.seeds, "/seeds"),
 	(views.article, "/article"),

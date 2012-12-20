@@ -24,7 +24,7 @@ class Field(Model):
 	return self.insert(**args)
     
     def remove(self, id):
-	return self.delete({"id":id})
+	return self.delete("id="+str(id))
     
     def view(self, id):
 	return self.select({"id":id})

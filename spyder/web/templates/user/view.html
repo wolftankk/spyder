@@ -10,7 +10,7 @@
     <h4>
       {{ user.username }}
     </h4>
-    <p>最后登录: 昨天 22:34</p>
+    <p>最后登录: {{ user.lastlogintime|timesince }}</p>
     <h3 id="change-password">设置密码</h3>
     <form action="/user/password" method="post" enctype="application/x-www-form-urlencoded">
     <ul class="typecho-option" id="typecho-option-item-password-4">

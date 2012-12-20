@@ -12,7 +12,7 @@
         <label for="seed_name" class="typecho-label">名称</label>
         <p><input type="text" id="seed_name" name="seed_name" value="{{ seed_data.seed_name|default('',true) }}" class="text" /></p>
         <label for="base_url" class="typecho-label">链接 (<a href="#">?</a>)</label>
-        <p><input type="text" id="urlformat" name="urlformat" value="{{ seed_data.rule.urlformat|default('',true) }}" class="text" /></p>
+        <p><textarea style="width:700px;height: 50px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <div id="forHTML">
           <label for="" class="typecho-label">采集区域节点</label>
@@ -28,21 +28,16 @@
           <label for="" class="typecho-label">页数区域节点</label>
           <p><input type="text" name="pageparent" value="{{ seed_data.rule.pageparent|default('',true) }}" class="text" /></p>
           <label for="" class="typecho-label">内容处理</label>
-          <p>
-            <label for=""><input type="checkbox" name="filterscript" /> 过滤script</label>
-            <label for=""><input type="checkbox" name="filterstyle" /> 过滤style</label>
-            <label for=""><input type="checkbox" name="filterlink" /> 过滤a标签</label>
-            <label for=""><input type="checkbox" name="filtertrim" /> 去首尾空白字符</label>
-            <label for=""><input type="checkbox" name="readability" checked="true" /> 格式整理</label>
-          </p>
           <p><textarea style="width:700px;height: 100px" autocomplete="off" name="filters">{{ seed_data.rule.filters|default('',true) }}</textarea></p>
         </div>
         <p class="submit">
           <span class="right">
+            <input type="hidden" id="urltype" name="urltype" value="{{ seed_data.rule.urltype|default('inputLink',true) }}" />
             <input type="hidden" name="type" value="{{ seed_type|default('',true) }}" />
-            <input type="hidden" name="startpage" value="{{ seed_data.rule.startpage|default('',true) }}" />
-            <input type="hidden" name="maxpage" value="{{ seed_data.rule.maxpage|default('',true) }}" />
-            <input type="hidden" name="step" value="{{ seed_data.rule.step|default('',true) }}" />
+            <input type="hidden" name="sid" value="{{ sid|default('',true) }}" />
+            <input type="hidden" id="startpage" name="startpage" value="{{ seed_data.rule.startpage|default('',true) }}" />
+            <input type="hidden" id="maxpage" name="maxpage" value="{{ seed_data.rule.maxpage|default('',true) }}" />
+            <input type="hidden" id="step" name="step" value="{{ seed_data.rule.step|default('',true) }}" />
             <input type="hidden" name="do" value="publish" />
             <button type="submit" id="btn-submit">保存种子 &raquo;</button>
           </span>
@@ -72,38 +67,27 @@
           <label for="lang" class="typecho-label">页面语言</label>
           <p>
             <select class="typecho-charset" name="lang" id="lang">
-              <option value="zhCN">中文简体</option>
-              <option value="zhTW">中文繁体</option>
-              <option value="en">英语</option>
+              {% set langs = [("zhCN", "中文简体"), ("zhTW", "中文繁体"), ("en", "英语")] %}
+              {% for lang in langs %}
+              <option value="{{ lang[0] }}"{% if lang[0] == seed_data.lang %} selected="true"{% endif %}>{{ lang[1] }}</option>
+              {% endfor %}
             </select>
           </p>
           <p class="description">请选择页面的语言</p>
         </li>
         <li>
-          <label for="autoCharset" class="typecho-label">页面编码 <input type="checkbox" id="autoCharset" /> 自动识别</label>
+          <label for="autoCharset" class="typecho-label">页面编码</label>
           <p>
             <select class="typecho-charset" name="charset" id="charset">
-              <option value="gb2312">Chinese Simplified (GB2312)</option>
-              <option value="utf-8">Universal Alphabet (UTF-8)</option>
-              <option value="big5">Chinese Traditional (Big5)</option>
-              <option value="shift-jis">Japanese (Shift-JIS)</option>
-              <option value="x-euc">Japanese (EUC)</option>
-              <option value="euc-kr">Korean (EUC)</option>
-              <option value="iso-8859-1">Western Alphabet</option>
-              <option value="iso-8859-3">Latin 3 Alphabet (ISO)</option>
-              <option value="iso-8859-4">Baltic Alphabet (ISO)</option>
-              <option value="iso-8859-5">Cyrillic Alphabet (ISO)</option>
-              <option value="iso-8859-6">Arabic Alphabet (ISO)</option>
-              <option value="iso-8859-7">Greek Alphabet (ISO)</option>
-              <option value="iso-8859-8">Hebrew Alphabet (ISO)</option>
-              <option value="koi8-r">Cyrillic Alphabet (KOI8-R)</option>
+              {% import './ui.html' as ui %}
+              {{ ui.render_charset(seed_data.charset) }}
             </select>
           </p>
           <p class="description">请选择页面的编码格式</p>
         </li>
         <li>
           <label for="frequency" class="typecho-label">采集频率</label>
-          <p><input class="typecho-date" class="mini" type="text" name="frequency" value="{{ seed_data.frequency|default(1,true) }}"></p>
+          <p><input class="mini" type="text" name="frequency" value="{{ seed_data.frequency|default(1,true) }}"></p>
           <p class="description">种子的自动采集的间隔时间(小时)</p>
         </li>
         <li>

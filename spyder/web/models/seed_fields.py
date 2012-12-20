@@ -23,8 +23,11 @@ class Seed_fields(Model):
     def add(self, **args):
 	return self.insert(**args)
     
+    def edit(self, sid, fid, value):
+	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value)
+    
     def remove(self, seed_id):
-	return self.delete({"seed_id":seed_id})
+	return self.delete("seed_id="+str(seed_id))
     
     def view(self, seed_id):
 	return self.select({"seed_id":seed_id})

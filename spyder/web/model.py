@@ -73,7 +73,7 @@ class Model(object):
 	>>> q.values()
 	[2, 'bob', 'Joseph']
 	"""
-	return self.db.update(self._table_name, where=where, vars=vars,_test=_test, **values)
+	return self.db.update(self._table_name, where=where, vars=vars, _test=_test, **values)
 
     def delete(self, where, using=None, vars=None, _test=False):
         """
@@ -138,7 +138,6 @@ class Model(object):
     def table_exists(self, field):
 	'''
 	'''
-
 
 if __name__ == "__main__":
     class Test(Model):
