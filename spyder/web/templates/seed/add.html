@@ -15,13 +15,25 @@
         <p><textarea style="width:700px;height: 50px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <div id="forHTML">
-          <label for="" class="typecho-label">采集区域节点</label>
+          <label for="" class="typecho-label">列表页父节点</label>
           <p><input type="text" name="listparent" value="{{ seed_data.rule.listparent|default('',true) }}" class="text" /></p>
-          <label for="" class="typecho-label">采集目标节点</label>
+          <label for="" class="typecho-label">列表页目标节点</label>
           <p><input type="text" name="entryparent" value="{{ seed_data.rule.entryparent|default('',true) }}" class="text" /></p>
+          <label for="" class="typecho-label">内容页父节点</label>
+          <p><input type="text" name="contentparent" value="{{ seed_data.rule.contentparent|default('',true) }}" class="text" /></p>
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
-          <p><input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" class="text" /></p>
+          <p>
+            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 540px;" />
+            {% if page_types %}
+            &nbsp;&nbsp;目标页面：
+            <select class="typecho-charset" name="page_type_{{ field.name }}">
+              {% for page_type in page_types %}
+              <option value="{{ page_type }}"{% if page_type == field.page_type %} selected="true"{% endif %}>{{ page_type|getPageTypeText }}</option>
+              {% endfor %}
+            </select>
+            {% endif %}
+          </p>
           {% endfor %}
         </div>
         <div id="forArticle">

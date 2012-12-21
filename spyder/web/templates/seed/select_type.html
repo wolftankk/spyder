@@ -8,7 +8,7 @@
 <div class="container typecho-page-main typecho-post-option typecho-post-area">
   <div class="column-08 select_type">
   {% for field in fields %}
-    <a class="typecho-mini-panel typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright" href="{{ url_for('seed.add', type=field) }}">{{ field }}</a>
+    <a class="typecho-mini-panel typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright" href="{{ url_for('seed.add', type=field) }}">{{ field|getSeedTypeText }}</a>
   {% endfor %}
   </div>
 </div>

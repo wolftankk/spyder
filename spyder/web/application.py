@@ -52,6 +52,14 @@ class spyder_web:
 	def getSiteStatus(value):
 		return helpers.getSiteStatus(value)
 
+	@self.app.template_filter()
+	def getPageTypeText(value):
+		return helpers.getPageTypeText(value)
+
+	@self.app.template_filter()
+	def getSeedTypeText(value):
+		return helpers.getSeedTypeText(value)
+
 	@self.app.context_processor
 	def utility_processor():
 		def somefunc(name):

@@ -59,6 +59,24 @@ def getSiteStatus(n):
     status = [u"正常",u"繁忙",u"拥挤",u"未知"]
     return status[n]
 
+def getPageTypeText(n):
+    text = {
+        "list": u"列表页",
+        "content": u"内容页"
+    }
+    return text[n]
+
+def getSeedTypeText(n):
+    text = {
+        "article": u"文章",
+        "game": u"游戏",
+        "kaifu": u"开服",
+        "kaice": u"开测",
+        "gift": u"礼包",
+        "company": u"厂商"
+    }
+    return text[n]
+
 def timesince(dt, default=None):
     """
     Returns string representing "time since" e.g.
@@ -98,19 +116,26 @@ def somefunc(name):
     """
     return True
     
-def getSeedFieldsBySid(sid):
+def getSeedFieldsBySid(sid, seed_type):
     seed_fields = Seed_fields(current_app)
+    #fields = seed_fields.list(sid)
     field = Field(current_app)
-    fields = seed_fields.list(sid)
+    datas = field.list(seed_type)
     new = []
-    for data in fields:
+    for data in datas:
         new2 = {}
-        tmp = field.view(data.field_id)[0]
-        new2["name"] = tmp["name"]
-        new2["title"] = tmp["title"]
-        new2["type"] = tmp["type"]
-        new2["id"] = tmp["id"]
-        new2["value"] = data["value"]
+        #tmp = field.view(data.field_id)[0]
+        new2["name"] = data["name"]
+        new2["title"] = data["title"]
+        new2["type"] = data["type"]
+        new2["id"] = data["id"]
+        v =  seed_fields.view(sid, data["id"]).list()
+        if len(v) > 0:
+            new2["value"] = v[0]["value"]
+            new2["page_type"] = v[0]["page_type"]
+        else:
+            new2["value"] = ""
+            new2["page_type"] = ""
         new.append(new2)
     return new
 

@@ -23,17 +23,20 @@ class Seed_fields(Model):
     def add(self, **args):
 	return self.insert(**args)
     
-    def edit(self, sid, fid, value):
-	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value)
+    def edit(self, sid, fid, value, page_type):
+	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value, page_type=page_type)
     
     def remove(self, seed_id):
 	return self.delete("seed_id="+str(seed_id))
     
-    def view(self, seed_id):
-	return self.select({"seed_id":seed_id})
+    def view(self, seed_id, fid):
+	return self.select({"seed_id":seed_id, "field_id":fid})
     
     def list(self, seed_id):
 	return self.select({"seed_id":seed_id})
     
     def totalcount(self):
 	return self.count()
+    
+    def getpageType(self):
+	return self.get_field_list(field="page_type")

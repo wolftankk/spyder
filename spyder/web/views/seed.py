@@ -4,6 +4,7 @@ from flask import render_template
 from libs import phpserialize
 from web.helpers import auth, getSeedFieldsBySid, checkboxVal
 from web.models import Seed, Field, Seed_fields
+import time
 
 seed = Module(__name__)
 
@@ -20,9 +21,11 @@ def add():
             "step": request.form.get("step"),
             "listparent": request.form.get("listparent"),
             "entryparent": request.form.get("entryparent"),
+            "contentparent": request.form.get("contentparent"),
             "pageparent": request.form.get("pageparent"),
             "filters": request.form.get("filters")
         }
+        time1 = int(time.time())
         save = {
             "type": request.form.get("type"),
             "seed_name": request.form.get("seed_name"),
@@ -33,6 +36,8 @@ def add():
             "enabled": request.form.get("enabled") is 1 and 1 or 0,
             "listtype": request.form.get("listtype"),
             "lang": request.form.get("lang"),
+            "created_time": time1,
+            "update_time": time1,
             "rule": phpserialize.dumps(list1)
         }
         seed = Seed(current_app)
@@ -40,11 +45,13 @@ def add():
         if sid:
             seed_field = Seed_fields(current_app)
             fields = field.list(save["type"])
+            #page_types = request.form.getlist("page_type[]")
             for field in fields:
                 seed_value = {}
                 seed_value["seed_id"] = sid
                 seed_value["field_id"] = field.id
                 seed_value["value"] = request.form.get(field.name)
+                seed_value["page_type"] = request.form.get("page_type_"+field.name)
                 seed_field.add(**seed_value)
         return redirect(url_for("seeds.index"));
     fields = field.getSeedType()
@@ -53,7 +60,9 @@ def add():
         seed_data["rule"] = {}
         seed_type = request.args.get("type");
         fields = field.list(seed_type)
-        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data)
+        seed_field = Seed_fields(current_app)
+        page_types = seed_field.getpageType()
+        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data, page_types=page_types)
     return render_template("seed/select_type.html", fields=fields)
     
 @seed.route("/view/<int:seed_id>/")
@@ -80,9 +89,11 @@ def edit(seed_id):
             "step": request.form.get("step"),
             "listparent": request.form.get("listparent"),
             "entryparent": request.form.get("entryparent"),
+            "contentparent": request.form.get("contentparent"),
             "pageparent": request.form.get("pageparent"),
             "filters": request.form.get("filters")
         }
+        time1 = int(time.time())
         save = {
             "type": request.form.get("type"),
             "seed_name": request.form.get("seed_name"),
@@ -93,6 +104,7 @@ def edit(seed_id):
             "enabled": enabled,
             "listtype": request.form.get("listtype"),
             "lang": request.form.get("lang"),
+            "update_time": time1,
             "rule": phpserialize.dumps(list1)
         }
         seed = Seed(current_app)
@@ -101,16 +113,18 @@ def edit(seed_id):
         fields = field.list(save["type"])
         seed_field = Seed_fields(current_app)
         for field in fields:
-            seed_field.edit(sid, field.id, request.form.get(field.name))
+            seed_field.edit(sid, field.id, request.form.get(field.name), request.form.get("page_type_"+field.name))
         return redirect(url_for("seeds.index"))
     if request.method == "GET" and seed_id > 0:
         seed = Seed(current_app)
         seed_data = seed.view(seed_id)[0]
-        seed_field = getSeedFieldsBySid(seed_id)
         seed_type = seed_data["type"]
+        seed_field = getSeedFieldsBySid(seed_id, seed_type)
+        seed_fields = Seed_fields(current_app)
+        page_types = seed_fields.getpageType()
         if seed_data["rule"]:
             seed_data["rule"] = phpserialize.loads(seed_data["rule"])
-    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id)
+    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types)
 
 @seed.route("/delete/<int:seed_id>")
 @auth
