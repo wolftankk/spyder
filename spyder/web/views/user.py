@@ -21,10 +21,10 @@ def add():
         group = request.form.get("group")
         user = User(current_app)
         userdata = user.check(uname)
+        if not uname or not mail or not password:
+            return render_template("user/add.html", error=u"请填写所有选项")
         if password != confirm:
-            return render_template("user/add.html", error="两次密码不匹配")
-        if not mail:
-            return render_template("user/add.html", error="必须填写电子邮箱")
+            return render_template("user/add.html", error=u"两次密码不匹配")
         if len(userdata) == 0:
             if password:
                 #valide

@@ -21,6 +21,7 @@ def add():
             "step": request.form.get("step"),
             "listparent": request.form.get("listparent"),
             "entryparent": request.form.get("entryparent"),
+            "contenturl": request.form.get("contenturl"),
             "contentparent": request.form.get("contentparent"),
             "pageparent": request.form.get("pageparent"),
             "filters": request.form.get("filters")
@@ -30,7 +31,7 @@ def add():
             "type": request.form.get("type"),
             "seed_name": request.form.get("seed_name"),
             "charset": request.form.get("charset"),
-            "frequency": request.form.get("frequency"),
+            "frequency": float(request.form.get("frequency"))*3600,
             "timeout": request.form.get("timeout"),
             "tries": request.form.get("tries"),
             "enabled": request.form.get("enabled") is 1 and 1 or 0,
@@ -89,6 +90,7 @@ def edit(seed_id):
             "step": request.form.get("step"),
             "listparent": request.form.get("listparent"),
             "entryparent": request.form.get("entryparent"),
+            "contenturl": request.form.get("contenturl"),
             "contentparent": request.form.get("contentparent"),
             "pageparent": request.form.get("pageparent"),
             "filters": request.form.get("filters")
@@ -98,7 +100,7 @@ def edit(seed_id):
             "type": request.form.get("type"),
             "seed_name": request.form.get("seed_name"),
             "charset": request.form.get("charset"),
-            "frequency": request.form.get("frequency"),
+            "frequency": float(request.form.get("frequency"))*3600,
             "timeout": request.form.get("timeout"),
             "tries": request.form.get("tries"),
             "enabled": enabled,
@@ -113,7 +115,16 @@ def edit(seed_id):
         fields = field.list(save["type"])
         seed_field = Seed_fields(current_app)
         for field in fields:
-            seed_field.edit(sid, field.id, request.form.get(field.name), request.form.get("page_type_"+field.name))
+            field_data = seed_field.view(sid, field.id).list()
+            if len(field_data) > 0:
+                seed_field.edit(sid, field.id, request.form.get(field.name), request.form.get("page_type_"+field.name))
+            else:
+                seed_value = {}
+                seed_value["seed_id"] = sid
+                seed_value["field_id"] = field.id
+                seed_value["value"] = request.form.get(field.name)
+                seed_value["page_type"] = request.form.get("page_type_"+field.name)
+                seed_field.add(**seed_value)
         return redirect(url_for("seeds.index"))
     if request.method == "GET" and seed_id > 0:
         seed = Seed(current_app)
@@ -122,6 +133,7 @@ def edit(seed_id):
         seed_field = getSeedFieldsBySid(seed_id, seed_type)
         seed_fields = Seed_fields(current_app)
         page_types = seed_fields.getpageType()
+        seed_data["frequency"] = float(seed_data["frequency"])/float(3600)
         if seed_data["rule"]:
             seed_data["rule"] = phpserialize.loads(seed_data["rule"])
     return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types)

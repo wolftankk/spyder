@@ -19,6 +19,8 @@
           <p><input type="text" name="listparent" value="{{ seed_data.rule.listparent|default('',true) }}" class="text" /></p>
           <label for="" class="typecho-label">列表页目标节点</label>
           <p><input type="text" name="entryparent" value="{{ seed_data.rule.entryparent|default('',true) }}" class="text" /></p>
+          <label for="" class="typecho-label">内容页连接节点</label>
+          <p><input type="text" name="contenturl" value="{{ seed_data.rule.contenturl|default('',true) }}" class="text" /></p>
           <label for="" class="typecho-label">内容页父节点</label>
           <p><input type="text" name="contentparent" value="{{ seed_data.rule.contentparent|default('',true) }}" class="text" /></p>
           {% for field in fields %}
