@@ -29,7 +29,7 @@ def auth(func):
         
     def wrap(*args, **kwargs):
         error = None
-        if ("logged_in" in session and not isinstance(session["logged_in"], int) and session["logged_in"] <= 0) or ("logged_in" not in session):
+        if ("uid" in session and not isinstance(session["uid"], int) and session["uid"] <= 0) or ("uid" not in session):
             error = u'请登录'
             return redirect(url_for('user.login', error=error))
         return func(*args, **kwargs)
@@ -55,6 +55,10 @@ def getPermissions(group):
     
     return 1
 
+def getSiteStatus(n):
+    status = [u"正常",u"繁忙",u"拥挤",u"未知"]
+    return status[n]
+
 def timesince(dt, default=None):
     """
     Returns string representing "time since" e.g.
@@ -62,7 +66,7 @@ def timesince(dt, default=None):
     """
     
     if default is None:
-        default = "刚刚"
+        default = u"刚刚"
 
     dt = datetime.fromtimestamp(dt);
     now = datetime.now()

@@ -7,9 +7,7 @@
   <div class="body">
     <div class="container typecho-page-main typecho-post-option typecho-post-area">
       <div class="column-24 start-01 typecho-list">
-        {% if error %}<p class="message error popup">{{ error }}</p>{% endif %}
         {% if succ %}
-          <p class="message popup">{{ succ }}</p>
           <script type="text/javascript">
             window.opener.document.location.reload(-1);
           </script>

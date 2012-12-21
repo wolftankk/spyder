@@ -53,8 +53,8 @@
           <td><input type="checkbox" value="{{ site.id }}" name="id[]"></td>
           <td colspan="3"><a href="/site/edit/{{ site.id }}">{{ site.name }}:{{ site.url }}</a></td>
           <td><a class="right hidden-by-mouse" href="{{ site.url }}" target="_blank"><img src="/static/images/view.gif" title="浏览站点" width="16" height="16" alt="view"></a></td>
-          <td><a href="#" class="balloon-button size-10" title="查看相关种子">1</a></td>
-          <td><span class="balloon st0">正常</span></td>
+          <td><a href="#" class="balloon-button size-10" title="查看相关种子">0</a></td>
+          <td><span class="balloon st{{ site.status }}">{{ site.status|getSiteStatus }}</span></td>
           <td>1小时前</td>
         </tr>
         {% endfor %}

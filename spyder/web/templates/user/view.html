@@ -12,12 +12,12 @@
     </h4>
     <p>最后登录: {{ user.lastlogintime|timesince }}</p>
     <h3 id="change-password">设置密码</h3>
-    <form action="/user/password" method="post" enctype="application/x-www-form-urlencoded">
+    <form action="." method="post" enctype="application/x-www-form-urlencoded">
     <ul class="typecho-option" id="typecho-option-item-password-4">
     <li>
     <label class="typecho-label" for="password-0-5">
     用户密码</label>
-    <input id="password-0-5" name="password" type="password" class="password" />
+    <input id="password" name="password" type="password" class="password" />
     <p class="description">
     为此用户分配一个密码.<br />
             建议使用特殊字符与字母的混编样式,以增加系统安全性.</p>
@@ -27,7 +27,7 @@
     <li>
     <label class="typecho-label" for="confirm-0-6">
     用户密码确认</label>
-    <input id="confirm-0-6" name="confirm" type="password" class="password" />
+    <input id="confirm" name="confirm" type="password" class="password" />
     <p class="description">
     请确认你的密码, 与上面输入的密码保持一致.</p>
     </li>
@@ -46,18 +46,16 @@
     </form>
   </div>
   <div class="column-08 typecho-mini-panel typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright">
-    <form action="/user/edit" method="post" enctype="application/x-www-form-urlencoded">
+    <form action="." method="post" enctype="application/x-www-form-urlencoded">
     <ul class="typecho-option" id="typecho-option-item-group-6">
     <li>
-    <label class="typecho-label" for="group-0-7">
+    <label class="typecho-label" for="group">
     用户组</label>
-    <select name="group" id="group-0-7">
-    <option value="visitor">
-    访问者</option>
-    <option value="editor">
-    编辑</option>
-    <option value="administrator">
-    管理员</option>
+    <select name="group" id="group">
+    {% set groups = [("visitor", "访问者"), ("editor", "编辑"), ("administrator", "管理员")] %}
+    {% for group in groups %}
+    <option value="{{ group[0] }}"{% if group[0] == user.permissions %} selected="true"{% endif %}>{{ group[1] }}</option>
+    {% endfor %}
     </select>
     <p class="description">
     不同的用户组拥有不同的权限.</p>
@@ -67,7 +65,7 @@
     <li>
     <label class="typecho-label" for="mail-0-11">
     电子邮箱地址*</label>
-    <input id="mail-0-11" name="mail" type="text" class="text" value="{{ user.email }}" />
+    <input id="mail" name="mail" type="text" class="text" value="{{ user.email }}" />
     <p class="description">
     电子邮箱地址将作为此用户的主要联系方式.<br />
             请不要与系统中现有的电子邮箱地址重复.</p>

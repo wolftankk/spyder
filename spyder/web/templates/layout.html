@@ -43,13 +43,21 @@
         </dd>
         {% endfor %}
       </dl>
-      <p class="operate">欢迎, <a href="/user/view/1" class="author important">admin</a>
+      <p class="operate">欢迎, <a href="/user/view/{{ session['uid'] }}" class="author important">{{ session['username'] }}</a>
               <a class="exit" href="/user/logout" title="登出">登出</a></p>
     </div>
     {% endblock %}
     {% block main %}
     <div class="main">
       <div class="body body-950">
+        {% if error or succ %}
+        <div class="container message{% if error %} error{% endif %}{% if succ %} success{% endif %} popup typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright">
+          <ul>
+            {% if error %}<li>{{ error }}</li>{% endif %}
+            {% if succ %}<li>{{ succ }}</li>{% endif %}
+          </ul>
+        </div>
+        {% endif %}
         <div class="container typecho-page-title">
           <div class="column-24">
             <h2>{{ self.title() }}{% block title_add %}{% endblock %}</h2>

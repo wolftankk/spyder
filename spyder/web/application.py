@@ -48,6 +48,10 @@ class spyder_web:
 	def timesince(value):
 		return helpers.timesince(value)
 
+	@self.app.template_filter()
+	def getSiteStatus(value):
+		return helpers.getSiteStatus(value)
+
 	@self.app.context_processor
 	def utility_processor():
 		def somefunc(name):
