@@ -8,6 +8,13 @@ from seed import Seed
 from document import Grab 
 from db import db
 
+import os, sys
+
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0,parentdir)
+
+from web.models import Seed as Seed_Model
+
 def now():
     return int(time.time())
 
@@ -45,17 +52,20 @@ class Spyder(object):
     def Test(self, sid):
         if not sid:
             return;
-        sql = "SELECT * FROM seeds WHERE sid=%s" % sid;
-        query = self.db.query(sql)
-        r = self.db.store_result();
-        if r.num_rows() == 0:
+        db=Seed_Model()
+        r = db.view(sid)
+        #sql = "SELECT * FROM seeds WHERE sid=%s" % sid;
+        #query = self.db.query(sql)
+        #r = self.db.store_result();
+        if len(r) == 0:
             print (ansicolor.red("Spyder") + " sid " + str(sid) + " has not exists.");
             return
-        data = r.fetch_row(0, 1);
+        data = r.list();
         if data and len(data) > 0:
+            print data[0]
             seed = Seed(data[0]);
             print "Seed %s start fetching." % ansicolor.yellow(seed)
-            docData = Grab(seed, False)
+            #docData = Grab(seed, False)
 
     def run(self, force):
         self.getSpiderList()

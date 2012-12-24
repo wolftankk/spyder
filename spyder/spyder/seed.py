@@ -9,7 +9,7 @@ class SeedEmpty(Exception): pass
 #paser rule
 class Seed(object):
     def __init__(self, seed):
-        if (type(seed) == type({})):
+        if seed and seed["sid"] > 0:
 	    self._seed = seed
 
             self._name = None
@@ -25,7 +25,7 @@ class Seed(object):
             self._debugMode = 0
             self.enabled = 0
 	    self.lang = "zhCN"
-            self.type = "html"
+            self.listtype = "html"
 	    self.cid = 0
 	    self.gameid = 0
 
@@ -37,7 +37,7 @@ class Seed(object):
         return self.getname()
 
     def __parse(self, seedData):
-        self.setname(seedData["sname"]) # set seed name
+        self.setname(seedData["seed_name"]) # set seed name
         self.sid = seedData["sid"]
 
         if seedData["frequency"] != None:
@@ -49,26 +49,26 @@ class Seed(object):
         if seedData["timeout"] != None:
             self.timeout = seedData["timeout"]
 
-        if seedData["starttime"] != None:
-            self.starttime = seedData["starttime"]
+        if seedData["start_time"] != None:
+            self.starttime = seedData["start_time"]
 
-        if seedData["finishtime"] != None:
-            self.finishtime = seedData["finishtime"]
+        if seedData["finish_time"] != None:
+            self.finishtime = seedData["finish_time"]
 
         if seedData["charset"] != "" or seedData != None:
             self.charset = seedData["charset"]
         
-        if seedData["url"] != None:
-            self.prefixurl = seedData["url"]
+        if seedData["base_url"] != None:
+            self.prefixurl = seedData["base_url"]
 
-	if seedData["cid"] > 0:
-	    self.cid = int(seedData["cid"])
+	#if seedData["cid"] > 0:
+	#    self.cid = int(seedData["cid"])
 
         if "enabled" in seedData:
             self.enabled = seedData["enabled"];
 
         if "listtype" in seedData:
-            self.type = seedData["listtype"];
+            self.listtype = seedData["listtype"];
 
 	if "lang" in seedData:
 	    self.lang = seedData["lang"];

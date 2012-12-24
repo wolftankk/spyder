@@ -4,11 +4,11 @@ import urllib2, urlparse, os, sys, io
 import config
 import hashlib, StringIO, struct
 from pybits import ansicolor
-from poster.encode import multipart_encode
-from poster.streaminghttp import register_openers
+#from poster.encode import multipart_encode
+#from poster.streaminghttp import register_openers
 import base64
 
-register_openers()
+#register_openers()
 
 class DumpMedia():
     def __init__(self, prefixUrl, url):
@@ -120,7 +120,8 @@ class DumpMedia():
 
 	data = self.mediaData
 
-	datagen, headers = multipart_encode({
+	"""
+    datagen, headers = multipart_encode({
 	    "XiMaGe" : base64.b64encode(data),
 	    "imageName" : newname,
 	    "imageType"    : self.getFileType()
@@ -129,6 +130,7 @@ class DumpMedia():
 	request.add_header("User-Agent", "Python-Spyder/1.1");
 	path = urllib2.urlopen(request).read()
 	path = path.strip()
+    """
 
 	if path:
 	    path = config.staticUrl + path;
