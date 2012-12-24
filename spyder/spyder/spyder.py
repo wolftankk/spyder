@@ -1,17 +1,15 @@
 #coding: utf-8
 #!/usr/bin/env python
 
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0,parentdir)
+
 import threading
 import io, time
 from pybits import ansicolor
 from seed import Seed
 from document import Grab 
-from db import db
-
-import os, sys
-
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0,parentdir)
 
 from web.models import Seed as Seed_Model
 
@@ -20,15 +18,15 @@ def now():
 
 class Spyder(object):
     def __init__(self):
-        self.db = db
         print (ansicolor.green("Spyder") + " start launching");
-
+	self.db = Seed_Model()
         #idle time
         self.needIdleTime = 600
         self.spiderList = None
         #self.queue = {}
 
     def getSpiderList(self):
+	'''
         self.spiderList = {};
         sql = "select * FROM seeds";
         query = self.db.query(sql);
@@ -48,12 +46,12 @@ class Spyder(object):
             sid = int(seedInfo["sid"]);
             #init seed and format
             self.spiderList[sid] = Seed(seedInfo)
+	'''
 
     def Test(self, sid):
         if not sid:
             return;
-        db=Seed_Model()
-        r = db.view(sid)
+        r = self.db.view(sid)
         #sql = "SELECT * FROM seeds WHERE sid=%s" % sid;
         #query = self.db.query(sql)
         #r = self.db.store_result();
@@ -68,6 +66,7 @@ class Spyder(object):
             #docData = Grab(seed, False)
 
     def run(self, force):
+	'''
         self.getSpiderList()
 	
         for sid in self.spiderList:
@@ -91,42 +90,44 @@ class Spyder(object):
         time.sleep(self.needIdleTime);
         print "休息结束 开始重新启动抓取程序";
         self.run(force);
+	'''
 
 if __name__ == "__main__":
-    import getopt, sys
-    try:
-        opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help", "force"]);
-    except getopt.GetoptError, err:
-        print str(err)
-        sys.exit(2)
+    Spyder().Test(2)
+    #import getopt, sys
+    #try:
+    #    opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help", "force"]);
+    #except getopt.GetoptError, err:
+    #    print str(err)
+    #    sys.exit(2)
 
-    if len(opts) == 0 :
-	opts = [('--run', '')]
+    #if len(opts) == 0 :
+    #    opts = [('--run', '')]
 
-    isRun = False
-    isForce = False
-    for o, a in opts:
-        if o == "-V" or o == "--version":
-            #get spyder version
-            import __init__
-            print __init__.VERSION
-        elif o == "-h" or o == "--help":
-            print "Spyder help"
-        elif o == "-t" or o == "--test":
-            try:
-                sid = int(a)
-            except ValueError:
-                print "请输入需要测试的sid"
-                sys.exit(2)
+    #isRun = False
+    #isForce = False
+    #for o, a in opts:
+    #    if o == "-V" or o == "--version":
+    #        #get spyder version
+    #        import __init__
+    #        print __init__.VERSION
+    #    elif o == "-h" or o == "--help":
+    #        print "Spyder help"
+    #    elif o == "-t" or o == "--test":
+    #        try:
+    #            sid = int(a)
+    #        except ValueError:
+    #            print "请输入需要测试的sid"
+    #            sys.exit(2)
 
-            if sid == 0:
-                print "请输入需要测试的sid"
-                sys.exit(2)
-            Spyder().Test(sid)
-        elif o == "-r" or o == "--run":
-	    isRun = True
-	elif o == "--force":
-	    isForce = True
+    #        if sid == 0:
+    #            print "请输入需要测试的sid"
+    #            sys.exit(2)
+    #        Spyder().Test(sid)
+    #    elif o == "-r" or o == "--run":
+    #        isRun = True
+    #    elif o == "--force":
+    #        isForce = True
 
-    if isRun:
-	Spyder().run(isForce)
+    #if isRun:
+    #	Spyder().run(isForce)

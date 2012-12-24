@@ -7,7 +7,9 @@ import phpserialize
 import re, urlparse
 import _mysql
 import feedparser
+
 from db import Store
+
 from fetch import Fetch
 from dumpmedia import DumpMedia
 import config, lxml

@@ -1,12 +1,16 @@
 #coding: utf-8
 
-from pyquery import PyQuery as pq
-import urllib2, urlparse, re
-import socket
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
+
+import urllib2, urlparse, re, socket, zlib
 from gzip import GzipFile
 from StringIO import StringIO
-from pybits import ansicolor
-import zlib
+
+from spyder.pyquery import PyQuery as pq
+from spyder.pybits import ansicolor
 
 __all__ = [
     'Fetch',
@@ -19,6 +23,9 @@ def deflate(data):
     except zlib.error:
 	return zlib.decompress(data)
 
+'''
+支持gzip格式的网页， 加快页面采集速度
+'''
 class ContentEncodingProcessor(urllib2.BaseHandler):
     #add header to request
     def http_request(self, req):
@@ -44,20 +51,36 @@ class ContentEncodingProcessor(urllib2.BaseHandler):
 encoding_support = ContentEncodingProcessor
 opener = urllib2.build_opener(encoding_support, urllib2.HTTPHandler)
 
+'''
+页面抓取
+'''
 class Fetch(object):
-    def __init__(self, url, charset="utf-8", timeout = 300):
+    def __init__(self, url, **config):
         self.url = url
-        self.charset = charset
-        self.timeout = timeout
+	if "charset" in config:
+	    self.charset = config['charset'];
+	else:
+	    self.charset = "utf-8"
+	
+	if "timeout" in config:
+	    self.timeout = config["timeout"]
+	else:
+	    self.timeout = 300;
+
+	if "tries" in config:
+	    self.tries = config["tries"]
+	else:
+	    self.tries = 5
+
         self.site = None
 	self.count = 1
 	self.error = None
 
-        self.openSite();
+        self.connect();
 
     def retryConnection(self):
-	if self.count <= 5:
-	    self.openSite();
+	if self.count <= self.tries:
+	    self.connect();
 	    self.count = self.count + 1
 	    print "Retry connection %s, now Count %s" % (self.site, self.count)
 	else:
@@ -76,7 +99,7 @@ class Fetch(object):
     def getError(self):
 	return self.error
 
-    def openSite(self):
+    def connect(self):
         self.request = urllib2.Request(self.url);
         try:
 	    #code, url, headers, msg
@@ -114,6 +137,10 @@ class Fetch(object):
                     result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
                 if result:
                     charset = result.group(1)
+		    '''
+		    get new charset
+		    '''
+		    self.charset = charset;
                     try:
                         doc = doc.decode(charset)
                         return doc
@@ -126,5 +153,5 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    f = Fetch("http://wow.178.com/", "gbk")
+    f = Fetch("http://wow.178.com/", timeout=300, charset="gbk")
     print f.read() if f.isReady() else "111"
