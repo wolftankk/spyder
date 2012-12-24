@@ -1,135 +1,171 @@
 #coding: utf-8
 
-from pybits import ansicolor
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
+
+from spyder.pybits import ansicolor
 import re, string, urlparse
-import phpserialize
+from libs.phpserialize import unserialize
 
-class SeedEmpty(Exception): pass
 
-#paser rule
+__all__ = [
+    'SeedEmpty', 'Seed', 'Rule',
+    'RuleCantParse', 'RuleEmpty'
+]
+
+class SeedEmpty(Exception): 
+    pass
+
+
+class RuleCantParse(Exception):
+    pass
+
+
+class RuleEmpty(Exception):
+    pass
+
+'''
+种子管理类
+分析种子， 将种子中的Rule分析出来
+'''
 class Seed(object):
     def __init__(self, seed):
-        if seed and seed["sid"] > 0:
+	if seed and seed["sid"] > 0:
 	    self._seed = seed
 
-            self._name = None
-            self._sid = None
-            self._rule = None
-            self._frequency = 0
-            self._tries = 0
-            self._timeout = 0
-            self._starttime = 0
-            self._finishtime = 0
-            self._preURL = None
-            self._charset = "utf-8"
-            self._debugMode = 0
-            self.enabled = 0
+	    self._sid = seed["sid"];
+	    self._name = None
+	    self._rule = None
+	    self._frequency = 0
+	    self._tries = 0
+	    self._timeout = 0
+	    self._starttime = 0
+	    self._finishtime = 0
+	    self._charset = "utf-8"
+	    self._debugMode = 0
+	    self.enabled = 0
 	    self.lang = "zhCN"
-            self.listtype = "html"
+	    self.listtype = "html"
 	    self.cid = 0
 	    self.gameid = 0
 
-            self.__parse(seed);
-        else:
-            raise SeedEmpty
+	    self.__parse(seed);
+	else:
+	    raise SeedEmpty
 
     def __str__(self):
-        return self.getname()
+	return self.getname()
+
+    def __repr__(self):
+	return '<seed: %s>' % repr(str(self))
 
     def __parse(self, seedData):
-        self.setname(seedData["seed_name"]) # set seed name
-        self.sid = seedData["sid"]
+	self.setname(seedData["seed_name"]) # set seed name
 
-        if seedData["frequency"] != None:
-            self.frequency = seedData["frequency"]
+	if seedData["frequency"] != None:
+	    self.frequency = seedData["frequency"]
 
-        if seedData["tries"] !=None:
-            self.tries = seedData["tries"]
+	if seedData["tries"] !=None:
+	    self.tries = seedData["tries"]
 
-        if seedData["timeout"] != None:
-            self.timeout = seedData["timeout"]
+	if seedData["timeout"] != None:
+	    self.timeout = seedData["timeout"]
 
-        if seedData["start_time"] != None:
-            self.starttime = seedData["start_time"]
+	if seedData["start_time"] != None:
+	    self.starttime = seedData["start_time"]
 
-        if seedData["finish_time"] != None:
-            self.finishtime = seedData["finish_time"]
+	if seedData["finish_time"] != None:
+	    self.finishtime = seedData["finish_time"]
 
-        if seedData["charset"] != "" or seedData != None:
-            self.charset = seedData["charset"]
-        
-        if seedData["base_url"] != None:
-            self.prefixurl = seedData["base_url"]
+	if seedData["charset"] != "" or seedData != None:
+	    self.charset = seedData["charset"]
 
-	#if seedData["cid"] > 0:
-	#    self.cid = int(seedData["cid"])
+	if "enabled" in seedData:
+	    self.enabled = seedData["enabled"];
 
-        if "enabled" in seedData:
-            self.enabled = seedData["enabled"];
-
-        if "listtype" in seedData:
-            self.listtype = seedData["listtype"];
+	if "listtype" in seedData:
+	    self.listtype = seedData["listtype"];
 
 	if "lang" in seedData:
 	    self.lang = seedData["lang"];
 
-        #rule
-        if seedData["rule"] != "":
-            self._rule = seedData["rule"]
-            self.rule = Rule(self._rule)
+	#rule
+	if seedData["rule"] != "":
+	    self._rule = seedData["rule"]
+	    self.rule = Rule(self._rule)
 	    list = self.rule.getListRule()
 	    if list:
 		self.gameid = list.gameid
 
     def getsid(self):
-        return self._sid
+	return self._sid
     def setsid(self, value):
-        self._sid = int(value)
+	self._sid = int(value)
     sid = property(getsid, setsid)
 
     def getname(self):
-        return self._name
+	return self._name
     def setname(self, name):
-        self._name = name
+	self._name = name
     name = property(fget=getname, fset=setname, doc="Seed name");
 
     def getfrequency(self):
-        return int(self._frequency)
+	return int(self._frequency)
     def setfrequency(self, value):
-        self._frequency = int(value)
+	self._frequency = int(value)
     frequency = property(getfrequency, setfrequency)
 
     def gettries(self):
-        return int(self._tries)
+	return int(self._tries)
     def settries(self, value):
-        self._tries = int(value)
+	self._tries = int(value)
     tries = property(gettries, settries)
 
     def gettimeout(self):
-        return self._timeout
+	return self._timeout
     def settimeout(self, value):
-        self._timeout = int(value)
+	self._timeout = int(value)
     timeout = property(gettimeout, settimeout)
 
     def getcharset(self):
-        return self._charset
+	return self._charset
     def setcharset(self, value):
-        self._charset = value
+	self._charset = value
     charset = property(getcharset, setcharset)
 
     @property
     def starttime(self):
-        return self._starttime
+	return self._starttime
     @starttime.setter
     def starttime(self, value):
-        self._starttime = int(value)
+	self._starttime = int(value)
 
     @property
     def finishtime(self):
-        return self._finishtime
+	return self._finishtime
     @finishtime.setter
     def finishtime(self, value):
-        self._finishtime = int(value)
+	self._finishtime = int(value)
+
+
+
+
+if __name__ == "__main__":
+    print Seed
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 class Rule(object):
@@ -137,7 +173,7 @@ class Rule(object):
         self.list = None
         self.article = None
 
-        rule = phpserialize.unserialize(rule)
+        rule = unserialize(rule)
         if (rule["list"] != None):
             list = rule["list"]
             self.list = RuleList(list)
