@@ -1,21 +1,21 @@
 #coding=utf-8
 
-import time
-from pyquery import PyQuery as pq
-from pybits import ansicolor
-import phpserialize
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
+
 import re, urlparse
-import _mysql
-import feedparser
 
-from db import Store
-
-from fetch import Fetch
-from dumpmedia import DumpMedia
-import config, lxml
-
-import urllib2, urllib
-import json
+from libs.utils import now
+from spyder.pyquery import PyQuery as pq
+from spyder.pybits import ansicolor
+from libs.phpserialize import serialize
+import spyder.feedparser
+from spyder.fetch import Fetch
+#from dumpmedia import DumpMedia
+#import config, lxml
+import urllib2, urllib, import json
 
 __all__ = [
     "getElementData",
@@ -25,6 +25,7 @@ __all__ = [
 
 spp_reg = re.compile(u"""[　]*""", re.I|re.M|re.S)
 
+'''
 def public_article(aid, catid = -1, gameid = -1):
     options = {
 	"convertLanuage" : "true"	    
@@ -57,6 +58,7 @@ def public_article(aid, catid = -1, gameid = -1):
     msg = site.read();
     j = json.loads(msg)
     return j
+'''
 
 
 r"""
@@ -278,7 +280,7 @@ class Document(object):
             title = _mysql.escape_string(title.encode("utf-8", "ignore"))
 
         self.url = self.url.encode("utf-8", "ignore")
-	self.images = phpserialize.serialize(self.images)
+	self.images = serialize(self.images)
 
         sql = "INSERT INTO articles (lang, title, content, images, url, sid, status, fetchtime) VALUES ('%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s')" % (self.lang, title, content, self.images, self.url, str(self.sid), "0", str(int(time.time())))
         
@@ -411,65 +413,3 @@ class Document(object):
                         url = urlparse.urljoin(self.url, url)
                         self.pages.append(url)
 
-    def specialFilter(self, content):
-        if len(self.articleRule.filters) > 0:
-            for filter in self.articleRule.filters:
-                element = getElementData(content, filter, True)
-		if element is not None:
-		    element.getparent().remove(element);
-
-    def tags(self, node, *tag_names):
-	for tag_name in tag_names:
-	    for e in node.find(tag_name):
-		yield e
-
-    def removeScript(self, content):
-        if self.filterscript:
-            content = content.remove("script");
-
-    def drop_anchor(self, element):
-	for k in element.attrib:
-	    del element.attrib[k]
-	try:
-	    element.drop_tag()
-	except:
-	    pass
-
-    def clean_comments(self, content):
-	def clean_comment(i, element):
-	    if (isinstance(element, lxml.html.HtmlComment)):
-		element.getparent().remove(element)
-
-	content.children().each(clean_comment)
-
-    def clean_attributes(self, content):
-	if content.tag == "font":
-	    content.tag = "span"
-
-	if content.tag == "center":
-	    content.tag = "div"
-
-	for att in ["color", "width", "height", "background", "style", "class", "id", "face"]:
-	    if content.get(att) is not None:
-		del content.attrib[att]
-
-    def readability(self, content):
-	origin_content = content
-
-	self.specialFilter(content)
-	
-	self.clean_comments(content)
-
-	self.removeScript(content)
-
-	try:
-	    for e in self.tags(content, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
-	        self.clean_attributes(e)
-
-	except:
-	    pass
-
-	for e in self.tags(content, "a"):
-	    self.drop_anchor(e)
-
-	return content

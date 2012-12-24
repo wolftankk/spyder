@@ -2,10 +2,13 @@
 
 import itertools
 
-__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters', 'iterbetter', 'IterBetter']
+__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters', 'iterbetter', 'IterBetter', "now"]
 
 import sys
 from threading import local as threadlocal
+
+def now():
+    return int(time.time())
 
 class Storage(dict):
     """

@@ -10,11 +10,8 @@ import io, time
 from pybits import ansicolor
 from seed import Seed
 from document import Grab 
-
 from web.models import Seed as Seed_Model
-
-def now():
-    return int(time.time())
+from libs.utils import now
 
 class Spyder(object):
     def __init__(self):
@@ -52,9 +49,6 @@ class Spyder(object):
 	if not sid:
 	    return;
 	r = self.db.view(sid)
-	#sql = "SELECT * FROM seeds WHERE sid=%s" % sid;
-	#query = self.db.query(sql)
-	#r = self.db.store_result();
 	if len(r) == 0:
 	    print (ansicolor.red("Spyder") + " sid " + str(sid) + " has not exists.");
 	    return

@@ -103,8 +103,6 @@ class Rule(object):
 	
 	r = self.db.list(seed["sid"])
 
-	print r.list()
-
         #rule = unserialize(rule)
 	#self.__rule = rule;
 
