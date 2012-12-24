@@ -8,19 +8,38 @@ if parentdir not in sys.path:
 from spyder.pybits import ansicolor
 import re, string, urlparse
 from libs.phpserialize import unserialize
-
+from libs.utils import Storage
+from web.models import Seed_fields
 
 __all__ = [
     'SeedEmpty', 'Seed', 'Rule',
     'RuleCantParse', 'RuleEmpty'
+    'SeedError'
 ]
 
+'''
+Seed种子类型错误 或者 无法分析时引用此错误
+'''
+class SeedError(Exception):
+    def __init__(self, msg='Seed Error!'):
+	self.msg = msg
+
+    def __str__(self):
+	return repr(self.msg)
+
+'''
+Seed不存在引用此错误
+'''
 class SeedEmpty(Exception): 
     pass
 
 
-class RuleCantParse(Exception):
-    pass
+class RuleError(Exception):
+    def __init__(self, msg='Rule cant parse'):
+	self.msg = msg
+
+    def __str__(self):
+	return repr(self.msg)
 
 
 class RuleEmpty(Exception):
@@ -31,162 +50,86 @@ class RuleEmpty(Exception):
 分析种子， 将种子中的Rule分析出来
 '''
 class Seed(object):
-    def __init__(self, seed):
-	if seed and seed["sid"] > 0:
-	    self._seed = seed
+    def __init__(self, seed={}):
+	if isinstance(seed, Storage) or isinstance(seed, object):
+	    if ("sid" not in seed) or ("sid" in seed and int(seed["sid"]) <= 0):
+		raise SeedEmpty
 
-	    self._sid = seed["sid"];
-	    self._name = None
-	    self._rule = None
-	    self._frequency = 0
-	    self._tries = 0
-	    self._timeout = 0
-	    self._starttime = 0
-	    self._finishtime = 0
-	    self._charset = "utf-8"
-	    self._debugMode = 0
-	    self.enabled = 0
-	    self.lang = "zhCN"
-	    self.listtype = "html"
-	    self.cid = 0
-	    self.gameid = 0
+	    '''
+		init
+	    '''
+	    self.__seed = seed;
+	    self.name = self.__seed["seed_name"].encode("utf-8")
 
-	    self.__parse(seed);
 	else:
-	    raise SeedEmpty
+	    raise SeedError("Seed instance error.")
 
     def __str__(self):
-	return self.getname()
+	return (self.name)
 
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
 
-    def __parse(self, seedData):
-	self.setname(seedData["seed_name"]) # set seed name
 
-	if seedData["frequency"] != None:
-	    self.frequency = seedData["frequency"]
+    def __getitem__(self, k):
+	if k in self.__seed:
+	    return self.__seed[k]
+	elif k == "timeout":
+	    return 300
+	elif k == "charset":
+	    return "utf-8"
+	else:
+	    return None
 
-	if seedData["tries"] !=None:
-	    self.tries = seedData["tries"]
-
-	if seedData["timeout"] != None:
-	    self.timeout = seedData["timeout"]
-
-	if seedData["start_time"] != None:
-	    self.starttime = seedData["start_time"]
-
-	if seedData["finish_time"] != None:
-	    self.finishtime = seedData["finish_time"]
-
-	if seedData["charset"] != "" or seedData != None:
-	    self.charset = seedData["charset"]
-
-	if "enabled" in seedData:
-	    self.enabled = seedData["enabled"];
-
-	if "listtype" in seedData:
-	    self.listtype = seedData["listtype"];
-
-	if "lang" in seedData:
-	    self.lang = seedData["lang"];
-
-	#rule
-	if seedData["rule"] != "":
-	    self._rule = seedData["rule"]
-	    self.rule = Rule(self._rule)
-	    list = self.rule.getListRule()
-	    if list:
-		self.gameid = list.gameid
-
-    def getsid(self):
-	return self._sid
-    def setsid(self, value):
-	self._sid = int(value)
-    sid = property(getsid, setsid)
-
-    def getname(self):
-	return self._name
-    def setname(self, name):
-	self._name = name
-    name = property(fget=getname, fset=setname, doc="Seed name");
-
-    def getfrequency(self):
-	return int(self._frequency)
-    def setfrequency(self, value):
-	self._frequency = int(value)
-    frequency = property(getfrequency, setfrequency)
-
-    def gettries(self):
-	return int(self._tries)
-    def settries(self, value):
-	self._tries = int(value)
-    tries = property(gettries, settries)
-
-    def gettimeout(self):
-	return self._timeout
-    def settimeout(self, value):
-	self._timeout = int(value)
-    timeout = property(gettimeout, settimeout)
-
-    def getcharset(self):
-	return self._charset
-    def setcharset(self, value):
-	self._charset = value
-    charset = property(getcharset, setcharset)
-
-    @property
-    def starttime(self):
-	return self._starttime
-    @starttime.setter
-    def starttime(self, value):
-	self._starttime = int(value)
-
-    @property
-    def finishtime(self):
-	return self._finishtime
-    @finishtime.setter
-    def finishtime(self, value):
-	self._finishtime = int(value)
+    def __setitem__(self, k, v):
+	self.__seed[k] = v
 
 
+    def getRule(self):
+	rule = Rule(self["rule"], self)
+	return rule
 
 
-if __name__ == "__main__":
-    print Seed
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+'''
+采集规则表
+'''
 class Rule(object):
-    def __init__(self, rule):
-        self.list = None
-        self.article = None
+    def __init__(self, rule, seed):
+	if not rule:
+	    raise RuleEmpty
 
-        rule = unserialize(rule)
-        if (rule["list"] != None):
-            list = rule["list"]
-            self.list = RuleList(list)
+	self.seed = seed;
+	self.db = Seed_fields()
+	
+	r = self.db.list(seed["sid"])
 
-        if (rule["article"] != None):
-            article = rule["article"]
-            self.article = RuleArticle(article)
+	print r.list()
+
+        #rule = unserialize(rule)
+	#self.__rule = rule;
+
+	'''
+	contenturl
+	urlformat
+	urltype: inputLink, createLink, dateLink
+	contentparent
+	pageparent
+	listparent
+	maxpage
+	step
+	startpage
+	filters
+	entryparent
+	'''
 
     def getListRule(self):
         return self.list
 
     def getArticleRule(self):
         return self.article
+
+    def __str__(self):
+	return '<%s 的规则>' % str(self.seed)
 
 
 r'''
@@ -383,3 +326,12 @@ Article rule:
     dateParten
 
 """
+
+if __name__ == "__main__":
+    from web.models import Seed as Seed_Model
+    db = Seed_Model();
+    r = db.view(2);
+    t = Seed(r.list()[0])
+    
+    # test Seed info
+    t.getRule();
