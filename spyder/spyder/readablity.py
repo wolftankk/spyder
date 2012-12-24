@@ -4,6 +4,8 @@
 格式化页面
 '''
 
+import re
+
 __all__ = [
     'readability'
 ]
@@ -17,8 +19,8 @@ def specialFilter(self, content):
     if len(self.articleRule.filters) > 0:
 	for filter in self.articleRule.filters:
 	    element = getElementData(content, filter, True)
-		if element is not None:
-		    element.getparent().remove(element);
+	    if element is not None:
+		element.getparent().remove(element);
 
 def tags(self, node, *tag_names):
     for tag_name in tag_names:

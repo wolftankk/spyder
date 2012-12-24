@@ -13,9 +13,13 @@ from spyder.pybits import ansicolor
 from libs.phpserialize import serialize
 import spyder.feedparser
 from spyder.fetch import Fetch
+from spyder.readability import readability
+
+
+print readability
 #from dumpmedia import DumpMedia
 #import config, lxml
-import urllib2, urllib, import json
+import urllib2, urllib, json
 
 __all__ = [
     "getElementData",
@@ -366,7 +370,7 @@ class Document(object):
 		for image in self.tags(content, "img"):
 		    self.processingImage(image)
                 #filter
-		content = self.readability(content)
+		content = readability(content)
 
                 content = content.html();
                 if content:
