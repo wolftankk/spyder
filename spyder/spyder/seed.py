@@ -92,6 +92,7 @@ class Seed(object):
 
 '''
 采集规则表
+Base Rule
 '''
 class Rule(object):
     def __init__(self, rule, seed):
@@ -102,9 +103,11 @@ class Rule(object):
 	self.db = Seed_fields()
 	
 	r = self.db.list(seed["sid"])
+	if len(r) > 0:
+	    self.extrarules = r.list();
 
-        #rule = unserialize(rule)
-	#self.__rule = rule;
+        rule = unserialize(rule)
+	self.rule = rule;
 
 	'''
 	contenturl
@@ -121,7 +124,7 @@ class Rule(object):
 	'''
 
     def getListRule(self):
-        return self.list
+        return RuleList(self)
 
     def getArticleRule(self):
         return self.article
@@ -129,68 +132,44 @@ class Rule(object):
     def __str__(self):
 	return '<%s 的规则>' % str(self.seed)
 
-
 r'''
-Exp: http://www.265g.com/chanye/hot/4985-1.html
+List一共有两种类型：feed, html
+当设定为feed时候， 将会自动分析出url等相关信息
+当设定为html时，将会根据设定的规则分析出信息
 
-1. get list 
-1)
-urlprefix: http://www.265g.com/chanye/hot/
-urlformat: 4985-(%d).html
-maxpages: 10
-firsepage: 1 0
 
-2)
-urlprefix: http://www.4gamer.net/script/search/index.php?mode=article&TS016
-type: ajax
-extraparams: PAGE:(%d), TAGS: xxx
-
-2. get article list
-$list = array(
-    preurl => "http://www.265g.com/chanye/hot/",
-    type => "default", //type: default, ajax(post),
-    extraparams => ""
-
-    urlformat => "4985-(%d).html",
-    startpage => 1
-    step = 1,
-    maxpage => 10,
-    
-    listparent=> "", //exp: <ul id="xxx"></ul>  <table> <tr> <td>
-    entryparent => "", //exp <li></li>
-    
-    dateparent => "",
-    titleparten => "",
-    articaleurl => ""
-)
 '''
 class RuleList(object):
-    def __init__(self, rule):
-        self.originRule = rule
-        self.type = "default"
-    
-        #url 批量格式
-        self.urlformat = rule["urlformat"]
-        self.step = rule["step"]
-        #起始页数
-        self.startpage = rule["startpage"]
-        #结束页数
-        self.maxpage = rule["maxpage"]
+    def __init__(self, parent):
+        self.parent = parent
+        self.type = parent.seed["listtype"];
 
-        #获取list元素
-        self.listparent = rule["listparent"]
-        #获取list=>item元素
-        self.entryparent = rule["entryparent"]
+	'''
+	contenturl
+	contentparent
+	pageparent
+	listparent
 
-        #获取日期元素
-        self.dateparent = rule["dateparent"]
-        #获取标题元素
-        self.titleparent = rule["titleparent"]
-        #获取link元素
-        self.linkparent = rule["articleparent"]
-	self.gameid = 0;
-	if "gameid" in rule:
-	    self.gameid = int(rule["gameid"])
+
+	filters
+	entryparent
+	'''
+	self.getListUrls()
+
+        ##获取list元素
+        #self.listparent = rule["listparent"]
+        ##获取list=>item元素
+        #self.entryparent = rule["entryparent"]
+
+        ##获取日期元素
+        #self.dateparent = rule["dateparent"]
+        ##获取标题元素
+        #self.titleparent = rule["titleparent"]
+        ##获取link元素
+        #self.linkparent = rule["articleparent"]
+	#self.gameid = 0;
+	#if "gameid" in rule:
+	#    self.gameid = int(rule["gameid"])
 
     def setPrefixUrl(self, url):
         self.prefixurl = url
@@ -221,30 +200,87 @@ class RuleList(object):
     def getItemDate(self):
         return self.dateparent
 
-
-    def getFormatedUrls(self):
+    def getListUrls(self):
+	r'''
+	获得需要采集的url列表
+	'''
         listUrls = [];
-	if self.urlformat == None or self.urlformat == "":
-	    raise RuleUrlInvalid
+	rule = self.parent.rule;
 
-	if not self.startpage:
-	    self.startpage = 1
+	#urltype: inputLink, createLink, dateLink
+	urltype = rule["urltype"]
+	
+	urlformat = rule["urlformat"]
+	step = rule["step"]
+	maxpage = rule["maxpage"]
+	startpage = rule["startpage"]
 
-	if not self.maxpage:
-	    self.maxpage = 1
+	if urltype == "inputLink":
+	    '''
+	    手动输入的url采集地址
+	    '''
+	elif urltype == "createLink":
+	    '''
+	    手动格式化的数字版本
+	    '''
+	    if not step:
+		step = 1
 
-	if not self.step:
-	    self.step = 1
+	    if not maxpage:
+		maxpage = 1
 
-	self.startpage = int(self.startpage)
-	self.maxpage   = int(self.maxpage)
-	urlformat = string.Template(self.urlformat);
-	for i in range(self.startpage, self.maxpage+1):
-	    url = urlformat.substitute(page=i);
-	    url = urlparse.urljoin(self.prefixurl, url);
-	    listUrls.append(url)
+	    if not startpage:
+		startpage = 1
 
-        return listUrls
+	    urlformat = string.Template(urlformat);
+	    for i in range(startpage, maxpage+1):
+		print i
+	        #url = urlformat.substitute(page=i);
+	        #url = urlparse.urljoin(prefixurl, url);
+		#print url
+	        #listUrls.append(url)
+	    
+	elif urltype == "dateLink":
+	    '''
+	    日期地址
+	    '''
+	else:
+	    raise RuleError("URL类型无效");
+
+        ##url 批量格式
+        #self.urlformat = rule["urlformat"]
+        #self.step = rule["step"]
+        ##起始页数
+        #self.startpage = rule["startpage"]
+        ##结束页数
+        #self.maxpage = rule["maxpage"]
+
+	#urlformat
+	#maxpage
+	#step
+	#startpage
+
+	#if self.urlformat == None or self.urlformat == "":
+	#    raise RuleUrlInvalid
+
+	#if not self.startpage:
+	#    self.startpage = 1
+
+	#if not self.maxpage:
+	#    self.maxpage = 1
+
+	#if not self.step:
+	#    self.step = 1
+
+	#self.startpage = int(self.startpage)
+	#self.maxpage   = int(self.maxpage)
+	#urlformat = string.Template(self.urlformat);
+	#for i in range(self.startpage, self.maxpage+1):
+	#    url = urlformat.substitute(page=i);
+	#    url = urlparse.urljoin(self.prefixurl, url);
+	#    listUrls.append(url)
+
+        #return listUrls
 
 r'''
 preurl
@@ -332,4 +368,5 @@ if __name__ == "__main__":
     t = Seed(r.list()[0])
     
     # test Seed info
-    t.getRule();
+    rule = t.getRule();
+    rule.getListRule();
