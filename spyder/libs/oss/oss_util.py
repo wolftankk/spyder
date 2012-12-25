@@ -69,6 +69,10 @@ def get_assign(secret_access_key, method, headers = {}, resource="/", result = [
         print "method:%s, content_md5:%s, content_type:%s, data:%s, canonicalized_oss_headers:%s, canonicalized_resource:%s" % (method, content_md5, content_type, date, canonicalized_oss_headers, canonicalized_resource)
         print "string_to_sign", string_to_sign, "string_to_sign_size", len(string_to_sign)
     
+    #BUG: character mapping must return integer, None or unicode
+        #FIX:
+    secret_access_key = secret_access_key.encode('ascii')
+    
     h = hmac.new(secret_access_key, string_to_sign, sha)
 
     return base64.encodestring(h.digest()).strip()
