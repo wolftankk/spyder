@@ -261,9 +261,6 @@ class RuleArticle(object):
             self.filters = []
 
 
-
-
-
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();

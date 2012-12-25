@@ -27,7 +27,6 @@ from seed import Seed
 #    "Grab"
 #]
 
-spp_reg = re.compile(u"""[　]*""", re.I|re.M|re.S)
 
 '''
 获得dom元素信息
@@ -41,7 +40,8 @@ eq
 attrParrent = re.compile("(\w+)?\((.+)?\)");
 
 def getElementData(obj, rule):
-    obj = pq(obj);
+    if not isinstance(obj, pq):
+	obj = pq(obj);
 
     rule = rule.split(".")
     
@@ -65,6 +65,8 @@ def getElementData(obj, rule):
 		    return selecteddom.eq(int(v))
 		elif action == "text" and hasattr(selecteddom, "text"):
 		    return selecteddom.text()
+		elif action == "html" and hasattr(selecteddom, "html"):
+		    return selecteddom.html()
 
     elif len(rule) == 1:
 	'''
@@ -73,10 +75,10 @@ def getElementData(obj, rule):
 	rule = rule.pop()
 	if rule.find('(*)'):
 	    parrent = re.compile(rule.replace('(*)', '(.+)?'))
-	    content = obj.text()
-	    result = parrent.findall(content)
-	    if result and len(result) > 0:
-		return result[0]
+	    content = obj.html()
+	    #result = parrent.findall(content)
+	#    if result and len(result) > 0:
+	#	return result[0]
     
     return None
 
@@ -99,10 +101,11 @@ class Grab(object):
 		'html'
 		self.listRule = rule.getListRule();
 	        self.fetchListPages();
+
+	    self.fetchArticles();
 	else:
 	    print "传入的种子不是Seed类型"
 
-        self.fetchArticles();
 
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
@@ -169,64 +172,159 @@ class Grab(object):
 
     def fetchArticles(self):
 	print "Start fetching these articles"
-        #if len(self.items.items()) > 0:
-        #    for url in self.items:
-        #        self.items[url]["article"] = Document(url, self.seed, self.savable, self.items[url])
+        if len(self.items.items()) > 0:
+            for guid in self.items:
+		item = self.items[guid]
+		self.items[guid]["article"] = Document(item["url"], self.seed)
     
+#ImageWidthThreshold = 700 * 0.55
+#ImageHeightThreshold = 30
+r"""
+    文章数据
+    包括抓取， 分析， 提取
+    
+    '''
+    包含的类型有article, game,
+    这些类型 全部调用repice下的处理函数
+    '''
+"""
+class Document(object):
+    regexps = {
+	"replaceBrs" : re.compile("(<br[^>]*>[ \n\r\t]*){2,}", re.I),
+	"spp_reg" : re.compile(u"""[　]*""", re.I|re.M|re.S)
+    }
+
+    def __init__(self, url, seed):
+	self.url = url
+	self.data = {}
+
+	#文章采集规则
+	self.articleRule = seed.getRule().getArticleRule()
+        print "Document %s is fetcing" % ansicolor.green(url)
+        firstContent = Fetch(url, charset = seed["charset"], timeout = seed["timeout"]).read();
+        self.parseDocument(firstContent)
+
+    def parseDocument(self, doc):
+	try:
+	    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
+	except:
+	    pass
+
+        doc = pq(doc);
+
+	wrapparent = self.articleRule.wrapparent
+	pageparent = self.articleRule.pageparent
+
+	#文本数据内容
+	content = ""
+	#文本中的图片数据
+	images = []
+	#初始化在第一页面
+	first = True
+
+	'''
+	只抓取页面中的文本内容
+	'''
+        def _getContent():
+            if not article:
+                return
+            #content = article(self.articleRule.getContentParent())
+            #if content:
+	    #    #first save
+	    #    for image in self.tags(content, "img"):
+	    #        self.processingImage(image)
+            #    #filter
+	    #    content = readability(content)
+
+            #    content = content.html();
+            #    if content:
+	    #        #strip
+	    #        try:
+	    #    	content = content.strip()
+	    #    	content = spp_reg.sub("", content)
+	    #        except:
+	    #    	pass
+            #        self.content = self.content +  content
+
+
+
+        if first:
+	    article = doc.find(wrapparent);
+
+            #pages
+	    if pageparent:
+		self.parsePage(article, pageparent)
+
+            #need parse pages, title, tags
+	    extrarules = self.articleRule.extrarules
+
+	    #只有文章是有content
+	    if len(extrarules):
+		for key, rule in extrarules:
+		    value = getElementData(doc, rule)
+            
+            #get content
+        #    _getContent();
+        #    article = None #fetch over
+        #    for purl in self.pages:
+	#	ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
+	#	if ppage is not None:
+	#	    self.fetchDocument(ppage)
+
+
+    def parsePage(self, doc, pageparent):
+        pages = doc.find(pageparent + " a")
+	urls = []
+
+        if len(pages) > 0:
+            for link in pages:
+		if link is not None and link.tag == "a" and hasattr(link, "get"):
+		    url = link.get("href");
+		    '过滤掉是javascript的链接'
+                    if re.match(r"javascript", url) == None:
+                        url = urlparse.urljoin(self.url, url)
+			if url not in urls:
+			    urls.append(url)
+		else:
+		    continue;
+
+	    self.data["pageurls"] = urls
+
+
+
+
+
+
 
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();
     r = db.view(2);
     seed = Seed(r.list()[0])
-    Grab(seed, False)
+    #Grab(seed, False)
 
 
+    url = "http://www.kaifu.com/articlecontent-39510-0.html"
+    doc = Fetch(url).read();
+    doc = pq(doc)
 
-ImageWidthThreshold = 700 * 0.55
-ImageHeightThreshold = 30
+    content = doc.find("div[class='fl newsinfo_topline boder_base newsinfo_left']");
+    print content.eq(0).find("h6[class='lh40']");
 
-r"""
-    Fecth and parser Article page
-"""
-class Document(object):
-    regexps = {
-	"replaceBrs" : re.compile("(<br[^>]*>[ \n\r\t]*){2,}", re.I),
 
-    }
+    '''
+    def __getitem__(self, item):
 
-    def __init__(self, url, seed, savable = True, info = None):
-        self.url = url;
-        self.articleRule = seed.rule.getArticleRule();
+    def __setitem__(self, item, value):
 
-        self.content = ""
-        self.pages   = []
-        self.contentData = {}
-	self.images = []
-        self.sid = seed.sid
-        self.savable = savable
-        self.filterscript = self.articleRule.filterscript
-	self.lang = seed.lang
-	self.seed = seed
-	self.info = info
-        
-        if self.checkUrl(url) == False or not self.savable:
-            print "Document %s is fetcing" % ansicolor.green(url)
-            self.firstPage = Fetch(url, seed.charset, seed.timeout).read();
+    def __contains__(self, id):
 
-            self.fetchDocument(self.firstPage, True)
+    def __iter__(self):
 
-            self.contentData["content"] = self.content
+    def keys():
+    '''
 
-            if self.saveArticle() > 0:
-                print ansicolor.green(self.url) + " saved!"
-        else:
-            print "Document %s has exists." % ansicolor.red(url)
-
-    def checkUrl(self, url):
-        #check url in articles
-        return Store("SELECT aid FROM articles WHERE url='%s'" % self.url).is_exists()
-
+    '''
     def saveArticle(self):
         content = ""
         title    = ""
@@ -277,7 +375,9 @@ class Document(object):
     def getImage(self, url):
         #fetch img
         return DumpMedia(self.url, url)
+    '''
 
+    '''
     def processingImage(self, image):
 	#首先处理图片层
 	parent = image.getparent()
@@ -321,70 +421,4 @@ class Document(object):
 		    parent.remove(image)
 		except:
 		    pass
-
-    def fetchDocument(self, doc, first=False):
-	#prehook
-	try:
-	    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
-	except:
-	    pass
-
-        doc = pq(doc);
-        article = doc.find(self.articleRule.getWrapParent())
-
-        def getContent():
-            if not article:
-                return
-            content = article(self.articleRule.getContentParent())
-            if content:
-		#first save
-		for image in self.tags(content, "img"):
-		    self.processingImage(image)
-                #filter
-		content = readability(content)
-
-                content = content.html();
-                if content:
-		    #strip
-		    try:
-			content = content.strip()
-			content = spp_reg.sub("", content)
-		    except:
-			pass
-                    self.content = self.content +  content
-
-        if first:
-            #need parse pages, title, tags
-            self.contentData["title"] = getElementData(article, self.articleRule.getTitleParent())
-
-            #pages
-            self.parsePage(article)
-            #get content
-            getContent();
-            article = None #fetch over
-            for purl in self.pages:
-		ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
-		if ppage is not None:
-		    self.fetchDocument(ppage)
-
-        getContent();
-
-    def parsePage(self, doc):
-        p = self.articleRule.getPageParent()
-        if len(p) == 0:
-            return
-        pages = doc.find(p)
-
-        if len(pages) > 0:
-            for p in pages:
-                p = pq(p)
-                url = p.attr("href")
-                if not url:
-                    continue
-                linkText = p.text().strip()
-                if re.match(r"[0-9]+?", linkText):
-                    #filter javascript
-                    if re.match(r"javascript", url) == None:
-                        url = urlparse.urljoin(self.url, url)
-                        self.pages.append(url)
-
+    '''
