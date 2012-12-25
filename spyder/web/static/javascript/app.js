@@ -30,10 +30,10 @@ function previewcreateLink() {
       break;
     }
     var b = (zero.checked && a < 10) ? "0"+a : a;
-    data += link.replace("(*)", b)+"\n";
+    data += link.replace("$page", b)+"\n";
     a += (step);
   };
-  if(max > 5) data += link.replace("(*)", (start+step*(max-1)));
+  if(max > 5) data += link.replace("$page", (start+step*(max-1)));
   $("createLinkPane").getElementById("createLinkText").set("value", data);
 }
 function previewdateLink() {
@@ -43,7 +43,7 @@ function previewdateLink() {
   data = "";
   for (var i=0; i <= max; i++) {
     var b = moment().add('hours', 24*i).format(date_style);
-    data += link.replace("(*)", b)+"\n";
+    data += link.replace("$page", b)+"\n";
   };
   $("dateLinkPane").getElementById("dateLinkText").set("value", data);
 }

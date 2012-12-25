@@ -19,15 +19,15 @@
           </div>
           <div id="createLinkPane" class="typecho-option-tabPane hidden">
             <label for="link_name" class="typecho-label">地址格式</label>
-            <p><input type="text" id="link_name" name="link_name" value="" class="text" /> <em rel="replace" data-target="link_name">(*)</em></p>
+            <p><input type="text" id="link_name" name="link_name" value="" class="text" /> <em rel="replace" data-target="link_name">$page</em></p>
             <label class="typecho-label">参数</label>
-            <p>开始 <input type="text" name="start" value="1" size="5" /> 自增 <input type="text" name="step" value="1" size="5" /> 项数 <input type="text" name="max" value="5" size="5" /> <label><input type="checkbox" name="zero" /> 补零</label></p>
+            <p>开始 <input type="text" name="start" value="1" size="5" /> 自增 <input type="text" name="step" value="1" size="5" /> 项数 <input type="text" name="max" value="5" size="5" /> <label><input type="checkbox" name="zero" value="1" /> 补零</label></p>
             <label class="typecho-label">预览</label>
             <textarea style="width: 100%;height: 130px" autocomplete="off" id="createLinkText" readonly></textarea>
           </div>
           <div id="dateLinkPane" class="typecho-option-tabPane hidden">
             <label for="date_link" class="typecho-label">地址格式</label>
-            <p><input type="text" id="date_link" name="date_link" value="" class="text" /> <em rel="replace" data-target="date_link">(*)</em></p>
+            <p><input type="text" id="date_link" name="date_link" value="" class="text" /> <em rel="replace" data-target="date_link">$page</em></p>
             <label class="typecho-label">时间样式</label>
             <p><input type="text" name="date_style" value="YYYY-MM-DD" size="30" /> 日期向后 <input type="text" name="max" value="0" size="5" /> 天</p>
             <p class="description">年-YYYY 月-MM 日-DD 时-HH 分-mm 秒-ss</p>
@@ -50,6 +50,7 @@
     urltype = window.opener.document.getElementById("urltype").value,
     start = window.opener.document.getElementById("startpage").value,
     max = window.opener.document.getElementById("maxpage").value,
+    zero = window.opener.document.getElementById("zero").value,
     step = window.opener.document.getElementById("step").value;
     switch (urltype){
       case "inputLink":
@@ -60,6 +61,7 @@
         $("createLinkPane").getElements("input[name='start']").set("value", start);
         $("createLinkPane").getElements("input[name='max']").set("value", max);
         $("createLinkPane").getElements("input[name='step']").set("value", step);
+        if(zero) $("createLinkPane").getElements("input[name='zero']").set("checked", true);
         break;
       case "dateLink":
         $("date_link").set("value", link);
@@ -78,6 +80,7 @@
       var link = "",
       start = 1,
       step = 1,
+      zero = 0,
       max = 1,
       urltype = $("urltype").get("value");
       switch (urltype){
@@ -89,6 +92,8 @@
           start = $("createLinkPane").getElements("input[name='start']").get("value");
           max = $("createLinkPane").getElements("input[name='max']").get("value");
           step = $("createLinkPane").getElements("input[name='step']").get("value");
+          zero = $("createLinkPane").getElements("input[name='zero']").get("value");
+          if(!zero) zero = 0;
           break;
         case "dateLink":
           link = $("date_link").get("value");
@@ -103,6 +108,7 @@
       window.opener.document.getElementById("startpage").value = start;
       window.opener.document.getElementById("maxpage").value = max;
       window.opener.document.getElementById("step").value = step;
+      window.opener.document.getElementById("zero").value = zero;
       window.close();
     });
   });

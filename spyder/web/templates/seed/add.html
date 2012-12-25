@@ -52,6 +52,7 @@
             <input type="hidden" id="startpage" name="startpage" value="{{ seed_data.rule.startpage|default('',true) }}" />
             <input type="hidden" id="maxpage" name="maxpage" value="{{ seed_data.rule.maxpage|default('',true) }}" />
             <input type="hidden" id="step" name="step" value="{{ seed_data.rule.step|default('',true) }}" />
+            <input type="hidden" id="zero" name="zero" value="{{ seed_data.rule.zero|default(0,true) }}" />
             <input type="hidden" name="do" value="publish" />
             <button type="submit" id="btn-submit">保存种子 &raquo;</button>
           </span>
