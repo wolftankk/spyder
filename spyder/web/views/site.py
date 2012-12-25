@@ -67,7 +67,7 @@ def test_mysql():
         mysql_username = request.form.get("mysql_username")
         mysql_password = request.form.get("mysql_password")
         try:
-            MySQL = MySQLdb.connect(host=mysql_server, user=mysql_username, passwd=mysql_password, db=mysql_dbname, connect_timeout=10)
+            MySQL = MySQLdb.connect(host=mysql_server, user=mysql_username, passwd=mysql_password, db=mysql_dbname, connect_timeout=30)
             return "1"
         except:
             return "0"

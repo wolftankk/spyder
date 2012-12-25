@@ -15,6 +15,7 @@
         <p><input type="text" id="url" name="url" value="{{ site.url }}" class="text" /></p>
         <label for="staticUrl" class="typecho-label">图片服务器地址</label>
         <p><input type="text" id="staticUrl" name="staticUrl" value="{{ site.sync_profile.staticUrl|default('',true) }}" class="text" /></p>
+        <p class="description">图片服务器的地址，末尾不需要加 '/'</p>
         <label for="staticType" class="typecho-label">图片上传接口类型</label>
         <p>
           <select id="staticType" name="staticType">
