@@ -22,3 +22,10 @@
   <option value="{{ charset[0] }}"{% if charset[0] == current %} selected="true"{% endif %}>{{ charset[1] }}</option>
   {%- endfor %}
 {% endmacro %}
+
+{% macro render_staticType(current) %}
+  {% set staticTypes = [("none", "不上传"), ("ftp", "FTP"), ("aliyun", "阿里云")] %}
+  {%- for staticType in staticTypes %}
+  <option value="{{ staticType[0] }}"{% if staticType[0] == current %} selected="true"{% endif %}>{{ staticType[1] }}</option>
+  {%- endfor %}
+{% endmacro %}

@@ -13,8 +13,73 @@
         <p><input type="text" id="name" name="name" value="{{ site.name }}" class="text" /></p>
         <label for="base_url" class="typecho-label">网站地址</label>
         <p><input type="text" id="url" name="url" value="{{ site.url }}" class="text" /></p>
-        <label for="base_url" class="typecho-label">图片服务器地址</label>
+        <label for="staticUrl" class="typecho-label">图片服务器地址</label>
         <p><input type="text" id="staticUrl" name="staticUrl" value="{{ site.sync_profile.staticUrl|default('',true) }}" class="text" /></p>
+        <label for="staticType" class="typecho-label">图片上传接口类型</label>
+        <p>
+          <select id="staticType" name="staticType">
+            {% import './ui.html' as ui %}
+            {{ ui.render_staticType(site.sync_profile.staticType) }}
+          </select>
+        </p>
+        <div id="ftp_form" class="column-08">
+          <table class="typecho-list-table">
+            <colgroup>
+              <col width="80">
+              <col width="230">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="2" class="typecho-radius-topleft typecho-radius-topright">设定FTP服务器的基本配置</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="even">
+                <td>服务器：</td><td><input type="text" name="ftp_server" value="{{ site.sync_profile.ftp_server|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td>端&nbsp;&nbsp;&nbsp;口：</td><td><input type="text" name="ftp_port" value="{{ site.sync_profile.ftp_port|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td>用户名：</td><td><input type="text" name="ftp_username" value="{{ site.sync_profile.ftp_username|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td>密&nbsp;&nbsp;&nbsp;码：</td><td><input type="password" name="ftp_password" value="{{ site.sync_profile.ftp_password|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td>目&nbsp;&nbsp;&nbsp;录：</td><td><input type="text" name="ftp_path" value="{{ site.sync_profile.ftp_path|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td colspan="2"><input type="button" id="test_ftp" value="测试连接"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="column-08" style="float: right;">
+          <table class="typecho-list-table">
+            <colgroup>
+              <col width="80">
+              <col width="230">
+            </colgroup>
+            <thead>
+              <tr>
+                <th colspan="2" class="typecho-radius-topleft typecho-radius-topright">设定阿里云的基本配置</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr class="even">
+                <td>用户：</td><td><input type="text" name="access_id" value="{{ site.sync_profile.access_id|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td>私钥：</td><td><input type="text" name="secret_access_key" value="{{ site.sync_profile.secret_access_key|default('',true) }}" size="20" /></td>
+              </tr>
+              <tr class="even">
+                <td colspan="2"><input type="button" id="test_aliyun" value="测试连接"></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div style="clear:both;"></div>
         <label for="" class="typecho-label">备注</label>
         <p><textarea style="width:700px;height: 200px" autocomplete="off" name="descript">{{ site.descript }}</textarea></p>
         {% if site.id %}<p>
@@ -40,13 +105,13 @@
           <label for="sync_type" class="typecho-label">入库方式</label>
           <p>
             <select class="typecho-charset" name="sync_type" id="sync_type">
-              <option value="mysql">MySQL数据库</option>
-              <option value="api">API接口</option>
+              <option value="mysql"{% if site.sync_type=="mysql" %} selected="true"{% endif %}>MySQL数据库</option>
+              <option value="api"{% if site.sync_type=="api" %} selected="true"{% endif %}>API接口</option>
             </select>
           </p>
           <p class="description">请选择采集数据入库的方式</p>
         </li>
-        <li id="mysql_form">
+        <li id="mysql_form" class="sync_type_data sync_type_mysql{% if site.sync_type=="api" %} hidden{% endif %}">
           <label for="" class="typecho-label">MySQL配置</label>
           <p>服务器：<input type="text" id="mysql_server" name="mysql_server" value="{{ site.sync_profile.mysql_server|default('',true) }}" size="20" /></p>
           <p>数据库：<input type="text" id="mysql_dbname" name="mysql_dbname" value="{{ site.sync_profile.mysql_dbname|default('',true) }}" size="20" /></p>
@@ -55,7 +120,7 @@
           <p>密&nbsp;&nbsp;&nbsp;码：<input type="text" id="mysql_password" name="mysql_password" value="{{ site.sync_profile.mysql_password|default('',true) }}" size="20" /></p>
           <p class="description">设定MySQL数据库的基本配置 <input type="button" id="test_mysql" value="测试连接"></p>
         </li>
-        <li>
+        <li class="sync_type_data sync_type_api{% if site.sync_type=="mysql" %} hidden{% endif %}">
           <label for="api_url" class="typecho-label">API接口地址</label>
           <p><input type="text" id="api_url" name="api_url" value="{{ site.sync_profile.api_url|default('',true) }}" class="mini" /></p>
           <p class="description">采用API方式入库请设定接口地址</p>
@@ -85,13 +150,35 @@
       }
     }).send();
   }
+  function testFtp(){
+    new Request({
+      "url": "{{ url_for('site.test_ftp') }}",
+      "data": $('ftp_form').toQueryString(),
+      "onRequest": function(){
+        $("test_ftp").set("value","正在连接中...").set("disabled", true);
+      },
+      "onComplete": function(){
+        $("test_ftp").set("value","测试连接").erase("disabled");
+      },
+      "onSuccess": function(t,x){
+        alert(t)
+      }
+    }).send();
+  }
   function addSeed(){
     var type = $("type").get("value");
     openWin('/site_map/add/?type='+type+"&site_id={{ site.id }}");
   }
+  function changeSyncType(){
+    var v = $(this).get("value");
+    $$(".sync_type_data").addClass("hidden");
+    $$(".sync_type_"+v).removeClass("hidden");
+  }
   window.addEvent('domready', function() {
     $("add_seed").addEvent("click", addSeed);
     $("test_mysql").addEvent("click", testMysql);
+    $("test_ftp").addEvent("click", testFtp);
+    $("sync_type").addEvent("change", changeSyncType);
   })
 })();
 </script>
