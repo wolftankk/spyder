@@ -102,7 +102,7 @@ class Grab(object):
 	else:
 	    print "传入的种子不是Seed类型"
 
-        #self.fetchArticles();
+        self.fetchArticles();
 
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
@@ -168,9 +168,10 @@ class Grab(object):
 		list.find(self.listRule.getEntryItem()).map(entry)
 
     def fetchArticles(self):
-        if len(self.items.items()) > 0:
-            for url in self.items:
-                self.items[url]["article"] = Document(url, self.seed, self.savable, self.items[url])
+	print "Start fetching these articles"
+        #if len(self.items.items()) > 0:
+        #    for url in self.items:
+        #        self.items[url]["article"] = Document(url, self.seed, self.savable, self.items[url])
     
 
 if __name__ == "__main__":
@@ -179,8 +180,6 @@ if __name__ == "__main__":
     r = db.view(2);
     seed = Seed(r.list()[0])
     Grab(seed, False)
-
-
 
 
 
