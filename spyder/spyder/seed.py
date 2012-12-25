@@ -109,25 +109,11 @@ class Rule(object):
         rule = unserialize(rule)
 	self.rule = rule;
 
-	'''
-	contenturl
-	urlformat
-	urltype: inputLink, createLink, dateLink
-	contentparent
-	pageparent
-	listparent
-	maxpage
-	step
-	startpage
-	filters
-	entryparent
-	'''
-
     def getListRule(self):
         return RuleList(self)
 
     def getArticleRule(self):
-        return self.article
+        return RuleArticle(self)
 
     def __str__(self):
 	return '<%s 的规则>' % str(self.seed)
@@ -136,8 +122,6 @@ r'''
 List一共有两种类型：feed, html
 当设定为feed时候， 将会自动分析出url等相关信息
 当设定为html时，将会根据设定的规则分析出信息
-
-
 '''
 class RuleList(object):
     def __init__(self, parent):
@@ -145,60 +129,49 @@ class RuleList(object):
         self.type = parent.seed["listtype"];
 
 	'''
-	contenturl
-	contentparent
-	pageparent
-	listparent
-
-
-	filters
-	entryparent
+	列表额外配置
 	'''
-	self.getListUrls()
+	self.extrarules = []
 
-        ##获取list元素
-        #self.listparent = rule["listparent"]
-        ##获取list=>item元素
-        #self.entryparent = rule["entryparent"]
+	extrarules = self.parent.extrarules
+	#from web.models import Field
+	#field_db = Field()
+	for i, rule in enumerate(extrarules):
+	    if rule and rule["page_type"] == "list":
+		field_id = rule["field_id"]
+		value = rule["value"]
+		#field = field_db.view(field_id).list()[0]
+		#name = field["name"]
+		self.extrarules.append((field_id, value))
 
-        ##获取日期元素
-        #self.dateparent = rule["dateparent"]
-        ##获取标题元素
-        #self.titleparent = rule["titleparent"]
-        ##获取link元素
-        #self.linkparent = rule["articleparent"]
-	#self.gameid = 0;
-	#if "gameid" in rule:
-	#    self.gameid = int(rule["gameid"])
-
-    def setPrefixUrl(self, url):
-        self.prefixurl = url
 
     def getListParent(self):
+	'''
+	获得列表集
+	DOM
+	'''
         #exp: div[class=cont_list]ul
         #exp: div[id=xx]ol
         #exp: div[id=class]div
-        return self.listparent
+	rule = self.parent.rule;
+        return rule["listparent"]
 
     def getEntryItem(self):
+	'''
+	获得列表中每个元素
+	DOM
+	'''
         #exp: <li></li>
         #@TODO: td 部分考虑
-        return self.entryparent
+	rule = self.parent.rule;
+        return rule["entryparent"]
 
-    def getItemLink(self):
-        if self.linkparent == None:
-            self.linkparent = "a[@href]";
-        
-        return self.linkparent
-
-    def getItemTitle(self):
-        if self.titleparent == None:
-            self.titleparent = "a[#text]"
-
-        return self.titleparent
-
-    def getItemDate(self):
-        return self.dateparent
+    def getContentUrl(self):
+	'''
+	    获取文章URL链接
+	'''
+	rule = self.parent.rule
+	return rule["contenturl"]
 
     def getListUrls(self):
 	r'''
@@ -223,22 +196,21 @@ class RuleList(object):
 	    '''
 	    手动格式化的数字版本
 	    '''
+	    step = int(step)
+	    maxpage = int(maxpage)
+	    startpage = int(startpage)
+
 	    if not step:
 		step = 1
 
 	    if not maxpage:
 		maxpage = 1
 
-	    if not startpage:
-		startpage = 1
-
 	    urlformat = string.Template(urlformat);
+
 	    for i in range(startpage, maxpage+1):
-		print i
-	        #url = urlformat.substitute(page=i);
-	        #url = urlparse.urljoin(prefixurl, url);
-		#print url
-	        #listUrls.append(url)
+	        url = urlformat.substitute(page=(i*step));
+	        listUrls.append(url)
 	    
 	elif urltype == "dateLink":
 	    '''
@@ -247,119 +219,50 @@ class RuleList(object):
 	else:
 	    raise RuleError("URL类型无效");
 
-        ##url 批量格式
-        #self.urlformat = rule["urlformat"]
-        #self.step = rule["step"]
-        ##起始页数
-        #self.startpage = rule["startpage"]
-        ##结束页数
-        #self.maxpage = rule["maxpage"]
+        return listUrls
 
-	#urlformat
-	#maxpage
-	#step
-	#startpage
-
-	#if self.urlformat == None or self.urlformat == "":
-	#    raise RuleUrlInvalid
-
-	#if not self.startpage:
-	#    self.startpage = 1
-
-	#if not self.maxpage:
-	#    self.maxpage = 1
-
-	#if not self.step:
-	#    self.step = 1
-
-	#self.startpage = int(self.startpage)
-	#self.maxpage   = int(self.maxpage)
-	#urlformat = string.Template(self.urlformat);
-	#for i in range(self.startpage, self.maxpage+1):
-	#    url = urlformat.substitute(page=i);
-	#    url = urlparse.urljoin(self.prefixurl, url);
-	#    listUrls.append(url)
-
-        #return listUrls
-
-r'''
-preurl
-articleparent
-
-titleparten
-tags
-authorparten
-context
-page
+'''
+文章采集规则
 '''
 class RuleArticle(object):
-    def __init__(self, rule):
-        self.rule = rule
+    def __init__(self, parent):
+	self.parent = parent
+	'''
+	contentparent //文章大致区域
+	pageparent
+	filters
+	'''
+	self.pageparent = parent.rule["pageparent"]
+	self.wrapparent = parent.rule["contentparent"]
 
-        self.pageparent = rule["pageparent"] #page
-        self.wrapparent = rule["articleparent"]#文章位置
-        self.contentparent = rule["contextparent"]
+        #self.downloadmedia  = False
 
-        self.tagsparent        = rule["tagsparent"]
-        self.titleparent    = rule["titleparent"]
-        self.authorpartent    = rule["authorparent"]
-        self.downloadmedia  = False
+        #if "downloadmedia" in rule:
+        #    self.downloadmedia = rule["downloadmedia"]
 
-        if "downloadmedia" in rule:
-            self.downloadmedia = rule["downloadmedia"]
+        #if "filterscript" in rule:
+        #    self.filterscript    = rule["filterscript"]
+        #else:
+        #    self.filterscript  = True
 
-        if "filterscript" in rule:
-            self.filterscript    = rule["filterscript"]
-        else:
-            self.filterscript  = True
+	self.extrarules = []
+	extrarules = self.parent.extrarules
+	for i, rule in enumerate(extrarules):
+	    if rule and rule["page_type"] == "content":
+		field_id = rule["field_id"]
+		value = rule["value"]
+		self.extrarules.append((field_id, value))
 
-        if "filters" in rule:
+        if "filters" in parent.rule:
 	    self.filters = []
-	    for f in rule["filters"]:
-		self.filters.append(rule["filters"][f])
+	    for f in parent.rule["filters"]:
+		self.filters.append(parent.rule["filters"][f])
         else:
             self.filters = []
 
-    def getWrapParent(self):
-        return self.wrapparent
 
-    def getTitleParent(self):
-        return self.titleparent
 
-    def getPageParent(self):
-        return self.pageparent
 
-    def getContentParent(self):
-        return self.contentparent
-
-r"""
-Rule
-~~~~
-`List rule`:
-    type RSS, html, ATOM, AJAX
-    ┌ urlparten, Exp: http://www.265g.com/chanye/hot/4985-(%d).html
-    ├ titleparten
-    ├ article parten
-    └ date parten
-
-1. 静态页面类
- 这些有着标准的列表页面和格式, 只需要匹配就可以
-
-2. Ajax加载型
-http://www.4gamer.net/script/search/index.php?mode=article&DATE=20120201
-需要使用ajax模式提交一些数据才可以 page=(1-4)
-
-Article rule:
-    titleparten
-    tagsparten
-    authorparten
-    contenparten
-    filterpartens
-    pagepartens
-    downloadMedia?
-    dateParten
-
-"""
 
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
@@ -369,4 +272,7 @@ if __name__ == "__main__":
     
     # test Seed info
     rule = t.getRule();
+    #test rule
     rule.getListRule();
+    #test article
+    rule.getArticleRule();

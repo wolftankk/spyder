@@ -3,9 +3,7 @@
 '''
 格式化页面
 '''
-
 import re
-
 __all__ = [
     'readability'
 ]

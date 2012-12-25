@@ -1,147 +1,108 @@
 #coding=utf-8
-
 import os, sys
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 import re, urlparse
-
 from libs.utils import now
+from libs.phpserialize import serialize
+import spyder.feedparser as feedparser
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
-from libs.phpserialize import serialize
-import spyder.feedparser
-from spyder.fetch import Fetch
-from spyder.readability import readability
+from hashlib import md5
 
+#import locale libs
+from fetch import Fetch
+from readability import readability
+from seed import Seed
 
-print readability
-#from dumpmedia import DumpMedia
-#import config, lxml
-import urllib2, urllib, json
+##from dumpmedia import DumpMedia
+##import config, lxml
+#import urllib2, urllib, json
 
-__all__ = [
-    "getElementData",
-    "Document",
-    "Grab"
-]
+#__all__ = [
+#    "getElementData",
+#    "Document",
+#    "Grab"
+#]
 
 spp_reg = re.compile(u"""[　]*""", re.I|re.M|re.S)
 
 '''
-def public_article(aid, catid = -1, gameid = -1):
-    options = {
-	"convertLanuage" : "true"	    
-    };
-    catid = int(catid);
-    gameid = int(gameid);
+获得dom元素信息
+rule类似于Jquery的方式 所以只要提取出来即可
 
-    if catid > -1:
-	options["websiteCatID"] = catid
-
-    if gameid > -1:
-	options["gameid"] = gameid
-
-    datagen = {
-        "data" : json.dumps({
-            "method" : "article.PublicArticleToSite",
-            "params" : {
-        	"AID" : [aid],
-        	"WID" : 1,
-        	"Options" : options
-            }
-        })
-    }
-
-    datagen = urllib.urlencode(datagen)
-
-    request = urllib2.Request("http://172.16.130.7/spyder_server/article.PublicArticleToSite");
-    request.add_header("User-Agent", "Python-Spyder/1.1");
-    site = urllib2.urlopen(request, datagen)
-    msg = site.read();
-    j = json.loads(msg)
-    return j
+attr
+text
+_is
+eq
 '''
+attrParrent = re.compile("(\w+)?\((.+)?\)");
 
+def getElementData(obj, rule):
+    obj = pq(obj);
 
-r"""
- Get the attr or the method of the document
-  @ get the attr
-  # the document method func
+    rule = rule.split(".")
+    
+    if len(rule) > 1:
+	#第一个永远是dom选择
+	selectRule = rule.pop(0)
+	selecteddom = obj.find(selectRule);
+	
+	for attr in rule:
+	    m = attrParrent.match(attr)
+	    if m:
+		action, v = m.groups()
+		if v:
+		    v = v.encode("utf-8")
+		    #去除引号
+		    v = v.strip("\'").strip('\"');
 
-  @param Obj Doc
-  @param token 
-  @isFilter return element when it's true, else return val
-"""
-def getElementData(obj,token, isFilter=False):
-    #parse token
-    p = re.compile("(\w+?)\[(.+)?]");
-    methodParrent = re.compile("([#|@]?)(\w+)(=?[\'|\"](.+)[\'|\"])?")
-    m = p.match(token);
-    if m:
-        tagName, methods = m.groups() 
-        methods = methods.split(",")
-        if len(methods) > 0:
-            elements = pq(obj).find(tagName)
+		if action == "attr" and hasattr(selecteddom, "attr") and v:
+		    return selecteddom.attr(v)
+		elif action == "eq" and hasattr(selecteddom, "eq"):
+		    return selecteddom.eq(int(v))
+		elif action == "text" and hasattr(selecteddom, "text"):
+		    return selecteddom.text()
 
-            if elements is None:
-                return None
-
-            #目前只取第一个
-            methodMatch = methodParrent.match(methods[0])
-            flag, tag, r, val = methodMatch.groups()
-
-            for element in elements:
-                if flag == "@":
-		    result = element.get(tag)
-		    if isFilter:
-			if val and result:
-			    if (val == result):
-				return element
-				break;
-		    else:
-			return result
-                elif flag == "#":
-                    try:
-			if isFilter:
-			    result = getattr(pq(element), tag)()
-			    if val and result:
-			        if (isinstance(val, str)):
-			            val = unicode(val, "utf8")
-			        
-			        r = re.search(val, result);
-			        if r:
-				    return element
-			            break;
-			else:
-			    result = getattr(pq(element), tag)()
-			    return result
-                    except AttributeError:
-                        return ""
+    elif len(rule) == 1:
+	'''
+	可能时正则提取
+	'''
+	rule = rule.pop()
+	if rule.find('(*)'):
+	    parrent = re.compile(rule.replace('(*)', '(.+)?'))
+	    content = obj.text()
+	    result = parrent.findall(content)
+	    if result and len(result) > 0:
+		return result[0]
+    
     return None
 
-
 r"""
-    Grab articles List
+从种子表中获得并且分析成文章数据
 """
 class Grab(object):
     def __init__(self, seed, savable = True):
-        rule = seed.rule;
-        self.seed = seed
-        self.savable = savable
-        self.type = seed.type
+	if isinstance(seed, Seed):
+	    self.items = {}
+	    self.seed = seed
+	    self.savable = savable
 
-        self.items = {}
-        if self.type == "feed":
-            self.parseFeed();
-        else:
-            self.listRule = rule.getListRule();
-            self.listRule.setPrefixUrl(seed.prefixurl);
-            self.prefixurl = seed.prefixurl;
-            self.fetchPage();
+	    rule = seed.getRule();
 
-        self.fetchArticles();
+	    listtype = seed["listtype"]
+	    if listtype == "feed":
+		self.parseFeed();
+	    else:
+		'html'
+		self.listRule = rule.getListRule();
+	        self.fetchListPages();
+	else:
+	    print "传入的种子不是Seed类型"
+
+        #self.fetchArticles();
 
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
@@ -152,64 +113,75 @@ class Grab(object):
         if len(items) > 0:
             for item in items:
                 link = item["link"]
-                title = item["title"]
-                date = item["published"]
-                self.items[link] = {
+		guid = md5(link).hexdigest()
+                self.items[guid] = {
                     "url" : link,
-                    "title" : title,
-                    "date" : date
                 }
 
         print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
 
-    def fetchPage(self):
+    def fetchListPages(self):
         print "Start to fetch and parse List"
-        listUrls = self.listRule.getFormatedUrls();
-        for url in listUrls:
-            doc = Fetch(url, self.seed.charset, self.seed.timeout).read()
-            if doc:
-                self.parserHtml(doc)
+	urls = self.listRule.getListUrls()
+        for url in urls:
+	    print u"正在抓取列表页面： " + url, "charset: " + self.seed["charset"], "timeout: " + str(self.seed["timeout"]);
+            doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
+	    if doc.isReady():
+		doc = doc.read()
+                self.parseListPage(doc, url)
         
         print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
     
+    def parseListPage(self, doc, listurl):
+	'''
+	分析采集回来的页面
+	@param doc 页面String stream
+	@param url link
+	'''
+        doc = pq(doc);
+        list = doc.find(self.listRule.getListParent());
+	extrarules = self.listRule.extrarules
+
+        if list:
+            def entry(i, e):
+                #link
+                urlParent = self.listRule.getContentUrl()
+		if e.tag == "a":
+		    link = e.get("href")
+		else:
+		    link = getElementData(e, urlParent)
+
+                link = urlparse.urljoin(listurl, link);
+		guid = md5(link).hexdigest()
+
+		self.items[guid] = {}
+		self.items[guid]["url"] = link
+
+		for key, _rule in extrarules:
+		    value = getElementData(e, _rule)
+		    if value:
+			self.items[guid][key] = value
+
+	    if len(self.listRule.getEntryItem()) == 0:
+		list.children().map(entry)
+	    else:	
+		list.find(self.listRule.getEntryItem()).map(entry)
+
     def fetchArticles(self):
         if len(self.items.items()) > 0:
             for url in self.items:
                 self.items[url]["article"] = Document(url, self.seed, self.savable, self.items[url])
     
-    def parserHtml(self, doc):
-        doc = pq(doc);
-        list = doc.find(self.listRule.getListParent());
-        if list:
-            def entry(i, e):
-                #link
-                url = self.listRule.getItemLink()
-		if e.tag == "a":
-		    link = e.get("href")
-		else:
-		    link = getElementData(e, url)
-                link = urlparse.urljoin(self.prefixurl, link);
 
-                #title
-                title = getElementData(e, self.listRule.getItemTitle());
-
-                #date
-                dateparent = self.listRule.getItemDate();
-                date = None
-                if dateparent:
-                    date = getElementData(e, self.listRule.getItemDate());
+if __name__ == "__main__":
+    from web.models import Seed as Seed_Model
+    db = Seed_Model();
+    r = db.view(2);
+    seed = Seed(r.list()[0])
+    Grab(seed, False)
 
 
-                self.items[link] = {
-                    "url" : link,
-                    "title" : title,
-                    "date" : date
-                }
 
-	    if len(self.listRule.getEntryItem()) == 0:
-		list.children().map(entry)
-	    else:	
-		list(self.listRule.getEntryItem()).map(entry)
 
 
 ImageWidthThreshold = 700 * 0.55
