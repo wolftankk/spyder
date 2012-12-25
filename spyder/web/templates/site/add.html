@@ -55,7 +55,7 @@
             </tbody>
           </table>
         </div>
-        <div class="column-08" style="float: right;">
+        <div id="aliyun_form" class="column-08" style="float: right;">
           <table class="typecho-list-table">
             <colgroup>
               <col width="80">
@@ -165,6 +165,21 @@
       }
     }).send();
   }
+  function testAliyun(){
+    new Request({
+      "url": "{{ url_for('site.test_aliyun') }}",
+      "data": $('aliyun_form').toQueryString(),
+      "onRequest": function(){
+        $("test_aliyun").set("value","正在连接中...").set("disabled", true);
+      },
+      "onComplete": function(){
+        $("test_aliyun").set("value","测试连接").erase("disabled");
+      },
+      "onSuccess": function(t,x){
+        alert(t)
+      }
+    }).send();
+  }
   function addSeed(){
     var type = $("type").get("value");
     openWin('/site_map/add/?type='+type+"&site_id={{ site.id }}");
@@ -178,6 +193,7 @@
     $("add_seed").addEvent("click", addSeed);
     $("test_mysql").addEvent("click", testMysql);
     $("test_ftp").addEvent("click", testFtp);
+    $("test_aliyun").addEvent("click", testAliyun);
     $("sync_type").addEvent("change", changeSyncType);
   })
 })();

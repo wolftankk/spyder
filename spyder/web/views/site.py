@@ -6,9 +6,6 @@ from libs import phpserialize
 from web.helpers import auth
 from web.models import Site, Field
 
-import MySQLdb
-from ftplib import FTP
-
 site = Module(__name__)
 
 @site.route("/add/", methods=("GET", "POST"))
@@ -63,6 +60,7 @@ def view(site_id):
 @site.route("/test_mysql/", methods=("GET", "POST"))
 @auth
 def test_mysql():
+    import MySQLdb
     if request.method == "POST":
         mysql_server = request.form.get("mysql_server")
         mysql_dbname = request.form.get("mysql_dbname")
@@ -79,6 +77,7 @@ def test_mysql():
 @auth
 def test_ftp():
     mess = None
+    from ftplib import FTP
     if request.method == "POST":
         ftp_server = request.form.get("ftp_server")
         ftp_port = int(request.form.get("ftp_port"))
@@ -94,6 +93,28 @@ def test_ftp():
         except:
             mess = u"FTP连接失败"
         ftp.quit()
+    return mess
+
+@site.route("/test_aliyun/", methods=("GET", "POST"))
+@auth
+def test_aliyun():
+    import time
+    from libs.oss.oss_api import OssAPI
+    mess = ""
+    if request.method == "POST":
+        HOST = "oss.aliyuncs.com"
+        ACCESS_ID = request.form.get("access_id")
+        SECRET_ACCESS_KEY = request.form.get("secret_access_key")
+        if len(ACCESS_ID) == 0 or len(SECRET_ACCESS_KEY) == 0:
+            mess = u"请配置 用户 和 私钥"
+            return mess
+        oss = OssAPI(HOST, ACCESS_ID, SECRET_ACCESS_KEY)
+        
+        res = oss.list_all_my_buckets()
+        if (res.status / 100) == 2:
+            mess = "阿里云接口连接成功"
+        else:
+            mess = "阿里云接口连接失败"
     return mess
 
 @site.route("/edit/<int:site_id>/", methods=("GET", "POST"))

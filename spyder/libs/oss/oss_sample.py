@@ -3,7 +3,7 @@
 import time
 from oss_api import *
 from oss_xml_handler import *
-HOST="storage.aliyun.com"
+HOST="oss.aliyuncs.com"
 ACCESS_ID = ""
 SECRET_ACCESS_KEY = ""
 #ACCESS_ID and SECRET_ACCESS_KEY 默认是空，请填入您申请的正确的ID和KEY.
