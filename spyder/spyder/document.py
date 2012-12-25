@@ -19,14 +19,12 @@ from readability import readability
 from seed import Seed
 
 ##from dumpmedia import DumpMedia
-##import config, lxml
-#import urllib2, urllib, json
 
-#__all__ = [
-#    "getElementData",
-#    "Document",
-#    "Grab"
-#]
+__all__ = [
+    "getElementData",
+    "Document",
+    "Grab"
+]
 
 
 '''

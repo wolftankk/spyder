@@ -4,32 +4,36 @@
 格式化页面
 '''
 import re
+import lxml
+
 __all__ = [
-    'readability'
+    'readability', 'tags'
 ]
 
 regexps = {
     "replaceBrs" : re.compile("(<br[^>]*>[ \n\r\t]*){2,}", re.I),
-
+    "spp_reg" : re.compile(u"""[　]*""", re.I|re.M|re.S)
 }
 
-def specialFilter(self, content):
+'''
+def specialFilter( content):
     if len(self.articleRule.filters) > 0:
 	for filter in self.articleRule.filters:
 	    element = getElementData(content, filter, True)
 	    if element is not None:
 		element.getparent().remove(element);
+'''
 
-def tags(self, node, *tag_names):
+
+def tags(node, *tag_names):
     for tag_name in tag_names:
 	for e in node.find(tag_name):
 	    yield e
 
-def removeScript(self, content):
-    if self.filterscript:
-	content = content.remove("script");
+def removeScript(content):
+    content = content.remove("script");
 
-def drop_anchor(self, element):
+def drop_anchor(element):
     for k in element.attrib:
 	del element.attrib[k]
     try:
@@ -37,14 +41,14 @@ def drop_anchor(self, element):
     except:
 	pass
 
-def clean_comments(self, content):
+def clean_comments(content):
     def clean_comment(i, element):
 	if (isinstance(element, lxml.html.HtmlComment)):
 	    element.getparent().remove(element)
 
     content.children().each(clean_comment)
 
-def clean_attributes(self, content):
+def clean_attributes(content):
     if content.tag == "font":
 	content.tag = "span"
 
