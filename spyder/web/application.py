@@ -26,7 +26,8 @@ class spyder_web:
 	(views.sites, "/sites"),
 	(views.user, "/user"),
 	(views.users, "/users"),
-	(views.status, "/status")
+	(views.status, "/status"),
+    (views.test_seed, "/test_seed")
     );
     
     def __init__(self):

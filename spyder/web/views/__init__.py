@@ -12,3 +12,4 @@ from .sites import sites
 from .status import status
 from .user import user
 from .users import users
+from .test_seed import test_seed

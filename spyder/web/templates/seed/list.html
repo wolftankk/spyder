@@ -65,7 +65,7 @@
             {% endif %}
           </td>
           <td><a href="/seed/edit/{{ seed.sid }}">{{ seed.seed_name }}</a></td>
-          <td><a class="right hidden-by-mouse" href="{{ seed.base_url }}" target="_blank"><img src="/static/images/view.gif" title="测试采集" width="16" height="16" alt="view"></a></td>
+          <td><a class="right hidden-by-mouse" href="/test_seed/list/{{ seed.sid }}" target="_blank"><img src="/static/images/view.gif" title="测试采集" width="16" height="16" alt="view"></a></td>
           <td><a href="#" class="balloon-button size-10" title="查看最近采集的数据">0</a></td>
           <td></td>
           <td>{{ seed.update_time|timesince }}</td>
