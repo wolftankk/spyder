@@ -17,6 +17,7 @@ from libs.utils import safestr, safeunicode
 from fetch import Fetch
 from readability import readability
 from seed import Seed
+from field import Field
 
 ##from dumpmedia import DumpMedia
 
@@ -72,19 +73,19 @@ def getElementData(obj, rule):
 	可能时正则提取
 	'''
 	rule = rule.pop()
-	if rule.find('(*)'):
-	    content = obj.text()
+	#if rule.find('(*)'):
+	#    content = obj.text()
 
-	    rule = rule.replace('(*)', '(.+)?')
-	    if isinstance(content, unicode):
-		rule = safeunicode(rule)
-	    else:
-		rule = safestr(rule)
-	    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
+	#    rule = rule.replace('(*)', '(.+)?')
+	#    if isinstance(content, unicode):
+	#	rule = safeunicode(rule)
+	#    else:
+	#	rule = safestr(rule)
+	#    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
 
-	    result = parrent.search(content)
-	    if result is not None:
-		return safeunicode(result.group(1)).strip()
+	#    result = parrent.search(content)
+	#    if result is not None:
+	#	return safeunicode(result.group(1)).strip()
     
     return None
 
@@ -107,7 +108,7 @@ class Grab(object):
 		'html'
 		self.listRule = rule.getListRule();
 	        self.fetchListPages();
-
+		
 	    self.fetchArticles();
 	else:
 	    print "传入的种子不是Seed类型"
@@ -165,11 +166,13 @@ class Grab(object):
 
 		self.items[guid] = {}
 		self.items[guid]["url"] = link
+		#Field(key="url", value=link)
 
-		for key, _rule in extrarules:
+		for field_id, _rule in extrarules:
+		    #print field_id, type(field_id) 
 		    value = getElementData(e, _rule)
 		    if value:
-			self.items[guid][key] = value
+			self.items[guid][field_id] = value
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
@@ -259,7 +262,7 @@ class Document(object):
 
             #pages
 	    if pageparent:
-		self.parsePage(article, pageparent)
+		urls = self.parsePage(article, pageparent)
 
             #need parse pages, title, tags
 	    extrarules = self.articleRule.extrarules
@@ -268,11 +271,14 @@ class Document(object):
 	    if len(extrarules):
 		for key, rule in extrarules:
 		    value = getElementData(doc, rule)
-		    print value
+		    print key, value
             
             #get content
         #    _getContent();
         #    article = None #fetch over
+	    if urls and len(urls) > 0:
+		for next_url in urls:
+		    print next_url
         #    for purl in self.pages:
 	#	ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
 	#	if ppage is not None:
@@ -296,17 +302,14 @@ class Document(object):
 		    continue;
 
 	    self.data["pageurls"] = urls
-
-
-
-
+	return urls
 
 
 
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();
-    r = db.view(2);
+    r = db.view(7);
     seed = Seed(r.list()[0])
     Grab(seed, False)
 

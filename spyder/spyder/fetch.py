@@ -59,6 +59,8 @@ class Fetch(object):
         self.url = url
 	if "charset" in config:
 	    self.charset = config['charset'];
+	    if self.charset == "auto":
+		self.charset = "utf-8"
 	else:
 	    self.charset = "utf-8"
 	

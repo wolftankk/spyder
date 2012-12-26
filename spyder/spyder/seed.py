@@ -189,6 +189,7 @@ class RuleList(object):
 	startpage = rule["startpage"]
 
 	if urltype == "inputLink":
+	    print urltype
 	    '''
 	    手动输入的url采集地址
 	    '''
@@ -213,6 +214,7 @@ class RuleList(object):
 	        listUrls.append(url)
 	    
 	elif urltype == "dateLink":
+	    print urltype
 	    '''
 	    日期地址
 	    '''
