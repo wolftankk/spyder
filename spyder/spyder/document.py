@@ -11,6 +11,7 @@ import spyder.feedparser as feedparser
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
 from hashlib import md5
+from libs.utils import safestr, safeunicode
 
 #import locale libs
 from fetch import Fetch
@@ -18,14 +19,12 @@ from readability import readability
 from seed import Seed
 
 ##from dumpmedia import DumpMedia
-##import config, lxml
-#import urllib2, urllib, json
 
-#__all__ = [
-#    "getElementData",
-#    "Document",
-#    "Grab"
-#]
+__all__ = [
+    "getElementData",
+    "Document",
+    "Grab"
+]
 
 
 '''
@@ -64,9 +63,9 @@ def getElementData(obj, rule):
 		elif action == "eq" and hasattr(selecteddom, "eq"):
 		    return selecteddom.eq(int(v))
 		elif action == "text" and hasattr(selecteddom, "text"):
-		    return selecteddom.text()
+		    return safeunicode(selecteddom.text()).strip()
 		elif action == "html" and hasattr(selecteddom, "html"):
-		    return selecteddom.html()
+		    return safeunicode(selecteddom.html()).strip()
 
     elif len(rule) == 1:
 	'''
@@ -74,11 +73,18 @@ def getElementData(obj, rule):
 	'''
 	rule = rule.pop()
 	if rule.find('(*)'):
-	    parrent = re.compile(rule.replace('(*)', '(.+)?'))
-	    content = obj.html()
-	    #result = parrent.findall(content)
-	#    if result and len(result) > 0:
-	#	return result[0]
+	    content = obj.text()
+
+	    rule = rule.replace('(*)', '(.+)?')
+	    if isinstance(content, unicode):
+		rule = safeunicode(rule)
+	    else:
+		rule = safestr(rule)
+	    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
+
+	    result = parrent.search(content)
+	    if result is not None:
+		return safeunicode(result.group(1)).strip()
     
     return None
 
@@ -262,6 +268,7 @@ class Document(object):
 	    if len(extrarules):
 		for key, rule in extrarules:
 		    value = getElementData(doc, rule)
+		    print value
             
             #get content
         #    _getContent();
@@ -301,16 +308,32 @@ if __name__ == "__main__":
     db = Seed_Model();
     r = db.view(2);
     seed = Seed(r.list()[0])
-    #Grab(seed, False)
+    Grab(seed, False)
 
 
-    url = "http://www.kaifu.com/articlecontent-39510-0.html"
-    doc = Fetch(url).read();
-    doc = pq(doc)
-
-    content = doc.find("div[class='fl newsinfo_topline boder_base newsinfo_left']");
-    print content.eq(0).find("h6[class='lh40']");
-
+#    url = "http://www.kaifu.com/articlecontent-39510-0.html"
+#    doc = Fetch(url).read();
+#    doc = pq(doc)
+#
+#    content = doc.find("div[class='fl newsinfo_topline boder_base newsinfo_left']");
+#    #print doc.find('div.newsinfo_topline')
+#    #print content.eq(0).find("h6.lh40");
+#
+#    content = content.text();
+#    p = "来源：(.+)?浏"
+#    if isinstance(content, unicode):
+#	p = safeunicode(p)
+#    else:
+#	p = safestr(p)
+#
+#    print p
+#    p = re.compile(p, re.M | re.UNICODE);
+#    print p
+#    r = p.search(content);
+#    print r
+#    if r is not None:
+#	print r.group(1).strip()
+    
 
     '''
     def __getitem__(self, item):
