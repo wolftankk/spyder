@@ -6,17 +6,13 @@ sys.path.insert(0,parentdir)
 
 from flask import Module, url_for, g, session, current_app, request, redirect
 
-#from spyder.spyder import Spyder
-#from spyder.seed import Seed
-from web.models import Seed as Seed_Model
-
 test_seed = Module(__name__)
 
 @test_seed.route("/list/<int:seed_id>")
 def list(seed_id):
     if seed_id:
-        db = Seed_Model();
-        r = db.view(seed_id);
-        seed = Seed(r.list()[0])
-        print Spyder().Test(seed_id)
-    return True
+	return "1"
+	#spyder_dir = os.path.realpath(os.path.join(os.getcwd(), "..", "spyder"))
+	#f = os.path.join(spyder_dir, "spider.py")
+	#msg, code = execute("python2", f, "-t", seed_id)
+    return "0"

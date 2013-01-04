@@ -15,7 +15,7 @@ from libs.utils import now
 
 class Spyder(object):
     def __init__(self):
-	print (ansicolor.green("Spyder") + " start launching");
+	print ansicolor.green("Spyder") + " start launching"
 	self.db = Seed_Model()
 	#idle time
 	self.needIdleTime = 600
@@ -50,7 +50,7 @@ class Spyder(object):
 	    return;
 	r = self.db.view(sid)
 	if len(r) == 0:
-	    print (ansicolor.red("Spyder") + " sid " + str(sid) + " has not exists.");
+	    print ansicolor.red("Spyder") + " sid " + str(sid) + " has not exists."
 	    return
 	data = r.list();
 	if data and len(data) > 0:
@@ -87,15 +87,7 @@ class Spyder(object):
 	'''
 
 if __name__ == "__main__":
-    #from StringIO import StringIO
-    #
-    #old_stdout = sys.stdout
-    #sys.stdout = mystdout = StringIO()
-    #Spyder().Test(2)
-    #sys.stdout = old_stdout
-
-    #mystdout.getvalue()
-    #mystdout.close()
+    Spyder().Test(2)
 
     #import getopt, sys
     #try:
@@ -107,24 +99,20 @@ if __name__ == "__main__":
     #if len(opts) == 0 :
     #    opts = [('--run', '')]
 
-    #isRun = False
-    #isForce = False
+    ##isRun = False
+    ##isForce = False
     #for o, a in opts:
     #    if o == "-V" or o == "--version":
-    #        #get spyder version
-    #        import __init__
-    #        print __init__.VERSION
-    #    elif o == "-h" or o == "--help":
-    #        print "Spyder help"
+    #        print "0.1"
     #    elif o == "-t" or o == "--test":
     #        try:
     #            sid = int(a)
     #        except ValueError:
-    #            print "请输入需要测试的sid"
+    #            sys.stdout.write("请输入需要测试的sid")
     #            sys.exit(2)
 
     #        if sid == 0:
-    #            print "请输入需要测试的sid"
+    #            sys.stdout.write("请输入需要测试的sid")
     #            sys.exit(2)
     #        Spyder().Test(sid)
     #    elif o == "-r" or o == "--run":

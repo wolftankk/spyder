@@ -130,19 +130,19 @@ class Grab(object):
                     "url" : link,
                 }
 
-        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
+        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()))
 
     def fetchListPages(self):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
         for url in urls:
-	    print "正在抓取列表页面： ", url, "charset: ", safestr(self.seed["charset"]), "timeout: ", safestr(self.seed["timeout"])
+	    print u"正在抓取列表页面： " + url + "charset: " + safestr(self.seed["charset"]) + "timeout: " + safestr(self.seed["timeout"])
             doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if doc.isReady():
 		doc = doc.read()
                 self.parseListPage(doc, url)
         
-        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()));
+        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()))
     
     def parseListPage(self, doc, listurl):
 	'''
@@ -182,7 +182,7 @@ class Grab(object):
 		list.find(self.listRule.getEntryItem()).map(entry)
 
     def fetchArticles(self):
-	print "Start fetching these articles"
+	print ansicolor.cyan("Start fetching these articles", True)
         if len(self.items.items()) > 0:
             for guid in self.items:
 		item = self.items[guid]
@@ -275,7 +275,6 @@ class Document(object):
 
 	    #采集分页内容
 	    if urls and len(urls) > 0 and content_re:
-		printable = True
 		for next_url in urls:
 		    next_page = Fetch(next_url, charset = self.seed["charset"], timeout = self.seed["timeout"]).read()
 		    if next_page is not None:
@@ -284,7 +283,7 @@ class Document(object):
 			    content += next_page
 
 	    if content and content_re:
-		print ansicolor.yellow("文章内容：", True), content
+		print ansicolor.yellow(u"文章内容：", True), content
 		self.data['content'] = content
 
     def parsePage(self, doc, pageparent):
