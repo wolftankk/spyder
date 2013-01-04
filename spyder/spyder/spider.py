@@ -7,8 +7,8 @@ sys.path.insert(0,parentdir)
 
 import threading
 import io, time
-from pybits import ansicolor
-from seed import Seed
+from spyder.pybits import ansicolor
+from spyder.seed import Seed
 from document import Grab 
 from web.models import Seed as Seed_Model
 from libs.utils import now
@@ -57,7 +57,7 @@ class Spyder(object):
 	    print data[0]
 	    seed = Seed(data[0]);
 	    print "Seed %s start fetching." % ansicolor.yellow(seed)
-	    #docData = Grab(seed, False)
+	    docData = Grab(seed, False)
 
     def run(self, force):
 	'''
@@ -87,7 +87,16 @@ class Spyder(object):
 	'''
 
 if __name__ == "__main__":
-    Spyder().Test(2)
+    #from StringIO import StringIO
+    #
+    #old_stdout = sys.stdout
+    #sys.stdout = mystdout = StringIO()
+    #Spyder().Test(2)
+    #sys.stdout = old_stdout
+
+    #mystdout.getvalue()
+    #mystdout.close()
+
     #import getopt, sys
     #try:
     #    opts, args = getopt.getopt(sys.argv[1:], "Vhrt:", ["run", "test=", "version", "help", "force"]);

@@ -5,7 +5,7 @@ if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 import re, urlparse
-from libs.utils import now
+from libs.utils import now, safestr
 from libs.phpserialize import serialize
 import spyder.feedparser as feedparser
 from spyder.pyquery import PyQuery as pq
@@ -13,11 +13,12 @@ from spyder.pybits import ansicolor
 from hashlib import md5
 from libs.utils import safestr, safeunicode
 
+from web.models import Field as sField
 #import locale libs
-from fetch import Fetch
-from readability import readability
-from seed import Seed
-from field import Field
+from spyder.fetch import Fetch
+from spyder.readability import Readability
+from spyder.seed import Seed
+from spyder.field import Field
 
 ##from dumpmedia import DumpMedia
 
@@ -73,6 +74,7 @@ def getElementData(obj, rule):
 	可能时正则提取
 	'''
 	rule = rule.pop()
+	# (*)  [参数]
 	#if rule.find('(*)'):
 	#    content = obj.text()
 
@@ -134,7 +136,7 @@ class Grab(object):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
         for url in urls:
-	    print u"正在抓取列表页面： " + url, "charset: " + self.seed["charset"], "timeout: " + str(self.seed["timeout"]);
+	    print "正在抓取列表页面： ", url, "charset: ", safestr(self.seed["charset"]), "timeout: ", safestr(self.seed["timeout"])
             doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if doc.isReady():
 		doc = doc.read()
@@ -198,14 +200,12 @@ r"""
     '''
 """
 class Document(object):
-    regexps = {
-	"replaceBrs" : re.compile("(<br[^>]*>[ \n\r\t]*){2,}", re.I),
-	"spp_reg" : re.compile(u"""[　]*""", re.I|re.M|re.S)
-    }
-
     def __init__(self, url, seed):
 	self.url = url
 	self.data = {}
+
+	self.fieldDB = sField();
+	self.seed = seed;
 
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()
@@ -213,16 +213,40 @@ class Document(object):
         firstContent = Fetch(url, charset = seed["charset"], timeout = seed["timeout"]).read();
         self.parseDocument(firstContent)
 
+    def _getContent(self, html, wrapparent, content_re):
+	if not html:
+	    return
+
+	html = pq(html).find(wrapparent)
+	_content = getElementData(html, content_re);
+	if _content:
+	#    #first save
+	#    for image in self.tags(content, "img"):
+	#        self.processingImage(image)
+	#    #filter
+	#    content = readability(content)
+
+	    return _content
+	#    if content:
+	#        #strip
+	#        try:
+	#    	content = content.strip()
+	#    	content = spp_reg.sub("", content)
+	#        except:
+	#    	pass
+	#        self.content = self.content +  content
+
     def parseDocument(self, doc):
-	try:
-	    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
-	except:
-	    pass
+	#try:
+	#    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
+	#except:
+	#    pass
 
         doc = pq(doc);
 
 	wrapparent = self.articleRule.wrapparent
 	pageparent = self.articleRule.pageparent
+	content_re = "";
 
 	#文本数据内容
 	content = ""
@@ -231,59 +255,37 @@ class Document(object):
 	#初始化在第一页面
 	first = True
 
-	'''
-	只抓取页面中的文本内容
-	'''
-        def _getContent():
-            if not article:
-                return
-            #content = article(self.articleRule.getContentParent())
-            #if content:
-	    #    #first save
-	    #    for image in self.tags(content, "img"):
-	    #        self.processingImage(image)
-            #    #filter
-	    #    content = readability(content)
-
-            #    content = content.html();
-            #    if content:
-	    #        #strip
-	    #        try:
-	    #    	content = content.strip()
-	    #    	content = spp_reg.sub("", content)
-	    #        except:
-	    #    	pass
-            #        self.content = self.content +  content
-
-
-
         if first:
 	    article = doc.find(wrapparent);
-
             #pages
 	    if pageparent:
 		urls = self.parsePage(article, pageparent)
-
-            #need parse pages, title, tags
+            #need title, tags
 	    extrarules = self.articleRule.extrarules
-
 	    #只有文章是有content
 	    if len(extrarules):
 		for key, rule in extrarules:
+		    data = self.fieldDB.view(key).list()[0];
 		    value = getElementData(doc, rule)
-		    print key, value
-            
-            #get content
-        #    _getContent();
-        #    article = None #fetch over
-	    if urls and len(urls) > 0:
-		for next_url in urls:
-		    print next_url
-        #    for purl in self.pages:
-	#	ppage = Fetch(purl, self.seed.charset, self.seed.timeout).read();
-	#	if ppage is not None:
-	#	    self.fetchDocument(ppage)
+		    if data['type'] == 'article' and data['name'] == 'content':
+			content_re = rule
+			content += value
+		    else:
+			self.data[data['name']] = value
 
+	    #采集分页内容
+	    if urls and len(urls) > 0 and content_re:
+		printable = True
+		for next_url in urls:
+		    next_page = Fetch(next_url, charset = self.seed["charset"], timeout = self.seed["timeout"]).read()
+		    if next_page is not None:
+			next_page = self._getContent(next_page, wrapparent, content_re);
+			if next_page:
+			    content += next_page
+
+	    if content and content_re:
+		print ansicolor.yellow("文章内容：", True), content
+		self.data['content'] = content
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -305,11 +307,10 @@ class Document(object):
 	return urls
 
 
-
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();
-    r = db.view(7);
+    r = db.view(2);
     seed = Seed(r.list()[0])
     Grab(seed, False)
 
