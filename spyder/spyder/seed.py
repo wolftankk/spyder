@@ -103,6 +103,10 @@ class Rule(object):
 	self.db = Seed_fields()
 	
 	r = self.db.list(seed["sid"])
+	'''
+	extrarules 额外规则表
+	这些额外的规则是动态的， 每个都有一个field id
+	'''
 	if len(r) > 0:
 	    self.extrarules = r.list();
 

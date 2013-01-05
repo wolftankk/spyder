@@ -11,7 +11,7 @@ from spyder.pybits import ansicolor
 from spyder.seed import Seed
 from document import Grab 
 from web.models import Seed as Seed_Model
-from libs.utils import now
+from libs.utils import now, safestr
 
 class Spyder(object):
     def __init__(self):
@@ -87,7 +87,23 @@ class Spyder(object):
 	'''
 
 if __name__ == "__main__":
+    from StringIO import StringIO
+    class Logger(object):
+        def __init__(self):
+            self.log = StringIO()
+            self.terminal = sys.stdout
+
+        def write(self, message):
+            #self.terminal.write(message)
+            self.log.write(safestr(message));
+
+	def getvalue(self):
+	    self.terminal.write(self.log.getvalue());
+        
+    sys.stdout = Logger()
+
     Spyder().Test(2)
+    sys.stdout.getvalue()
 
     #import getopt, sys
     #try:

@@ -13,7 +13,6 @@ from spyder.pybits import ansicolor
 from hashlib import md5
 from libs.utils import safestr, safeunicode
 
-from web.models import Field as sField
 #import locale libs
 from spyder.fetch import Fetch
 from spyder.readability import Readability
@@ -74,20 +73,19 @@ def getElementData(obj, rule):
 	可能时正则提取
 	'''
 	rule = rule.pop()
-	# (*)  [参数]
-	#if rule.find('(*)'):
-	#    content = obj.text()
+	# [参数]
+	if rule.find('(*)'):
+	    content = obj.text()
+	    rule = rule.replace('(*)', '(.+)?')
+	    if isinstance(content, unicode):
+		rule = safeunicode(rule)
+	    else:
+		rule = safestr(rule)
+	    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
 
-	#    rule = rule.replace('(*)', '(.+)?')
-	#    if isinstance(content, unicode):
-	#	rule = safeunicode(rule)
-	#    else:
-	#	rule = safestr(rule)
-	#    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
-
-	#    result = parrent.search(content)
-	#    if result is not None:
-	#	return safeunicode(result.group(1)).strip()
+	    result = parrent.search(content)
+	    if result is not None:
+		return safeunicode(result.group(1)).strip()
     
     return None
 
@@ -204,7 +202,6 @@ class Document(object):
 	self.url = url
 	self.data = {}
 
-	self.fieldDB = sField();
 	self.seed = seed;
 
 	#文章采集规则
@@ -262,16 +259,23 @@ class Document(object):
 		urls = self.parsePage(article, pageparent)
             #need title, tags
 	    extrarules = self.articleRule.extrarules
+
 	    #只有文章是有content
 	    if len(extrarules):
 		for key, rule in extrarules:
-		    data = self.fieldDB.view(key).list()[0];
+		    field = Field(field_id=key, rule=rule);
 		    value = getElementData(doc, rule)
-		    if data['type'] == 'article' and data['name'] == 'content':
-			content_re = rule
-			content += value
+
+		    '''
+		    self.data[field.get('name')] = field
+		    if field.is_article_content():
+			content_re = field.get("rule")
 		    else:
-			self.data[data['name']] = value
+			print field, rule, value
+			field.value = value
+		    '''
+
+		#print self.data
 
 	    #采集分页内容
 	    if urls and len(urls) > 0 and content_re:
@@ -283,8 +287,8 @@ class Document(object):
 			    content += next_page
 
 	    if content and content_re:
-		print ansicolor.yellow(u"文章内容：", True), content
 		self.data['content'] = content
+		#get images
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -311,8 +315,8 @@ if __name__ == "__main__":
     db = Seed_Model();
     r = db.view(2);
     seed = Seed(r.list()[0])
-    Grab(seed, False)
-
+    #Grab(seed, False)
+    Document("http://www.kaifu.com/articlecontent-40336-0.html", seed)
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"
 #    doc = Fetch(url).read();
