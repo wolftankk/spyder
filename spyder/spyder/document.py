@@ -83,6 +83,7 @@ def getElementData(obj, rule):
 	# [参数]
 	if rule.find('[arg]'):
 	    content = obj.html()
+	    content_text = obj.text()
 
 	    rule = rule.replace('[arg]', '(.+)?')
 	    rule = rule.replace('(*)', '.+?')
@@ -98,6 +99,11 @@ def getElementData(obj, rule):
 		if result is not None:
 		    result = safeunicode(result.group(1)).strip()
 		    return result
+		else:
+		    result = parrent.search(content_text)
+		    if result is not None:
+			result = safeunicode(result.group(1)).strip()
+			return result
 	    except:
 		return None
     
