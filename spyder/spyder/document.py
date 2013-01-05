@@ -42,14 +42,21 @@ attrParrent = re.compile("(\w+)?\((.+)?\)");
 def getElementData(obj, rule):
     if not isinstance(obj, pq):
 	obj = pq(obj);
-
+    
+    old_rule = rule
     rule = rule.split(".")
     
-    if len(rule) > 1:
+    '''
+	避免有url链接
+    '''
+    if len(rule) > 1 and old_rule.find("[arg]") == -1:
 	#第一个永远是dom选择
 	selectRule = rule.pop(0)
+	#移除 ( )
+	selectRule = selectRule.replace("(", "");
+	selectRule = selectRule.replace(")", "");
+
 	selecteddom = obj.find(selectRule);
-	
 	for attr in rule:
 	    m = attrParrent.match(attr)
 	    if m:
@@ -78,16 +85,17 @@ def getElementData(obj, rule):
 	    content = obj.text()
 
 	    rule = rule.replace('[arg]', '(.+)?')
-	    rule = rule.replace('(*)', '.+?')
+	    rule = rule.replace('(*)', '[.+]?')
 
 	    if isinstance(content, unicode):
 		rule = safeunicode(rule)
 	    else:
 		rule = safestr(rule)
-	    
+
 	    parrent = re.compile(rule, re.MULTILINE)
 	    try:
 		result = parrent.search(content)
+		print result
 		if result is not None:
 		    result = safeunicode(result.group(1)).strip()
 		    return result
@@ -232,6 +240,8 @@ class Document(object):
 	wrapparent = self.articleRule.wrapparent
 	pageparent = self.articleRule.pageparent
 	content_re = "";
+	#子页面url
+	urls = []
 
 	#文本数据内容
 	content = ""
@@ -258,7 +268,7 @@ class Document(object):
 		    field.value = value
 
 	#采集分页内容
-	if urls and len(urls) > 0 and content_re:
+	if len(urls) > 0 and content_re:
 	    for next_url in urls:
 		next_page = Fetch(next_url, charset = self.seed["charset"], timeout = self.seed["timeout"]).read()
 		if next_page is not None:
@@ -297,10 +307,18 @@ class Document(object):
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();
-    r = db.view(2);
+
+    #文章测试
+    #r = db.view(2);
+    #seed = Seed(r.list()[0])
+    #Grab(seed, False)
+    #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
+
+    #游戏测试
+    r = db.view(7);
     seed = Seed(r.list()[0])
     #Grab(seed, False)
-    Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
+    Document("http://www.kaifu.com/gameinfo-longj.html", seed)
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"
 #    doc = Fetch(url).read();
