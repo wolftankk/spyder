@@ -113,11 +113,10 @@ r"""
 从种子表中获得并且分析成文章数据
 """
 class Grab(object):
-    def __init__(self, seed, savable = True):
+    def __init__(self, seed):
 	if isinstance(seed, Seed):
 	    self.items = {}
 	    self.seed = seed
-	    self.savable = savable
 
 	    rule = seed.getRule();
 
@@ -153,6 +152,7 @@ class Grab(object):
     def fetchListPages(self):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
+	#这里需要采用多线程方式
         for url in urls:
 	    print u"正在抓取列表页面： " + url + "charset: " + safestr(self.seed["charset"]) + "timeout: " + safestr(self.seed["timeout"])
             doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
@@ -176,6 +176,7 @@ class Grab(object):
             def entry(i, e):
                 #link
                 urlParent = self.listRule.getContentUrl()
+		 
 		if e.tag == "a":
 		    link = e.get("href")
 		else:
@@ -266,7 +267,6 @@ class Document(object):
 
 		self.data[field.get('name')] = field
 
-		print field, value
 		if field.is_article_content():
 		    content_re = field.get("rule")
 		    content = value
@@ -315,15 +315,15 @@ if __name__ == "__main__":
     db = Seed_Model();
 
     #文章测试
-    #r = db.view(2);
-    #seed = Seed(r.list()[0])
-    ##Grab(seed, False)
+    r = db.view(2);
+    seed = Seed(r.list()[0])
+    Grab(seed)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
     #r = db.view(7);
     #seed = Seed(r.list()[0])
-    ##Grab(seed, False)
+    #Grab(seed, False)
     #Document("http://www.kaifu.com/gameinfo-longj.html", seed)
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"

@@ -1,15 +1,18 @@
 #coding=utf-8
 
-import urllib2, urlparse, os, sys, io
-import config
+import os, sys
+parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
+
+import urllib2, urlparse, io
 import hashlib, StringIO, struct
-from pybits import ansicolor
-#from poster.encode import multipart_encode
-#from poster.streaminghttp import register_openers
-import base64
+from spyder.pybits import ansicolor
 
-#register_openers()
 
+
+
+"""""
 class DumpMedia():
     def __init__(self, prefixUrl, url):
         self.mediaUrl = urlparse.urljoin(prefixUrl, url)
@@ -120,8 +123,8 @@ class DumpMedia():
 
 	data = self.mediaData
 
-	"""
-    datagen, headers = multipart_encode({
+	'''
+	datagen, headers = multipart_encode({
 	    "XiMaGe" : base64.b64encode(data),
 	    "imageName" : newname,
 	    "imageType"    : self.getFileType()
@@ -130,7 +133,7 @@ class DumpMedia():
 	request.add_header("User-Agent", "Python-Spyder/1.1");
 	path = urllib2.urlopen(request).read()
 	path = path.strip()
-    """
+	'''
 
 	if path:
 	    path = config.staticUrl + path;
@@ -181,6 +184,8 @@ class DumpMedia():
     def getSubType(self):
         return self.urlinfo.getsubtype()
 
+
 if __name__ == "__main__":
     m = DumpMedia("http://p2.bahamut.com.tw", "http://p2。bahamut。com。tw/B/2KU/43/0000527843.PNG")
     print m.getSize()
+"""""
