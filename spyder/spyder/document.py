@@ -265,7 +265,7 @@ class Document(object):
 		for key, rule in extrarules:
 		    field = Field(field_id=key, rule=rule);
 		    value = getElementData(doc, rule)
-
+		    print value
 		    '''
 		    self.data[field.get('name')] = field
 		    if field.is_article_content():
