@@ -2,9 +2,12 @@
 
 '''
 格式化页面
+
+现在文章图片 这里直接获得
 '''
 import re
 import lxml
+from spyder.pyquery import PyQuery as pq
 
 __all__ = [
 ]
@@ -35,21 +38,78 @@ class Readability:
 	"spp_reg" : re.compile(u"""[　]*""", re.I|re.M|re.S)
     }
 
+    images = []
+
+    '''
+    image 保留字段
+    '''
+    image_attr = ["src", "alt", "width", "height"]
+
     def __init__(self, content):
 	self.content = content;
-	#origin_content = content
+	
+	self.replaceBrs();
+	self.replaceFonts();
+	self.replace_spp();
+
+	self.getHtml();
+
+	self.clean_comments()
+	self.removeScript();
+	self.removeStyle();
+	#self.removeLink();
+
+	#移除所有 a 标记
+	for e in self.tags(self.html, "a"):
+	    self.drop_anchor(e)
+    
+	try:
+	    for e in self.tags(self.html, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
+		self.clean_attributes(e)
+	except:
+	    pass
+
+	for e in self.tags(self.html, "img"):
+	    self.processingImage(e)
+
 	#self.specialFilter(content)
-	#self.clean_comments(content)
-	#self.removeScript(content)
-	#try:
-	#    for e in self.tags(content, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
-	#	self.clean_attributes(e)
 
-	#except:
-	#    pass
+    def getContent(self):
+	content = self.html.html();
 
-	#for e in self.tags(content, "a"):
-	#    self.drop_anchor(e)
+	content = content.replace("<body>", "");
+	content = content.replace("</body>", "");
+
+	return content
+
+    def replaceBrs(self):
+	try:
+	    self.content = self.regexps["replaceBrs"].sub("<p></p>", self.content)
+	    self.content = self.regexps["killBreaks"].sub("<br />", self.content)
+	except:
+	    pass
+
+    def replace_spp(self):
+	try:
+	    self.content = self.content.strip()
+	    self.content = self.regexps["spp_reg"].sub("", self.content)
+	    self.content = self.regexps["trim"].sub("", self.content)
+	    self.content = self.regexps["normalize"].sub("", self.content)
+	except:
+	    pass
+
+    def replaceFonts(self):
+	try:
+	    self.content = self.regexps["replaceFonts"].sub("<\g<1>span>", self.content)
+	except:
+	    pass
+
+
+    def getHtml(self):
+	#自动加上html标记
+	if self.content.find("<html>") == -1:
+	    content = "<html><body>" + self.content + "</body></html>"
+	    self.html = pq(content)
 
 
     @staticmethod
@@ -59,13 +119,23 @@ class Readability:
 		yield e
 
     def removeScript(self):
-	self.content = self.content.remove("script");
+	self.html.remove("script");
 
     def removeStyle(self):
-	self.content = self.content.remove("style");
+	self.html.remove("style");
 
     def removeLink(self):
-	self.content = self.content.remove("link");
+	self.html.remove("link");
+
+    def removeAnchor(self):
+	self.html.remove("a");
+
+    def clean_comments(self):
+	def clean_comment(i, element):
+	    if (isinstance(element, lxml.html.HtmlComment)):
+		element.getparent().remove(element)
+
+	self.html.children().each(clean_comment)
 
     def drop_anchor(self, element):
 	for k in element.attrib:
@@ -73,25 +143,71 @@ class Readability:
 	try:
 	    element.drop_tag()
 	except:
+	    element.tag = "span"
 	    pass
 
-    def clean_comments(self):
-	def clean_comment(i, element):
-	    if (isinstance(element, lxml.html.HtmlComment)):
-		element.getparent().remove(element)
 
-	self.content.children().each(clean_comment)
+    def clean_attributes(self, element):
+	if element.tag == "font":
+	    element.tag = "span"
 
-    def clean_attributes(self):
-	if self.content.tag == "font":
-	    self.content.tag = "span"
-
-	if self.content.tag == "center":
-	    self.content.tag = "div"
+	if element.tag == "center":
+	    element.tag = "div"
 
 	for att in ["color", "width", "height", "background", "style", "class", "id", "face"]:
-	    if self.content.get(att) is not None:
-		del self.content.attrib[att]
+	    if element.get(att) is not None:
+		del element.attrib[att]
+
+
+    def getImages(self):
+	return self.images;
+
+    def processingImage(self, image):
+	#首先处理图片层
+	parent = image.getparent()
+
+	if parent is not None and parent.tag is "a":
+	    parentAttrs = parent.attrib
+	    for k in parentAttrs:
+		del parentAttrs[k]
+	    parent.drop_tag()
+
+	imgAttrs = image.attrib
+	need_deleted_attrs = list(set(imgAttrs) - set(self.image_attr))
+	if need_deleted_attrs:
+	    for k in need_deleted_attrs:
+		del imgAttrs[k]
+
+	image_src = image.get("src");
+	self.images.append(image_src)
+
+	#imgSrc = urlparse.urljoin(self.url, imgSrc);
+	#image.set("src", imgSrc);
+	#imageInfo = DumpMedia(self.url, imgSrc)
+
+	#if imageInfo.fetched:
+	#    width, height = imageInfo.getSize()
+	#    if width < ImageWidthThreshold:
+	#	image.set("class", "asideImg")
+	#    #if (width > ImageWidthThreshold):
+	#    #    image.set("class", "blockImage")
+	#    #else:
+	#    #    image.set("class", "leftImage")
+
+	#if config.storeImage and self.savable:
+	#    if imageInfo.write():
+	#	new_imgurl = imageInfo.getMediaName()
+	#	if new_imgurl:
+	#	    print new_imgurl
+	#	    self.images.append(new_imgurl)
+	#	    imgurl = image.set("src", new_imgurl)
+	#    else:
+	#	#remove
+	#	try:
+	#	    parent.remove(image)
+	#	except:
+	#	    pass
+
 
 '''
 def specialFilter( content):

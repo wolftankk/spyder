@@ -6,20 +6,20 @@ if parentdir not in sys.path:
 
 from flask import Module, url_for, g, session, current_app, request, redirect
 
-<<<<<<< HEAD
-=======
 #from spyder.spyder import Spyder
 from spyder.seed import Seed
 from spyder.document import Grab
 from web.models import Seed as Seed_Model
 
->>>>>>> origin/master
 test_seed = Module(__name__)
 
 @test_seed.route("/list/<int:seed_id>")
 def list(seed_id):
+    """
+
+    """
+'''
     if seed_id:
-<<<<<<< HEAD
 	return "1"
 	#spyder_dir = os.path.realpath(os.path.join(os.getcwd(), "..", "spyder"))
 	#f = os.path.join(spyder_dir, "spider.py")
@@ -33,3 +33,4 @@ def list(seed_id):
         
     return t.read()
 >>>>>>> origin/master
+'''

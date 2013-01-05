@@ -74,18 +74,25 @@ def getElementData(obj, rule):
 	'''
 	rule = rule.pop()
 	# [参数]
-	if rule.find('(*)'):
+	if rule.find('[arg]'):
 	    content = obj.text()
-	    rule = rule.replace('(*)', '(.+)?')
+
+	    rule = rule.replace('[arg]', '(.+)?')
+	    rule = rule.replace('(*)', '.+?')
+
 	    if isinstance(content, unicode):
 		rule = safeunicode(rule)
 	    else:
 		rule = safestr(rule)
-	    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
-
-	    result = parrent.search(content)
-	    if result is not None:
-		return safeunicode(result.group(1)).strip()
+	    
+	    parrent = re.compile(rule, re.MULTILINE)
+	    try:
+		result = parrent.search(content)
+		if result is not None:
+		    result = safeunicode(result.group(1)).strip()
+		    return result
+	    except:
+		return None
     
     return None
 
@@ -186,8 +193,7 @@ class Grab(object):
 		item = self.items[guid]
 		self.items[guid]["article"] = Document(item["url"], self.seed)
     
-#ImageWidthThreshold = 700 * 0.55
-#ImageHeightThreshold = 30
+
 r"""
     文章数据
     包括抓取， 分析， 提取
@@ -208,7 +214,8 @@ class Document(object):
 	self.articleRule = seed.getRule().getArticleRule()
         print "Document %s is fetcing" % ansicolor.green(url)
         firstContent = Fetch(url, charset = seed["charset"], timeout = seed["timeout"]).read();
-        self.parseDocument(firstContent)
+	if firstContent:
+	    self.parseDocument(firstContent)
 
     def _getContent(self, html, wrapparent, content_re):
 	if not html:
@@ -217,28 +224,9 @@ class Document(object):
 	html = pq(html).find(wrapparent)
 	_content = getElementData(html, content_re);
 	if _content:
-	#    #first save
-	#    for image in self.tags(content, "img"):
-	#        self.processingImage(image)
-	#    #filter
-	#    content = readability(content)
-
 	    return _content
-	#    if content:
-	#        #strip
-	#        try:
-	#    	content = content.strip()
-	#    	content = spp_reg.sub("", content)
-	#        except:
-	#    	pass
-	#        self.content = self.content +  content
 
     def parseDocument(self, doc):
-	#try:
-	#    doc = self.regexps["replaceBrs"].sub("<p></p>", doc)
-	#except:
-	#    pass
-
         doc = pq(doc);
 
 	wrapparent = self.articleRule.wrapparent
@@ -247,48 +235,44 @@ class Document(object):
 
 	#文本数据内容
 	content = ""
-	#文本中的图片数据
-	images = []
-	#初始化在第一页面
-	first = True
 
-        if first:
-	    article = doc.find(wrapparent);
-            #pages
-	    if pageparent:
-		urls = self.parsePage(article, pageparent)
-            #need title, tags
-	    extrarules = self.articleRule.extrarules
+	article = doc.find(wrapparent);
+	#pages
+	if pageparent:
+	    urls = self.parsePage(article, pageparent)
+	#need title, tags
+	extrarules = self.articleRule.extrarules
 
-	    #只有文章是有content
-	    if len(extrarules):
-		for key, rule in extrarules:
-		    field = Field(field_id=key, rule=rule);
-		    value = getElementData(doc, rule)
-		    print value
-		    '''
-		    self.data[field.get('name')] = field
-		    if field.is_article_content():
-			content_re = field.get("rule")
-		    else:
-			print field, rule, value
-			field.value = value
-		    '''
+	#只有文章是有content
+	if len(extrarules):
+	    for key, rule in extrarules:
+		field = Field(field_id=key, rule=rule);
 
-		#print self.data
+		value = getElementData(doc, rule)
 
-	    #采集分页内容
-	    if urls and len(urls) > 0 and content_re:
-		for next_url in urls:
-		    next_page = Fetch(next_url, charset = self.seed["charset"], timeout = self.seed["timeout"]).read()
-		    if next_page is not None:
-			next_page = self._getContent(next_page, wrapparent, content_re);
-			if next_page:
-			    content += next_page
+		self.data[field.get('name')] = field
+		if field.is_article_content():
+		    content_re = field.get("rule")
+		    content = value
+		else:
+		    field.value = value
 
-	    if content and content_re:
-		self.data['content'] = content
-		#get images
+	#采集分页内容
+	if urls and len(urls) > 0 and content_re:
+	    for next_url in urls:
+		next_page = Fetch(next_url, charset = self.seed["charset"], timeout = self.seed["timeout"]).read()
+		if next_page is not None:
+		    next_page = self._getContent(next_page, wrapparent, content_re);
+		    if next_page:
+			content += next_page
+
+	if content and content_re:
+	    content = Readability(content)
+
+	    images = content.getImages();
+
+	    self.data['content'].value = content.getContent();
+	    self.data['images'] = images
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -316,7 +300,7 @@ if __name__ == "__main__":
     r = db.view(2);
     seed = Seed(r.list()[0])
     #Grab(seed, False)
-    Document("http://www.kaifu.com/articlecontent-40336-0.html", seed)
+    Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"
 #    doc = Fetch(url).read();
@@ -408,47 +392,4 @@ if __name__ == "__main__":
     '''
 
     '''
-    def processingImage(self, image):
-	#首先处理图片层
-	parent = image.getparent()
-
-	if parent is not None and parent.tag is "a":
-	    parentAttrs = parent.attrib
-	    for k in parentAttrs:
-		del parentAttrs[k]
-	    parent.drop_tag()
-
-	imgKW = ["src", "alt", "width", "height"];
-	imgAttrs = image.attrib
-	for k in imgAttrs:
-	    if k not in imgKW:
-		del imgAttrs[k]
-
-	imgSrc = image.get("src");
-	imgSrc = urlparse.urljoin(self.url, imgSrc);
-	image.set("src", imgSrc);
-	imageInfo = DumpMedia(self.url, imgSrc)
-
-	if imageInfo.fetched:
-	    width, height = imageInfo.getSize()
-	    if width < ImageWidthThreshold:
-		image.set("class", "asideImg")
-	    #if (width > ImageWidthThreshold):
-	    #    image.set("class", "blockImage")
-	    #else:
-	    #    image.set("class", "leftImage")
-
-	if config.storeImage and self.savable:
-	    if imageInfo.write():
-		new_imgurl = imageInfo.getMediaName()
-		if new_imgurl:
-		    print new_imgurl
-		    self.images.append(new_imgurl)
-		    imgurl = image.set("src", new_imgurl)
-	    else:
-		#remove
-		try:
-		    parent.remove(image)
-		except:
-		    pass
     '''
