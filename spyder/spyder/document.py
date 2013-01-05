@@ -82,20 +82,19 @@ def getElementData(obj, rule):
 	rule = rule.pop()
 	# [参数]
 	if rule.find('[arg]'):
-	    content = obj.text()
+	    content = obj.html()
 
 	    rule = rule.replace('[arg]', '(.+)?')
-	    rule = rule.replace('(*)', '[.+]?')
+	    rule = rule.replace('(*)', '.+?')
 
 	    if isinstance(content, unicode):
 		rule = safeunicode(rule)
 	    else:
 		rule = safestr(rule)
 
-	    parrent = re.compile(rule, re.MULTILINE)
+	    parrent = re.compile(rule, re.MULTILINE | re.UNICODE)
 	    try:
 		result = parrent.search(content)
-		print result
 		if result is not None:
 		    result = safeunicode(result.group(1)).strip()
 		    return result
@@ -257,10 +256,11 @@ class Document(object):
 	if len(extrarules):
 	    for key, rule in extrarules:
 		field = Field(field_id=key, rule=rule);
-
 		value = getElementData(doc, rule)
 
 		self.data[field.get('name')] = field
+
+		print field, value
 		if field.is_article_content():
 		    content_re = field.get("rule")
 		    content = value
@@ -311,14 +311,14 @@ if __name__ == "__main__":
     #文章测试
     #r = db.view(2);
     #seed = Seed(r.list()[0])
-    #Grab(seed, False)
+    ##Grab(seed, False)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
-    r = db.view(7);
-    seed = Seed(r.list()[0])
-    #Grab(seed, False)
-    Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    #r = db.view(7);
+    #seed = Seed(r.list()[0])
+    ##Grab(seed, False)
+    #Document("http://www.kaifu.com/gameinfo-longj.html", seed)
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"
 #    doc = Fetch(url).read();
