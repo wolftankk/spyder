@@ -5,8 +5,6 @@ if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 import re, urlparse
-from libs.utils import now, safestr
-from libs.phpserialize import serialize
 import spyder.feedparser as feedparser
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
