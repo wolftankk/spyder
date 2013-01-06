@@ -113,22 +113,20 @@ r"""
 从种子表中获得并且分析成文章数据
 """
 class Grab(object):
+
+    items = {}
     def __init__(self, seed):
 	if isinstance(seed, Seed):
-	    self.items = {}
 	    self.seed = seed
-
 	    rule = seed.getRule();
-
 	    listtype = seed["listtype"]
+
 	    if listtype == "feed":
 		self.parseFeed();
 	    else:
 		'html'
 		self.listRule = rule.getListRule();
 	        self.fetchListPages();
-		
-	    self.fetchArticles();
 	else:
 	    print "传入的种子不是Seed类型"
 
@@ -147,21 +145,20 @@ class Grab(object):
                     "url" : link,
                 }
 
-        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()))
+        print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def fetchListPages(self):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
 	#这里需要采用多线程方式
         for url in urls:
-	    print u"正在抓取列表页面： " + url + "charset: " + safestr(self.seed["charset"]) + "timeout: " + safestr(self.seed["timeout"])
+	    print u"正在抓取列表页面：", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
             doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if doc.isReady():
 		doc = doc.read()
                 self.parseListPage(doc, url)
-        
-        print "List has finished parsing. It has %s docs." % ansicolor.red(len(self.items.items()))
-    
+        print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
+
     def parseListPage(self, doc, listurl):
 	'''
 	分析采集回来的页面
@@ -187,25 +184,50 @@ class Grab(object):
 
 		self.items[guid] = {}
 		self.items[guid]["url"] = link
-		#Field(key="url", value=link)
 
 		for field_id, _rule in extrarules:
-		    #print field_id, type(field_id) 
+		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule)
+		    field.value = value
 		    if value:
-			self.items[guid][field_id] = value
+			self.items[guid][field["name"]] = field
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
 	    else:	
 		list.find(self.listRule.getEntryItem()).map(entry)
 
+    def __len__(self):
+	'''
+	    获取列表中有多少URL链接
+	'''
+	return len(self.items.items())
+
+    def getUrls(self):
+	return [self.items[guid]["url"] for guid in self.items]
+    
+    def __getitem__(self, key):
+	'''
+	用于获取单篇文章内容信息
+	'''
+	if key.find("http://") > -1:
+	    if key in self.getUrls():
+		key = md5(key).hexdigest()
+
+	if self.items[key]:
+	    item = self.items[key]
+	    if not item.has_key("article") or not isinstance(item["article"], Document):
+		item["article"] = Document(item["url"], self.seed);
+	    
+	    return item
+	    
     def fetchArticles(self):
-	print ansicolor.cyan("Start fetching these articles", True)
-        if len(self.items.items()) > 0:
+        print ansicolor.cyan("Start fetching these articles", True)
+        if self.__len__() > 0:
             for guid in self.items:
-		item = self.items[guid]
-		self.items[guid]["article"] = Document(item["url"], self.seed)
+        	item = self.items[guid]
+        	self.items[guid]["article"] = Document(item["url"], self.seed)
+    run = fetchArticles
     
 
 r"""
@@ -317,7 +339,8 @@ if __name__ == "__main__":
     #文章测试
     r = db.view(2);
     seed = Seed(r.list()[0])
-    Grab(seed)
+    g = Grab(seed)
+    print dir(g)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
