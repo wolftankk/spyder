@@ -113,11 +113,12 @@ r"""
 从种子表中获得并且分析成文章数据
 """
 class Grab(object):
-
     items = {}
+    seed_id = 0;
     def __init__(self, seed):
 	if isinstance(seed, Seed):
 	    self.seed = seed
+	    self.seed_id = seed["sid"]
 	    rule = seed.getRule();
 	    listtype = seed["listtype"]
 
@@ -218,7 +219,6 @@ class Grab(object):
 	    item = self.items[key]
 	    if not item.has_key("article") or not isinstance(item["article"], Document):
 		item["article"] = Document(item["url"], self.seed);
-	    
 	    return item
 	    
     def fetchArticles(self):
@@ -228,7 +228,7 @@ class Grab(object):
         	item = self.items[guid]
         	self.items[guid]["article"] = Document(item["url"], self.seed)
     run = fetchArticles
-    
+
 
 r"""
     文章数据
@@ -241,13 +241,17 @@ r"""
 """
 class Document(object):
     def __init__(self, url, seed):
+	'''
+	document base url
+	'''
 	self.url = url
+
 	self.data = {}
 
 	self.seed = seed;
-
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()
+
         print "Document %s is fetcing" % ansicolor.green(url)
         firstContent = Fetch(url, charset = seed["charset"], timeout = seed["timeout"]).read();
 	if firstContent:
@@ -306,7 +310,6 @@ class Document(object):
 
 	if content and content_re:
 	    content = Readability(content)
-
 	    images = content.getImages();
 
 	    self.data['content'].value = content.getContent();
@@ -340,7 +343,7 @@ if __name__ == "__main__":
     r = db.view(2);
     seed = Seed(r.list()[0])
     g = Grab(seed)
-    print dir(g)
+    print g.seed_id
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
@@ -372,18 +375,6 @@ if __name__ == "__main__":
 #    if r is not None:
 #	print r.group(1).strip()
     
-
-    '''
-    def __getitem__(self, item):
-
-    def __setitem__(self, item, value):
-
-    def __contains__(self, id):
-
-    def __iter__(self):
-
-    def keys():
-    '''
 
     '''
     def saveArticle(self):
@@ -436,7 +427,4 @@ if __name__ == "__main__":
     def getImage(self, url):
         #fetch img
         return DumpMedia(self.url, url)
-    '''
-
-    '''
     '''

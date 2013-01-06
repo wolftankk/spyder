@@ -60,7 +60,6 @@ class Seed(object):
 	    '''
 	    self.__seed = seed;
 	    self.name = self.__seed["seed_name"].encode("utf-8")
-
 	else:
 	    raise SeedError("Seed instance error.")
 
@@ -69,7 +68,6 @@ class Seed(object):
 
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
-
 
     def __getitem__(self, k):
 	if k in self.__seed:
@@ -83,7 +81,6 @@ class Seed(object):
 
     def __setitem__(self, k, v):
 	self.__seed[k] = v
-
 
     def getRule(self):
 	rule = Rule(self["rule"], self)
@@ -138,14 +135,10 @@ class RuleList(object):
 	self.extrarules = []
 
 	extrarules = self.parent.extrarules
-	#from web.models import Field
-	#field_db = Field()
 	for i, rule in enumerate(extrarules):
 	    if rule and rule["page_type"] == "list":
 		field_id = rule["field_id"]
 		value = rule["value"]
-		#field = field_db.view(field_id).list()[0]
-		#name = field["name"]
 		self.extrarules.append((field_id, value))
 
 
@@ -240,16 +233,6 @@ class RuleArticle(object):
 	'''
 	self.pageparent = parent.rule["pageparent"]
 	self.wrapparent = parent.rule["contentparent"]
-
-        #self.downloadmedia  = False
-
-        #if "downloadmedia" in rule:
-        #    self.downloadmedia = rule["downloadmedia"]
-
-        #if "filterscript" in rule:
-        #    self.filterscript    = rule["filterscript"]
-        #else:
-        #    self.filterscript  = True
 
 	self.extrarules = []
 	extrarules = self.parent.extrarules
