@@ -51,6 +51,11 @@ class Field(dict):
 	    return True
 
 	return False
+
+    def __parseDate(self, str):
+	'''
+	转成timestamp
+	'''
     
     def get_field(self):
 	'''
@@ -59,6 +64,9 @@ class Field(dict):
 	return self['value']
 
     def set_field(self, value):
+	if self["name"].find("date") > 1:
+	    value = self.__parseDate(value)
+
 	self['value'] = value
     value = property(get_field, set_field);
 

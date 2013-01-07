@@ -55,6 +55,7 @@ def getElementData(obj, rule):
 	selectRule = selectRule.replace(")", "");
 
 	selecteddom = obj.find(selectRule);
+
 	for attr in rule:
 	    m = attrParrent.match(attr)
 	    if m:
@@ -67,7 +68,11 @@ def getElementData(obj, rule):
 		if action == "attr" and hasattr(selecteddom, "attr") and v:
 		    return selecteddom.attr(v)
 		elif action == "eq" and hasattr(selecteddom, "eq"):
-		    return selecteddom.eq(int(v))
+		    #产生子元素？
+		    if len(rule) > 1:
+			selecteddom = selecteddom.eq(int(v))
+		    else:
+			return selecteddom.eq(int(v))
 		elif action == "text" and hasattr(selecteddom, "text"):
 		    return safeunicode(selecteddom.text()).strip()
 		elif action == "html" and hasattr(selecteddom, "html"):
@@ -113,6 +118,9 @@ r"""
 class Grab(object):
     items = {}
     seed_id = 0;
+    dont_craw_content = [
+	'kaifu', 'kaice'	    
+    ]
     def __init__(self, seed):
 	if isinstance(seed, Seed):
 	    self.seed = seed
@@ -168,6 +176,8 @@ class Grab(object):
         list = doc.find(self.listRule.getListParent());
 	extrarules = self.listRule.extrarules
 
+	seed_type = self.seed["type"]
+
         if list:
             def entry(i, e):
                 #link
@@ -181,15 +191,25 @@ class Grab(object):
                 link = urlparse.urljoin(listurl, link);
 		guid = md5(link).hexdigest()
 
-		self.items[guid] = {}
-		self.items[guid]["url"] = link
-
+		item = {}
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule)
-		    field.value = value
 		    if value:
-			self.items[guid][field["name"]] = field
+			field.value = value
+			item[field["name"]] = field
+
+		if seed_type in self.dont_craw_content:
+		    s = ""
+		    for f in item:
+			s += safestr(item[f].value)
+
+		    guid = md5(s).hexdigest()
+		    self.items[guid] = item
+		else:
+		    item["url"] = link
+		self.items[guid] = item
+
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
@@ -215,7 +235,7 @@ class Grab(object):
 
 	if self.items[key]:
 	    item = self.items[key]
-	    if not item.has_key("article") or not isinstance(item["article"], Document):
+	    if "url" in item and (("article" not in item) or (not isinstance(item["article"], Document))):
 		item["article"] = Document(item["url"], self.seed);
 	    return item
 	    
@@ -224,7 +244,8 @@ class Grab(object):
         if self.__len__() > 0:
             for guid in self.items:
         	item = self.items[guid]
-        	self.items[guid]["article"] = Document(item["url"], self.seed)
+		if "url" in item:
+		    self.items[guid]["article"] = Document(item["url"], self.seed)
     run = fetchArticles
 
 
@@ -338,17 +359,26 @@ if __name__ == "__main__":
     db = Seed_Model();
 
     #文章测试
-    r = db.view(2);
-    seed = Seed(r.list()[0])
-    g = Grab(seed)
-    print g.seed_id
+    #r = db.view(2);
+    #seed = Seed(r.list()[0])
+    #g = Grab(seed)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
     #r = db.view(7);
     #seed = Seed(r.list()[0])
-    #Grab(seed, False)
-    #Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    ##Grab(seed)
+    #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    #print game.data
+
+    #游戏开服
+    r = db.view(8);
+    seed = Seed(r.list()[0])
+    kaifus = Grab(seed)
+    #print kaifus.items
+    print kaifus["959af6d03d99d0671ea49e255851ac35"]
+    #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    #print game.data
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"
 #    doc = Fetch(url).read();

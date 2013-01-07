@@ -89,4 +89,4 @@ class spyder_web:
 
 if __name__ == "__main__":
     application = spyder_web();
-    application.run();
+    application.run(host="0.0.0.0");

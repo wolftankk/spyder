@@ -211,10 +211,47 @@ class RuleList(object):
 	        listUrls.append(url)
 	    
 	elif urltype == "dateLink":
-	    print urltype
-	    '''
-	    日期地址
-	    '''
+	    #import datetime
+	    try:
+		datetime	
+	    except:
+		import datetime
+
+
+
+	    maxpage = int(maxpage)
+	    if not startpage:
+		startpage = "YYYY-MM-DD"
+	    
+
+	    date_template = startpage;
+	    if date_template.find("YYYY") > -1:
+		date_template = date_template.replace("YYYY", "%Y")
+	    elif date_template.find("YY") > -1:
+		date_template = date_template.replace("YYYY", "%y")
+
+	    if date_template.find("MM") > -1:
+		date_template = date_template.replace("MM", "%m")
+
+	    if date_template.find("DD") > -1:
+		date_template = date_template.replace("DD", "%d")
+
+	    today = datetime.date.today()
+	    pages = [
+		today.strftime(date_template)
+	    ]
+	    #print datetime.date.today() + datetime.timedelta(days=-100)
+	    if maxpage > 0:
+		for i in range(1, maxpage + 1):
+		    pages.append((today + datetime.timedelta(days=+i)).strftime(date_template))
+	    elif maxpage < 0:
+		for i in range(-1, maxpage - 1, -1):
+		    pages.append((today + datetime.timedelta(days=+i)).strftime(date_template))
+
+	    urlformat = string.Template(urlformat);
+	    for p in pages:
+	        url = urlformat.substitute(page=p);
+	        listUrls.append(url)
 	else:
 	    raise RuleError("URL类型无效");
 
