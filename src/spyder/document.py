@@ -191,24 +191,25 @@ class Grab(object):
                 link = urlparse.urljoin(listurl, link);
 		guid = md5(link).hexdigest()
 
-		item = {}
+		_item = {}
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule)
 		    if value:
 			field.value = value
-			item[field["name"]] = field
+			_item[field["name"]] = field
+
 
 		if seed_type in self.dont_craw_content:
 		    s = ""
-		    for f in item:
-			s += safestr(item[f].value)
+		    for f in _item:
+			s += safestr(_item[f].value)
 
 		    guid = md5(s).hexdigest()
-		    self.items[guid] = item
+		    self.items[guid] = _item
 		else:
-		    item["url"] = link
-		self.items[guid] = item
+		    _item["url"] = link
+		    self.items[guid] = _item
 
 
 	    if len(self.listRule.getEntryItem()) == 0:
@@ -233,7 +234,7 @@ class Grab(object):
 	    if key in self.getUrls():
 		key = md5(key).hexdigest()
 
-	if self.items[key]:
+	if key in self.items:
 	    item = self.items[key]
 	    if "url" in item and (("article" not in item) or (not isinstance(item["article"], Document))):
 		item["article"] = Document(item["url"], self.seed);
@@ -375,8 +376,7 @@ if __name__ == "__main__":
     r = db.view(8);
     seed = Seed(r.list()[0])
     kaifus = Grab(seed)
-    #print kaifus.items
-    print kaifus["959af6d03d99d0671ea49e255851ac35"]
+    print kaifus["f4079524a1c26aca464befb3459709fb"]
     #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
     #print game.data
 

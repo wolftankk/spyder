@@ -6,6 +6,7 @@ __all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 
 
 import sys
 from threading import local as threadlocal
+import time
 
 def now():
     return int(time.time())

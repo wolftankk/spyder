@@ -12,9 +12,11 @@ if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 from web.models import Field as Field_Model
+from libs.utils import safestr, now
 
 import weakref
 from collections import defaultdict
+import time
 
 '''
 创建一个动态的弱key表
@@ -56,6 +58,18 @@ class Field(dict):
 	'''
 	转成timestamp
 	'''
+	t1 = "今日 17点"
+	t2 = "01月08日09点开服"
+	t3 = "01月07日14:10"
+	#str = safestr(str)
+	#print time.strptime(str, "今日 %H点")
+
+	#t2 = safestr(t2)
+	#print time.strptime(t2, safestr("%m月%d日%H点开服"))
+
+	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
+	#return int(now())
+
     
     def get_field(self):
 	'''
