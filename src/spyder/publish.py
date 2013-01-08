@@ -36,9 +36,10 @@ class Site(object):
 将采集的数据发布到网站
 '''
 class Publish():
+    site = {}
     def __init__(self, guid, data):
 	'''
-	    初始化 把所有的网站都列出来， 并且进行数据推送
+	初始化 把所有的网站都列出来， 并且进行数据推送
 	'''
 	print data
 

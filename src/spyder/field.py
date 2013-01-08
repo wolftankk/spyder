@@ -20,7 +20,7 @@ from libs.utils import safestr, now, object_ref
 from collections import defaultdict
 
 __all__ = [
-    'Field', "Item"
+    'Field', "Item", "get_field_from_cache"
 ]
 
 '''
@@ -33,15 +33,9 @@ _fields_cache = defaultdict(weakref.WeakKeyDictionary)
 
 class Field(dict):
     def __init__(self, **kwargs):
-	self.db = Field_Model();
-
 	if kwargs['field_id']:
 	    field_id = kwargs['field_id']
-	    if _fields_cache[field_id]:
-		data = _fields_cache[field_id]
-	    else:
-		data = self.db.view(field_id).list()[0];
-		_fields_cache[field_id] = data
+	    data = get_field_from_cache(field_id)
 
 	    #直接赋值到self中
 	    if data is not None:
@@ -91,21 +85,16 @@ class Field(dict):
     def __str__(self):
 	return '< Field: %s >' % self['name']
 
+def get_field_from_cache(field_id):
+    db = Field_Model();
+    if _fields_cache[field_id]:
+	data = _fields_cache[field_id]
+    else:
+	data = db.view(field_id).list()[0];
+	_fields_cache[field_id] = data
 
-class ItemMeta(type):
-    def __new__(mcs, cls_name, bases, attrs):
-	fields = {}
-	new_attrs = {}
-	for k, v in attrs.iteritems():
-	    if isinstance(v, Field):
-		fields[k] = v
-	    else:
-		new_attrs[k] = v
+    return data
 
-	cls = type.__new__(mcs, cls_name, bases, new_attrs)
-	cls.fields = cls.fields.copy()
-	cls.fields.update(fields)
-	return cls
 
 class Item(object):
     def __init__(self, *args, **kwargs):
