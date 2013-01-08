@@ -4,7 +4,7 @@ from flask import render_template
 from libs import phpserialize
 from web.helpers import auth, getSeedFieldsBySid, checkboxVal
 from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
-import time, json
+import time
 
 seed = Module(__name__)
 
@@ -103,6 +103,17 @@ def autosave():
         resp = make_response()
         resp.set_cookie('editorSize', size)
     return resp
+    
+@seed.route("/copynew/<int:seed_id>/")
+@auth
+def copynew(seed_id):
+    if seed_id:
+        seed = Seed(current_app)
+        sid = seed.copynew(seed_id)
+        if sid:
+            seed_fields = Seed_fields(current_app)
+            seed_fields.copynew(seed_id,sid)
+    return redirect(url_for('seeds.index'))
 
 @seed.route("/addlink/")
 @auth
