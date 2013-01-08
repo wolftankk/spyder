@@ -9,7 +9,10 @@ from spyder.pybits import ansicolor
 import re, string, urlparse
 from libs.phpserialize import unserialize
 from libs.utils import Storage
+
 from web.models import Seed_fields
+from web.models import Seed_tag
+from web.models import Tags
 
 __all__ = [
     'SeedEmpty', 'Seed', 'Rule',
@@ -41,7 +44,6 @@ class RuleError(Exception):
     def __str__(self):
 	return repr(self.msg)
 
-
 class RuleEmpty(Exception):
     pass
 
@@ -55,10 +57,11 @@ class Seed(object):
 	    if ("sid" not in seed) or ("sid" in seed and int(seed["sid"]) <= 0):
 		raise SeedEmpty
 
-	    '''
-		init
-	    '''
 	    self.__seed = seed;
+	    '''
+	    tags
+	    '''
+	    self.get_tags()
 	    self.name = self.__seed["seed_name"].encode("utf-8")
 	else:
 	    raise SeedError("Seed instance error.")
@@ -68,6 +71,18 @@ class Seed(object):
 
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
+
+    def get_tags(self):
+	self.tags = [];
+	st_db = Seed_tag()
+	tag_db = Tags()
+
+	query = st_db.select(where={"sid" :self["sid"]}, what="tid")
+	tag_num = len(query)
+	r = query.list()
+	for t in r:
+	    if t and "tid" in t:
+		self.tags.append(tag_db.view(t["tid"]).list()[0]["name"])
 
     def __getitem__(self, k):
 	if k in self.__seed:
