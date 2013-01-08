@@ -40,7 +40,7 @@ class Publish():
 	'''
 	    初始化 把所有的网站都列出来， 并且进行数据推送
 	'''
-	#print data
+	print data
 
 
 

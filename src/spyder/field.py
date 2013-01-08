@@ -108,10 +108,10 @@ class ItemMeta(type):
 	return cls
 
 class Item(object):
-    fields = {}
-    attrs = {}
-    
     def __init__(self, *args, **kwargs):
+	self.fields = {}
+	self.attrs = {}
+    
 	if args or kwargs:
 	    for k, v in dict(*args, **kwargs).iteritems():
 		self[k] = v

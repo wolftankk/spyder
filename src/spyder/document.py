@@ -111,14 +111,13 @@ r"""
 从种子表中获得并且分析成文章数据
 """
 class Grab(object):
-    items = {}
-    seed_id = 0;
     dont_craw_content = [
 	'kaifu', 'kaice'	    
     ]
 
     def __init__(self, seed):
 	if isinstance(seed, Seed):
+	    self.items = {}
 	    self.seed = seed
 	    self.seed_id = seed["sid"]
 	    self.seed_type = self.seed["type"]
@@ -209,8 +208,7 @@ class Grab(object):
 		    self.items[guid] = _item
 		else:
 		    _item["url"] = link
-		    print _item
-		    #self.items[guid] = _item
+		    self.items[guid] = _item
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
@@ -233,15 +231,14 @@ class Grab(object):
 	if key in self.items:
 	    _item = self.items[key]
 	    
-	    #if "url" in item and ("article" not in item):
-	    #    item["article"] = Document(item, self.seed);
-	    #return item
+	    if "url" in _item and ("article" not in _item):
+	        _item["article"] = Document(_item, self.seed);
+	    return _item
 
     def push(self):
         print ansicolor.cyan("Start fetching these articles", True)
 	for k in self.keys():
-	    self[k]
-	#    Publish(k, self[k])
+	    Publish(k, self[k])
 
 r"""
     文章数据
