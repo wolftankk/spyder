@@ -260,6 +260,9 @@ class Document(object):
 	self.data = item
 
 	self.seed = seed;
+
+	item["tags"] = ",".join(self.seed.tags)
+
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()
 
