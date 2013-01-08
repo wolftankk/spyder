@@ -90,6 +90,8 @@ class Site(object):
 
 	    try:
 		#test link
+
+		'''
 		fields = db.get_fields()
 		print "Connect database %s success" % db.db_config[db.db_setting]['db']
 
@@ -106,13 +108,18 @@ class Site(object):
 		    insert_data["category_id"] = data["tags"]
 
 		db.insert(**insert_data)
+		''''
 	    except:
 		#stop insert
 		pass;
 
     def push(self, guid, data, field_map):
+	print self.sync_profile
+
+	'''
 	if self.profile["sync_type"] == "mysql":
 	    self.post_to_mysql(guid, data, field_map)
+	'''
 
 
 '''
