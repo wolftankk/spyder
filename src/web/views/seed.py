@@ -1,10 +1,10 @@
 #coding: utf-8
-from flask import Module, url_for, g, session, current_app, request, redirect
+from flask import Module, url_for, g, session, current_app, request, redirect, make_response
 from flask import render_template
 from libs import phpserialize
 from web.helpers import auth, getSeedFieldsBySid, checkboxVal
 from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
-import time, json
+import time
 
 seed = Module(__name__)
 
@@ -64,7 +64,7 @@ def add():
                 tag = tag.strip()
                 ishere = tags_model.findByName(tag).list()
                 if len(ishere) > 0:
-                    tid = ishere["id"]
+                    tid = ishere[0]["id"]
                 else:
                     tid = tags_model.add(name=tag)
                 ishere = seed_tag.view(sid,tid).list() 
@@ -73,6 +73,9 @@ def add():
         return redirect(url_for("seeds.index"));
     fields = field.getSeedType()
     if request.method == "GET" and request.args.get("type"):
+        size = request.cookies.get("editorSize")
+        if not size:
+            size = 50
         seed_data = {}
         seed_data["rule"] = {}
         seed_type = request.args.get("type");
@@ -84,13 +87,33 @@ def add():
         alltags_data = tags_model.list()
         for tag in alltags_data:
             alltags.append(tag["name"])
-        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data, page_types=page_types, alltags=alltags)
+        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data, page_types=page_types, alltags=alltags, size=size)
     return render_template("seed/select_type.html", fields=fields)
     
 @seed.route("/view/<int:seed_id>/")
 @auth
 def view(seed_id):
     return seed_id
+
+@seed.route("/autosave/", methods=("GET", "POST"))
+@auth
+def autosave():
+    if request.method == "POST" and request.form.get("do") == "editorResize":
+        size = request.form.get("size")
+        resp = make_response()
+        resp.set_cookie('editorSize', size)
+    return resp
+    
+@seed.route("/copynew/<int:seed_id>/")
+@auth
+def copynew(seed_id):
+    if seed_id:
+        seed = Seed(current_app)
+        sid = seed.copynew(seed_id)
+        if sid:
+            seed_fields = Seed_fields(current_app)
+            seed_fields.copynew(seed_id,sid)
+    return redirect(url_for('seeds.index'))
 
 @seed.route("/addlink/")
 @auth
@@ -154,18 +177,29 @@ def edit(seed_id):
         tags_data = tags_data.split(",")
         tags_model = Tags(current_app)
         seed_tag = Seed_tag(current_app)
+        current_tags_data = seed_tag.list(sid)
+        del_tags_data = {}
+        for current_tag in current_tags_data:
+            del_tags_data[current_tag["tid"]] = current_tag;
         for tag in tags_data:
             tag = tag.strip()
             ishere = tags_model.findByName(tag).list()
             if len(ishere) > 0:
-                tid = ishere["id"]
+                tid = ishere[0]["id"]
             else:
                 tid = tags_model.add(name=tag)
+            if tid in del_tags_data:
+                del del_tags_data[tid]
             ishere = seed_tag.view(sid,tid).list() 
             if len(ishere) == 0:
                 seed_tag.add(sid=sid, tid=tid)
+        for k in del_tags_data:
+            seed_tag.remove(del_tags_data[k]["sid"],del_tags_data[k]["tid"])
         return redirect(url_for("seeds.index"))
     if request.method == "GET" and seed_id > 0:
+        size = request.cookies.get("editorSize")
+        if not size:
+            size = 50
         seed = Seed(current_app)
         seed_data = seed.view(seed_id)[0]
         seed_type = seed_data["type"]
@@ -185,7 +219,7 @@ def edit(seed_id):
         alltags_data = tags_model.list()
         for tag in alltags_data:
             alltags.append(tag["name"])
-    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types, tags=tags, alltags=alltags)
+    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types, tags=tags, alltags=alltags, size=size)
 
 @seed.route("/delete/<int:seed_id>")
 @auth

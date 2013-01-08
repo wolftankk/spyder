@@ -23,7 +23,7 @@ class Seed_tag(Model):
 	return self.insert(**args)
     
     def remove(self, sid, tid):
-	return self.delete({"sid":sid, "tid":tid})
+	return self.delete("sid="+str(sid)+" and tid="+str(tid))
     
     def view(self, sid, tid):
 	return self.select({"sid":sid, "tid":tid})
