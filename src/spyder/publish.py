@@ -72,7 +72,7 @@ class Site(object):
 	if self.static_type == "none" or not self.staticUrl:
 	    return;
 
-	print data
+	#content <-> images
 
     """
     def init_fieldmap(self, field_map):
