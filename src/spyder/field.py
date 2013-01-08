@@ -13,10 +13,15 @@ if parentdir not in sys.path:
 
 from web.models import Field as Field_Model
 from libs.utils import safestr, now
-
 import weakref
 from collections import defaultdict
 import time
+
+__all__ = [
+    'live_refs', 'Field', 'Item'
+]
+
+
 
 '''
 创建一个动态的弱key表
@@ -86,3 +91,23 @@ class Field(dict):
 
     def __str__(self):
 	return '< Field: %s >' % self['name']
+
+
+class ItemMeta(type):
+    def __new__(mcs, cls_name, bases, attrs):
+	fields = {}
+	new_attrs = {}
+
+	for k, v in attrs.iteritems():
+	    if isinstance(v, Field):
+		fields[k] = v
+	    else:
+		new_attrs[k] = v
+
+	cls = type.__new__(mcs, cls_name, bases, new_attrs)
+	cls.fields = cls.fields.copy()
+	cls.fields.update(fields)
+	return cls
+
+class Item():
+    __metaclass__ = ItemMeta

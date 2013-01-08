@@ -5,19 +5,17 @@ if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
 import re, urlparse
+from hashlib import md5
+
 import spyder.feedparser as feedparser
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
-from hashlib import md5
 from libs.utils import safestr, safeunicode
-
-#import locale libs
 from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
 from spyder.field import Field
 
-##from dumpmedia import DumpMedia
 
 __all__ = [
     "getElementData",
@@ -25,18 +23,15 @@ __all__ = [
     "Grab"
 ]
 
-
 '''
 获得dom元素信息
 rule类似于Jquery的方式 所以只要提取出来即可
-
 attr
 text
 _is
 eq
 '''
 attrParrent = re.compile("(\w+)?\((.+)?\)");
-
 def getElementData(obj, rule):
     if not isinstance(obj, pq):
 	obj = pq(obj);
@@ -121,6 +116,7 @@ class Grab(object):
     dont_craw_content = [
 	'kaifu', 'kaice'	    
     ]
+
     def __init__(self, seed):
 	if isinstance(seed, Seed):
 	    self.seed = seed
@@ -151,7 +147,6 @@ class Grab(object):
                 self.items[guid] = {
                     "url" : link,
                 }
-
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def fetchListPages(self):
@@ -219,27 +214,29 @@ class Grab(object):
 
     def __len__(self):
 	'''
-	    获取列表中有多少URL链接
+	    获取列表中有多少数据量
 	'''
 	return len(self.items.items())
 
-    def getUrls(self):
-	return [self.items[guid]["url"] for guid in self.items]
-    
+    def keys(self):
+	return self.items.keys()
+
     def __getitem__(self, key):
 	'''
-	用于获取单篇文章内容信息
+	@param key MD5 string
 	'''
-	if key.find("http://") > -1:
-	    if key in self.getUrls():
-		key = md5(key).hexdigest()
-
 	if key in self.items:
 	    item = self.items[key]
 	    if "url" in item and (("article" not in item) or (not isinstance(item["article"], Document))):
 		item["article"] = Document(item["url"], self.seed);
 	    return item
-	    
+
+    def publish(self):
+        print ansicolor.cyan("Start fetching these articles", True)
+	'''
+	find seed and website relationship
+	'''
+    '''
     def fetchArticles(self):
         print ansicolor.cyan("Start fetching these articles", True)
         if self.__len__() > 0:
@@ -248,6 +245,7 @@ class Grab(object):
 		if "url" in item:
 		    self.items[guid]["article"] = Document(item["url"], self.seed)
     run = fetchArticles
+    '''
 
 
 r"""
@@ -360,9 +358,9 @@ if __name__ == "__main__":
     db = Seed_Model();
 
     #文章测试
-    #r = db.view(2);
-    #seed = Seed(r.list()[0])
-    #g = Grab(seed)
+    r = db.view(2);
+    seed = Seed(r.list()[0])
+    articles = Grab(seed)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
 
     #游戏测试
@@ -376,7 +374,6 @@ if __name__ == "__main__":
     r = db.view(8);
     seed = Seed(r.list()[0])
     kaifus = Grab(seed)
-    print kaifus["f4079524a1c26aca464befb3459709fb"]
     #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
     #print game.data
 

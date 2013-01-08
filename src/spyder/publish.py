@@ -33,6 +33,15 @@ class Site(object):
 	pass
 
 
+'''
+将采集的数据发布到网站
+'''
+class Publish():
+    def __init__(self):
+	pass
+
+
+
 if __name__ == "__main__":
     db = Site_Model()
     r = db.view(1);
