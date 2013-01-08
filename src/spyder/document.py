@@ -237,9 +237,8 @@ class Grab(object):
 
     def push(self):
         print ansicolor.cyan("Start fetching these articles", True)
-	publish_server = Publish()
 	for k in self.keys():
-	    publish_server.push(guid, self[k])
+	    Publish(k, self[k])
 
 r"""
     文章数据
