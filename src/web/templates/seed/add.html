@@ -12,7 +12,7 @@
         <label for="seed_name" class="typecho-label">名称</label>
         <p><input type="text" id="seed_name" name="seed_name" value="{{ seed_data.seed_name|default('',true) }}" class="text" /></p>
         <label for="base_url" class="typecho-label">链接 (<a href="#">?</a>)</label>
-        <p><textarea style="width:700px;height: 50px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
+        <p><textarea style="width:700px;height: {{ size }}px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <div id="forHTML">
           <label for="" class="typecho-label">列表页父节点</label>
@@ -138,5 +138,12 @@
         Typecho.autoComplete('#tags', _tags);
     });
 })();
+
+var textEditor = new Typecho.textarea('#urlformat', {
+    resizeAble: true,
+    autoSave: false,
+    autoSaveLeaveMessage: '您的内容尚未保存, 是否离开此页面?',
+    resizeUrl: '{{ url_for("seed.autosave") }}'
+});
 </script>
 {% endblock %}

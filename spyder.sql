@@ -3,8 +3,8 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: local.site
--- 生成日期: 2012 年 12 月 26 日 19:10
--- 服务器版本: 5.5.21-log
+-- 生成日期: 2013 年 01 月 08 日 11:54
+-- 服务器版本: 5.5.21
 -- PHP 版本: 5.3.15
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
@@ -26,15 +26,14 @@ SET time_zone = "+00:00";
 -- 表的结构 `field_template`
 --
 
-DROP TABLE IF EXISTS `field_template`;
 CREATE TABLE IF NOT EXISTS `field_template` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(64) NOT NULL COMMENT 'field name',
   `title` varchar(64) NOT NULL COMMENT 'nickname',
-  `type` enum('article','game','kaifu','kaice','gift','company') NOT NULL DEFAULT 'article',
+  `type` enum('article','game','kaifu','kaice','gift','company','gallery') NOT NULL DEFAULT 'article',
   PRIMARY KEY (`id`),
   UNIQUE KEY `name` (`name`,`type`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=55 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=61 ;
 
 --
 -- 转存表中的数据 `field_template`
@@ -94,7 +93,13 @@ INSERT INTO `field_template` (`id`, `name`, `title`, `type`) VALUES
 (51, 'address', '地址', 'company'),
 (52, 'telephone', '电话', 'company'),
 (53, 'email', '电子邮件', 'company'),
-(54, 'company_thumb', '厂商logo', 'company');
+(54, 'company_thumb', '厂商logo', 'company'),
+(55, 'title', '图库标题', 'gallery'),
+(56, 'author', '作者', 'gallery'),
+(57, 'tag', '标签', 'gallery'),
+(58, 'source', '来源', 'gallery'),
+(59, 'thumb', '缩略图', 'gallery'),
+(60, 'content', '内容图片', 'gallery');
 
 -- --------------------------------------------------------
 
@@ -102,7 +107,6 @@ INSERT INTO `field_template` (`id`, `name`, `title`, `type`) VALUES
 -- 表的结构 `seeds`
 --
 
-DROP TABLE IF EXISTS `seeds`;
 CREATE TABLE IF NOT EXISTS `seeds` (
   `sid` int(11) NOT NULL AUTO_INCREMENT,
   `seed_name` varchar(64) NOT NULL,
@@ -122,15 +126,16 @@ CREATE TABLE IF NOT EXISTS `seeds` (
   `finish_time` int(11) NOT NULL,
   PRIMARY KEY (`sid`),
   UNIQUE KEY `url` (`base_url`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=8 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=9 ;
 
 --
 -- 转存表中的数据 `seeds`
 --
 
 INSERT INTO `seeds` (`sid`, `seed_name`, `type`, `base_url`, `charset`, `lang`, `enabled`, `listtype`, `rule`, `frequency`, `timeout`, `tries`, `created_time`, `update_time`, `start_time`, `finish_time`) VALUES
-(2, '开服网新闻', 'article', NULL, 'utf-8', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:55:"http://www.kaifu.com/article-24--0-0-0-0-0-0-$page.html";s:10:"pageparent";s:18:"div[class=''pages'']";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"10";s:7:"filters";s:0:"";s:10:"contenturl";s:76:"div[class=''fl p14 blue news_detailliset lh40'']  a[class=''blue''].attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:10:"listparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:18:"li[class=''b_line'']";}', 7200, 30, 5, 0, 1356434812, 0, 0),
-(7, '开服网游戏', 'game', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:62:"http://www.kaifu.com/gamelist-1-0-0-0-0-0-0-0-0-0-1-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:2:"28";s:4:"step";s:2:"64";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:50:"div[class=''fl boder_base newsinfo_left game_info'']";s:10:"listparent";s:28:"div[class=''box_line picbox'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:27:"ul[class=''position_div fl'']";}', 3600, 30, 5, 1356075535, 1356507492, 0, 0);
+(2, '开服网新闻', 'article', NULL, 'utf-8', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:55:"http://www.kaifu.com/article-24--0-0-0-0-0-0-$page.html";s:10:"pageparent";s:18:"div[class=''pages'']";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"10";s:7:"filters";s:0:"";s:10:"contenturl";s:76:"div[class=''fl p14 blue news_detailliset lh40'']  a[class=''blue''].attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:10:"listparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:18:"li[class=''b_line'']";}', 7200, 30, 5, 0, 1357616501, 0, 0),
+(7, '开服网游戏', 'game', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:62:"http://www.kaifu.com/gamelist-1-0-0-0-0-0-0-0-0-0-1-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:2:"28";s:4:"step";s:2:"64";s:7:"filters";s:0:"";s:10:"contenturl";s:38:"(p[class=''gl_gname''] > a).attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:50:"div[class=''fl boder_base newsinfo_left game_info'']";s:10:"listparent";s:28:"div[class=''box_line picbox'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:27:"ul[class=''position_div fl'']";}', 3600, 30, 5, 1356075535, 1357382812, 0, 0),
+(8, '开服网开服', 'kaifu', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:51:"http://kf.kaifu.com/index-0-1-$page----0-0-0-0.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"0";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:8:"dateLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:0:"";s:10:"listparent";s:17:"div[id="content"]";s:9:"startpage";s:10:"YYYY-MM-DD";s:11:"entryparent";s:20:"div[id="kflist"] >ul";}', 3600, 30, 5, 1357542329, 1357550285, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -138,11 +143,10 @@ INSERT INTO `seeds` (`sid`, `seed_name`, `type`, `base_url`, `charset`, `lang`, 
 -- 表的结构 `seed_fields`
 --
 
-DROP TABLE IF EXISTS `seed_fields`;
 CREATE TABLE IF NOT EXISTS `seed_fields` (
   `seed_id` int(11) NOT NULL,
   `field_id` int(11) NOT NULL,
-  `value` varchar(64) DEFAULT NULL,
+  `value` varchar(255) DEFAULT NULL,
   `page_type` enum('list','content') NOT NULL COMMENT '采集目标页面的类型：列表或者内容页',
   KEY `seed_id` (`seed_id`,`field_id`),
   KEY `seed_id_2` (`seed_id`)
@@ -157,22 +161,30 @@ INSERT INTO `seed_fields` (`seed_id`, `field_id`, `value`, `page_type`) VALUES
 (2, 2, 'span[class=author].text()', 'content'),
 (2, 3, 'span[class=''gray decoration''] > a.text()', 'list'),
 (2, 5, 'div[class=''newsinfo_artical p14 lh24''].html()', 'content'),
-(2, 4, '来源：(*)浏览', 'content'),
-(2, 6, '本文(*)发布', 'content'),
-(7, 7, 'div[class=''title''] > h6[class=''fl'']', 'content'),
-(7, 8, '<span>游戏模式：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
-(7, 9, '<span>游戏题材：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
-(7, 10, '<span>画面方式：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
-(7, 11, '<span>战斗方式：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
-(7, 12, '<span>游戏产地：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
-(7, 13, '<span>收费模式：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
+(2, 4, '来源：[arg]浏览', 'content'),
+(2, 6, '本文[arg]发布', 'content'),
+(7, 7, '(div[class=''title''] > h6[class=''fl''] > a:first).text()', 'content'),
+(7, 8, '<span>游戏模式：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
+(7, 9, '<span>游戏题材：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
+(7, 10, '<span>画面方式：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
+(7, 11, '<span>战斗方式：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
+(7, 12, '<span>游戏产地：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
+(7, 13, '<span>收费模式：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
 (7, 14, '', 'content'),
-(7, 15, '<span>开发公司：<a href="(*)" target="_blank">[参数]</a></span>', 'content'),
+(7, 15, '<span>开发公司：<a href="(*)" target="_blank">[arg]</a></span>', 'content'),
 (7, 16, 'div[class=''newsinfo_artical p14 lh24 fl mt_5''] p', 'content'),
 (7, 17, 'a[class=''bt_playgame''].attr(''href'')', 'content'),
 (7, 18, 'img[class=''imgboxs''].attr(''src'')', 'list'),
 (7, 19, 'div[class=''fl pic mr picbd''] img.attr(''src'')', 'content'),
-(7, 20, 'p[class=''gray'']', 'list');
+(7, 20, 'p[class=''gray'']', 'list'),
+(8, 21, 'li.eq(1).text()', 'list'),
+(8, 22, '', 'list'),
+(8, 23, 'li.eq(3).text()', 'list'),
+(8, 24, '', 'list'),
+(8, 25, 'li.eq(2).text()', 'list'),
+(8, 26, 'li.eq(0).text()', 'list'),
+(8, 27, 'li.eq(5).attr("href")', 'list'),
+(8, 28, '', 'list');
 
 -- --------------------------------------------------------
 
@@ -180,7 +192,6 @@ INSERT INTO `seed_fields` (`seed_id`, `field_id`, `value`, `page_type`) VALUES
 -- 表的结构 `seed_logs`
 --
 
-DROP TABLE IF EXISTS `seed_logs`;
 CREATE TABLE IF NOT EXISTS `seed_logs` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sid` int(11) NOT NULL,
@@ -197,7 +208,6 @@ CREATE TABLE IF NOT EXISTS `seed_logs` (
 -- 表的结构 `seed_tag`
 --
 
-DROP TABLE IF EXISTS `seed_tag`;
 CREATE TABLE IF NOT EXISTS `seed_tag` (
   `sid` int(11) NOT NULL,
   `tid` int(11) NOT NULL,
@@ -206,13 +216,21 @@ CREATE TABLE IF NOT EXISTS `seed_tag` (
   KEY `tid` (`tid`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8;
 
+--
+-- 转存表中的数据 `seed_tag`
+--
+
+INSERT INTO `seed_tag` (`sid`, `tid`) VALUES
+(2, 4),
+(2, 8),
+(2, 9);
+
 -- --------------------------------------------------------
 
 --
 -- 表的结构 `tags`
 --
 
-DROP TABLE IF EXISTS `tags`;
 CREATE TABLE IF NOT EXISTS `tags` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `parent_id` int(11) NOT NULL DEFAULT '-1',
@@ -220,7 +238,19 @@ CREATE TABLE IF NOT EXISTS `tags` (
   `type` enum('tag','category') NOT NULL DEFAULT 'tag',
   `description` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=4 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=10 ;
+
+--
+-- 转存表中的数据 `tags`
+--
+
+INSERT INTO `tags` (`id`, `parent_id`, `name`, `type`, `description`) VALUES
+(4, -1, '游戏资讯', 'tag', ''),
+(5, -1, '游戏新闻', 'tag', ''),
+(6, -1, '海外资讯', 'tag', ''),
+(7, -1, '产业新闻', 'tag', ''),
+(8, -1, '人物采访', 'tag', ''),
+(9, -1, '热点追踪', 'tag', '');
 
 -- --------------------------------------------------------
 
@@ -228,7 +258,6 @@ CREATE TABLE IF NOT EXISTS `tags` (
 -- 表的结构 `users`
 --
 
-DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
   `uid` int(11) NOT NULL AUTO_INCREMENT,
   `username` varchar(255) NOT NULL,
@@ -246,8 +275,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`uid`, `username`, `passwd`, `email`, `permissions`, `salt`, `createtime`, `lastlogintime`) VALUES
-(10, 'admin', '13dbcde8ab9b640d6d725b57750ab3d6', 'admin@admin.com', 'administrator', 'gWT3', 0, 1356402282),
-(11, 'fireyy', '793d2dd8ac95f086666650518c69665d', 'fireyy@admin.com', 'administrator', 'at2Y', 1356060783, 1356332622);
+(10, 'admin', '13dbcde8ab9b640d6d725b57750ab3d6', 'admin@admin.com', 'administrator', 'gWT3', 0, 1357551909),
+(11, 'fireyy', '793d2dd8ac95f086666650518c69665d', 'fireyy@admin.com', 'administrator', 'at2Y', 1356060783, 1357554189);
 
 -- --------------------------------------------------------
 
@@ -255,7 +284,6 @@ INSERT INTO `users` (`uid`, `username`, `passwd`, `email`, `permissions`, `salt`
 -- 表的结构 `websites`
 --
 
-DROP TABLE IF EXISTS `websites`;
 CREATE TABLE IF NOT EXISTS `websites` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -272,7 +300,7 @@ CREATE TABLE IF NOT EXISTS `websites` (
 --
 
 INSERT INTO `websites` (`id`, `name`, `descript`, `url`, `sync_type`, `sync_profile`, `status`) VALUES
-(1, 'CMDP', 'CMDP站点的入库配置', 'http://www.dbplay.com', 'mysql', 'a:15:{s:12:"mysql_dbname";s:6:"spyder";s:12:"mysql_prefix";s:0:"";s:9:"access_id";s:16:"ACSUdnnvmrXfgall";s:8:"ftp_path";s:1:"/";s:12:"ftp_password";s:9:"il@veCMDP";s:12:"mysql_server";s:9:"127.0.0.1";s:7:"api_url";s:0:"";s:14:"mysql_password";s:0:"";s:10:"ftp_server";s:13:"58.222.24.174";s:8:"ftp_port";s:4:"2012";s:12:"ftp_username";s:4:"cmdp";s:10:"staticType";s:3:"ftp";s:17:"secret_access_key";s:10:"r8wybyBOs5";s:9:"staticUrl";s:25:"http://cdn.img.dbplay.com";s:14:"mysql_username";s:4:"root";}', 0);
+(1, 'CMDP', 'CMDP站点的入库配置', 'http://www.dbplay.com', 'mysql', 'a:15:{s:12:"mysql_dbname";s:6:"spyder";s:12:"mysql_prefix";s:0:"";s:9:"access_id";s:16:"1";s:8:"ftp_path";s:1:"/";s:12:"ftp_password";s:9:"1";s:12:"mysql_server";s:9:"127.0.0.1";s:7:"api_url";s:0:"";s:14:"mysql_password";s:0:"";s:10:"ftp_server";s:13:"58.222.24.174";s:8:"ftp_port";s:4:"2012";s:12:"ftp_username";s:4:"cmdp";s:10:"staticType";s:6:"aliyun";s:17:"secret_access_key";s:10:"1";s:9:"staticUrl";s:25:"http://cdn.img.dbplay.com";s:14:"mysql_username";s:4:"root";}', 0);
 
 -- --------------------------------------------------------
 
@@ -280,7 +308,6 @@ INSERT INTO `websites` (`id`, `name`, `descript`, `url`, `sync_type`, `sync_prof
 -- 表的结构 `website_map`
 --
 
-DROP TABLE IF EXISTS `website_map`;
 CREATE TABLE IF NOT EXISTS `website_map` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `siteid` int(11) NOT NULL COMMENT '站点ID',

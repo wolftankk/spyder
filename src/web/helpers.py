@@ -73,7 +73,8 @@ def getSeedTypeText(n):
         "kaifu": u"开服",
         "kaice": u"开测",
         "gift": u"礼包",
-        "company": u"厂商"
+        "company": u"厂商",
+        "gallery": u"图库"
     }
     return text[n]
 
