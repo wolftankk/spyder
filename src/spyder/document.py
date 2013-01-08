@@ -14,8 +14,8 @@ from libs.utils import safestr, safeunicode
 from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
-from spyder.field import Field
-
+from spyder.field import Field, Item
+from spyder.publish import Publish
 
 __all__ = [
     "getElementData",
@@ -121,6 +121,8 @@ class Grab(object):
 	if isinstance(seed, Seed):
 	    self.seed = seed
 	    self.seed_id = seed["sid"]
+	    self.seed_type = self.seed["type"]
+
 	    rule = seed.getRule();
 	    listtype = seed["listtype"]
 
@@ -133,7 +135,6 @@ class Grab(object):
 	else:
 	    print "传入的种子不是Seed类型"
 
-
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
         seed = self.seed
@@ -144,9 +145,13 @@ class Grab(object):
             for item in items:
                 link = item["link"]
 		guid = md5(link).hexdigest()
-                self.items[guid] = {
-                    "url" : link,
-                }
+
+		_item = Item({
+		    "url" : link,
+		    "type" : self.seed_type
+		})
+                self.items[guid] = _item
+
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def fetchListPages(self):
@@ -171,8 +176,6 @@ class Grab(object):
         list = doc.find(self.listRule.getListParent());
 	extrarules = self.listRule.extrarules
 
-	seed_type = self.seed["type"]
-
         if list:
             def entry(i, e):
                 #link
@@ -186,7 +189,10 @@ class Grab(object):
                 link = urlparse.urljoin(listurl, link);
 		guid = md5(link).hexdigest()
 
-		_item = {}
+		_item = Item({
+		    "type" : self.seed_type
+		})
+
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule)
@@ -194,8 +200,7 @@ class Grab(object):
 			field.value = value
 			_item[field["name"]] = field
 
-
-		if seed_type in self.dont_craw_content:
+		if self.seed_type in self.dont_craw_content:
 		    s = ""
 		    for f in _item:
 			s += safestr(_item[f].value)
@@ -204,8 +209,8 @@ class Grab(object):
 		    self.items[guid] = _item
 		else:
 		    _item["url"] = link
-		    self.items[guid] = _item
-
+		    print _item
+		    #self.items[guid] = _item
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
@@ -226,27 +231,17 @@ class Grab(object):
 	@param key MD5 string
 	'''
 	if key in self.items:
-	    item = self.items[key]
-	    if "url" in item and (("article" not in item) or (not isinstance(item["article"], Document))):
-		item["article"] = Document(item["url"], self.seed);
-	    return item
+	    _item = self.items[key]
+	    
+	    #if "url" in item and ("article" not in item):
+	    #    item["article"] = Document(item, self.seed);
+	    #return item
 
-    def publish(self):
+    def push(self):
         print ansicolor.cyan("Start fetching these articles", True)
-	'''
-	find seed and website relationship
-	'''
-    '''
-    def fetchArticles(self):
-        print ansicolor.cyan("Start fetching these articles", True)
-        if self.__len__() > 0:
-            for guid in self.items:
-        	item = self.items[guid]
-		if "url" in item:
-		    self.items[guid]["article"] = Document(item["url"], self.seed)
-    run = fetchArticles
-    '''
-
+	for k in self.keys():
+	    self[k]
+	#    Publish(k, self[k])
 
 r"""
     文章数据
@@ -258,20 +253,20 @@ r"""
     '''
 """
 class Document(object):
-    def __init__(self, url, seed):
+    def __init__(self, item, seed):
 	'''
 	document base url
 	'''
-	self.url = url
+	self.url = item["url"]
 
-	self.data = {}
+	self.data = item
 
 	self.seed = seed;
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()
 
-        print "Document %s is fetcing" % ansicolor.green(url)
-        firstContent = Fetch(url, charset = seed["charset"], timeout = seed["timeout"]).read();
+        print "Document %s is fetcing" % ansicolor.green(self.url)
+        firstContent = Fetch(self.url, charset = seed["charset"], timeout = seed["timeout"]).read();
 	if firstContent:
 	    self.parseDocument(firstContent)
 
@@ -362,6 +357,7 @@ if __name__ == "__main__":
     seed = Seed(r.list()[0])
     articles = Grab(seed)
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
+    articles.push()
 
     #游戏测试
     #r = db.view(7);
@@ -371,9 +367,9 @@ if __name__ == "__main__":
     #print game.data
 
     #游戏开服
-    r = db.view(8);
-    seed = Seed(r.list()[0])
-    kaifus = Grab(seed)
+    #r = db.view(8);
+    #seed = Seed(r.list()[0])
+    #kaifus = Grab(seed)
     #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
     #print game.data
 

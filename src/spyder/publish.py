@@ -14,11 +14,10 @@ from libs.phpserialize import unserialize
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
 from libs.utils import safestr, safeunicode
-
 from web.models import Site as Site_Model
-
 from _mysql import escape_string
 
+live_website = {}
 
 def create_model(self, name):
     '''
@@ -37,8 +36,11 @@ class Site(object):
 将采集的数据发布到网站
 '''
 class Publish():
-    def __init__(self):
-	pass
+    def __init__(self, guid, data):
+	'''
+	    初始化 把所有的网站都列出来， 并且进行数据推送
+	'''
+	#print data
 
 
 

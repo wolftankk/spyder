@@ -11,17 +11,17 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-from web.models import Field as Field_Model
-from libs.utils import safestr, now
+from UserDict import DictMixin
 import weakref
-from collections import defaultdict
 import time
 
+from web.models import Field as Field_Model
+from libs.utils import safestr, now, object_ref
+from collections import defaultdict
+
 __all__ = [
-    'live_refs', 'Field', 'Item'
+    'Field', "Item"
 ]
-
-
 
 '''
 创建一个动态的弱key表
@@ -29,7 +29,7 @@ __all__ = [
 其中包含了name, type, rule等等内容
 需要缓存一下数据库
 '''
-live_refs = defaultdict(weakref.WeakKeyDictionary)
+_fields_cache = defaultdict(weakref.WeakKeyDictionary)
 
 class Field(dict):
     def __init__(self, **kwargs):
@@ -37,11 +37,11 @@ class Field(dict):
 
 	if kwargs['field_id']:
 	    field_id = kwargs['field_id']
-	    if live_refs[field_id]:
-		data = live_refs[field_id]
+	    if _fields_cache[field_id]:
+		data = _fields_cache[field_id]
 	    else:
 		data = self.db.view(field_id).list()[0];
-		live_refs[field_id] = data
+		_fields_cache[field_id] = data
 
 	    #直接赋值到self中
 	    if data is not None:
@@ -74,7 +74,6 @@ class Field(dict):
 
 	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
 	#return int(now())
-
     
     def get_field(self):
 	'''
@@ -97,7 +96,6 @@ class ItemMeta(type):
     def __new__(mcs, cls_name, bases, attrs):
 	fields = {}
 	new_attrs = {}
-
 	for k, v in attrs.iteritems():
 	    if isinstance(v, Field):
 		fields[k] = v
@@ -109,5 +107,45 @@ class ItemMeta(type):
 	cls.fields.update(fields)
 	return cls
 
-class Item():
-    __metaclass__ = ItemMeta
+class Item(object):
+    fields = {}
+    attrs = {}
+    
+    def __init__(self, *args, **kwargs):
+	if args or kwargs:
+	    for k, v in dict(*args, **kwargs).iteritems():
+		self[k] = v
+
+    def __setitem__(self, key, value):
+	if isinstance(value, Field):
+	    self.fields[key] = value
+	else:
+	    self.attrs[key] = value
+    
+    def __getitem__(self, key):
+	if key in self.fields:
+	    return self.fields[key]
+	elif key in self.attrs:
+	    return self.attrs[key]
+
+    def __contains__(self, key):
+	if key in self.fields:
+	    return True
+	elif key in self.attrs:
+	    return True
+	else:
+	    return False
+
+    def __repr__(self):
+	return '<Item Field: ' + repr(self.fields) + " Attrs: " + repr(self.attrs) + " >"
+
+if __name__ == "__main__":
+    #test Item
+    test_item = Item(test="a", ddd="ff")
+    print test_item.keys()
+    print "ddd" in test_item
+    print "adads" in test_item
+    test_item["aaa"] = "c"
+    print test_item["test"]
+    #test_item["a"] = "dad"
+    #print test_item
