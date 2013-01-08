@@ -7,3 +7,5 @@ from .seeds import Seed
 from .pages import Pagination
 from .field import Field
 from .seed_fields import Seed_fields
+from .tags import Tags
+from .seed_tag import Seed_tag
