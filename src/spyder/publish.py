@@ -73,6 +73,10 @@ class Site(object):
 	    return;
 
 	#content <-> images
+	#这里需要多进程处理
+	images = data["images"] or []
+	print images
+
 
     """
     def init_fieldmap(self, field_map):
