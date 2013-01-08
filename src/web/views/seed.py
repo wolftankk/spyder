@@ -3,8 +3,8 @@ from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
 from libs import phpserialize
 from web.helpers import auth, getSeedFieldsBySid, checkboxVal
-from web.models import Seed, Field, Seed_fields
-import time
+from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
+import time, json
 
 seed = Module(__name__)
 
@@ -55,6 +55,21 @@ def add():
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
                 seed_field.add(**seed_value)
+            #插入标签
+            tags_data = request.form.get("tags")
+            tags_data = tags_data.split(",")
+            tags_model = Tags(current_app)
+            seed_tag = Seed_tag(current_app)
+            for tag in tags_data:
+                tag = tag.strip()
+                ishere = tags_model.findByName(tag).list()
+                if len(ishere) > 0:
+                    tid = ishere["id"]
+                else:
+                    tid = tags_model.add(name=tag)
+                ishere = seed_tag.view(sid,tid).list() 
+                if len(ishere) == 0:
+                    seed_tag.add(sid=sid, tid=tid)
         return redirect(url_for("seeds.index"));
     fields = field.getSeedType()
     if request.method == "GET" and request.args.get("type"):
@@ -64,7 +79,12 @@ def add():
         fields = field.list(seed_type)
         seed_field = Seed_fields(current_app)
         page_types = seed_field.getpageType()
-        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data, page_types=page_types)
+        alltags = []
+        tags_model = Tags(current_app)
+        alltags_data = tags_model.list()
+        for tag in alltags_data:
+            alltags.append(tag["name"])
+        return render_template("seed/add.html", seed_type=seed_type, fields=fields, seed_data=seed_data, page_types=page_types, alltags=alltags)
     return render_template("seed/select_type.html", fields=fields)
     
 @seed.route("/view/<int:seed_id>/")
@@ -80,6 +100,8 @@ def add_link():
 @seed.route("/edit/<int:seed_id>/", methods=("GET", "POST"))
 @auth
 def edit(seed_id):
+    tags = []
+    alltags = []
     if request.method == "POST" and request.form.get("sid"):
         sid = request.form.get("sid")
         enabled = checkboxVal(request.form.get("enabled"))
@@ -127,6 +149,21 @@ def edit(seed_id):
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
                 seed_field.add(**seed_value)
+        #更改标签
+        tags_data = request.form.get("tags")
+        tags_data = tags_data.split(",")
+        tags_model = Tags(current_app)
+        seed_tag = Seed_tag(current_app)
+        for tag in tags_data:
+            tag = tag.strip()
+            ishere = tags_model.findByName(tag).list()
+            if len(ishere) > 0:
+                tid = ishere["id"]
+            else:
+                tid = tags_model.add(name=tag)
+            ishere = seed_tag.view(sid,tid).list() 
+            if len(ishere) == 0:
+                seed_tag.add(sid=sid, tid=tid)
         return redirect(url_for("seeds.index"))
     if request.method == "GET" and seed_id > 0:
         seed = Seed(current_app)
@@ -138,7 +175,17 @@ def edit(seed_id):
         seed_data["frequency"] = float(seed_data["frequency"])/float(3600)
         if seed_data["rule"]:
             seed_data["rule"] = phpserialize.loads(seed_data["rule"])
-    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types)
+        #取出标签
+        seed_tag = Seed_tag(current_app)
+        tags_model = Tags(current_app)
+        tags_data = seed_tag.list(seed_id)
+        for tag in tags_data:
+            tmp = tags_model.view(tag["tid"])[0]
+            tags.append(tmp["name"])
+        alltags_data = tags_model.list()
+        for tag in alltags_data:
+            alltags.append(tag["name"])
+    return render_template("seed/add.html", seed_type=seed_type, fields=seed_field, seed_data=seed_data, sid=seed_id, page_types=page_types, tags=tags, alltags=alltags)
 
 @seed.route("/delete/<int:seed_id>")
 @auth
