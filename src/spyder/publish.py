@@ -14,7 +14,6 @@ from libs.phpserialize import unserialize
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
 from libs.utils import safestr, safeunicode
-from _mysql import escape_string
 
 from web.models import Site as Site_Model
 from web.models import Site_map
@@ -43,6 +42,22 @@ class Site(object):
 
 	self.profile = data
 	self.id = data["id"]
+	
+	self.db_config = {
+	    'default' : {
+		"table_prefix" : self.sync_profile["mysql_prefix"],
+		"db" : self.sync_profile["mysql_dbname"],
+		'user' : self.sync_profile["mysql_username"],
+		"passwd" : self.sync_profile["mysql_password"],
+		"host" : self.sync_profile["mysql_server"]
+	    }	    
+	}
+
+	if self.sync_profile["staticUrl"]:
+	    self.staticUrl = self.sync_profile["staticUrl"]
+
+	#静态上传类型 none, ftp, aliyun
+	self.static_type = self.sync_profile["staticType"]
 
     def init_fieldmap(self, field_map):
 	# new_field_name :  field_template_name
@@ -71,15 +86,6 @@ class Site(object):
 		"new_field" : new_field
 	    }
 
-	    db_config = {
-		'default' : {
-		    "table_prefix" : self.sync_profile["mysql_prefix"],
-		    "db" : self.sync_profile["mysql_dbname"],
-		    'user' : self.sync_profile["mysql_username"],
-		    "passwd" : self.sync_profile["mysql_password"],
-		    "host" : self.sync_profile["mysql_server"]
-		}	    
-	    }
 	    #init db
 	    self.field_map[type][self.id]["model"] = cmdp_model(db_config, self.field_map[type][self.id]["table_name"])
 
@@ -88,10 +94,9 @@ class Site(object):
 	    map = self.field_map[type][self.id]["new_field"]
 	    
 
+	    '''
 	    try:
 		#test link
-
-		'''
 		fields = db.get_fields()
 		print "Connect database %s success" % db.db_config[db.db_setting]['db']
 
@@ -108,14 +113,11 @@ class Site(object):
 		    insert_data["category_id"] = data["tags"]
 
 		db.insert(**insert_data)
-		''''
 	    except:
-		#stop insert
 		pass;
+	    '''
 
     def push(self, guid, data, field_map):
-	print self.sync_profile
-
 	'''
 	if self.profile["sync_type"] == "mysql":
 	    self.post_to_mysql(guid, data, field_map)
@@ -132,11 +134,12 @@ class Publish():
 	'''
 	#site cache
 	self.sites = {}
-	# site map cache by category
+	# site map cache by category, kaifu
 	self.site_by_category = {}
 
-	# get all site data
+	#初始化站点信息
 	self.init_sites()
+
 	self.mapdb = Site_map()
 
     def init_sites(self):
@@ -149,9 +152,26 @@ class Publish():
 	    if site and "id" in site:
 		self.sites[site["id"]] = Site(site)
 
-    def update_sites(self):
-	self.sites = {}
-	self.init_sites();
+    def get_site(self, site_id):
+	'''
+	get Site instance by site_id
+	'''
+	if site_id in self.sites:
+	    return self.sites[site_id]
+
+    def init_site_fieldmap(self, seed_type):
+	'''
+	初始化站点字段映射表
+	'''
+	self.site_by_category[seed_type] = {}
+	query = self.mapdb.select(where={ "seed_type" : seed_type }, what="siteid", group="siteid")
+	if len(query) > 0:
+	    r = query.list();
+	    for site in r:
+		site_id = site["siteid"]
+		#映射数据表
+		fields = self.mapdb.select( where = { "seed_type" : seed_type, "siteid" : site_id} ).list()
+		self.site_by_category[seed_type][site_id] = fields
 
     def push(self, guid, data):
 	'''
@@ -160,27 +180,16 @@ class Publish():
 	然后发布出去
 	'''
 	seed_type = data["type"]
-
 	if seed_type not in self.site_by_category:
-	    self.site_by_category[seed_type] = {}
-
-	    query = self.mapdb.select(where={ "seed_type" : seed_type }, what="siteid", group="siteid")
-
-	    if len(query) > 0:
-	        r = query.list();
-	        for site in r:
-		    site_id = site["siteid"]
-
-		    #映射数据表
-		    fields = self.mapdb.select( where = { "seed_type" : seed_type, "siteid" : site_id} ).list()
-		    self.site_by_category[seed_type][site_id] = fields
-
+	    self.init_site_fieldmap(seed_type)
 
 	if seed_type in self.site_by_category:
-	    siteids = self.site_by_category[seed_type]
-	    for id in siteids:
-		#guid, data, field_map
-		self.sites[id].push(guid, data, siteids[id])
+	    sites = self.site_by_category[seed_type]
+	    for site_id in sites:
+		site_profile = sites[site_id]
+		site = self.get_site(site_id)
+		if site is not None:
+		    site.push(guid, data, site_profile)
 	
 
 if __name__ == "__main__":
