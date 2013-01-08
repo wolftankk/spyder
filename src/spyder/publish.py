@@ -59,6 +59,22 @@ class Site(object):
 	#静态上传类型 none, ftp, aliyun
 	self.static_type = self.sync_profile["staticType"]
 
+    def push(self, guid, data, field_map):
+	'''
+	每条数据最终会通过此处发布到数据库或者api中
+	if self.profile["sync_type"] == "mysql":
+	    self.post_to_mysql(guid, data, field_map)
+	'''
+	#处理数据， 看数据中的图片是否需要上传
+	self.upload_media(data)
+
+    def upload_media(self, data):
+	if self.static_type == "none" or not self.staticUrl:
+	    return;
+
+	print data
+
+    """
     def init_fieldmap(self, field_map):
 	# new_field_name :  field_template_name
 	new_field = {}
@@ -116,12 +132,8 @@ class Site(object):
 	    except:
 		pass;
 	    '''
+    """
 
-    def push(self, guid, data, field_map):
-	'''
-	if self.profile["sync_type"] == "mysql":
-	    self.post_to_mysql(guid, data, field_map)
-	'''
 
 
 '''
