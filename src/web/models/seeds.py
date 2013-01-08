@@ -1,5 +1,7 @@
 #coding: utf-8
 from web.model import Model
+from datetime import datetime
+import time
 
 class Seed(Model):
     sid = 0;
@@ -27,6 +29,19 @@ class Seed(Model):
 
     def add(self, **args):
 	return self.insert(**args)
+    
+    def copynew(self, sid):
+        save = self.view(sid).list()
+        if len(save) > 0:
+            save = save[0]
+            save["seed_name"] = save["seed_name"]+datetime.today().strftime("%Y%m%d%H%M%S")
+            time1 = int(time.time())
+            save["created_time"] = time1
+            save["update_time"] = time1
+            save["enabled"] = 0
+            del save["sid"]
+            return self.insert(**save)
+	return False
     
     def remove(self, sid):
 	return self.delete("sid="+str(sid))

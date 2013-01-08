@@ -27,6 +27,14 @@ class Seed_fields(Model):
     def add(self, **args):
 	return self.insert(**args)
     
+    def copynew(self, old_sid, new_sid):
+        datas = self.list(old_sid).list()
+        if len(datas) > 0:
+            for save in datas:
+                save["seed_id"] = new_sid
+                self.insert(**save)
+	return True
+    
     def edit(self, sid, fid, value, page_type):
 	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value, page_type=page_type)
     

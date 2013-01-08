@@ -35,11 +35,12 @@
         <col width="25">
         <col width="50">
         <col width="30">
-        <col width="280">
+        <col width="230">
         <col width="30">
         <col width="110">
         <col width="205">
         <col width="150">
+        <col width="50">
       </colgroup>
       <thead>
         <tr>
@@ -50,7 +51,8 @@
           <th> </th>
           <th>采集量</th>
           <th>标签</th>
-          <th class="typecho-radius-topright">日期</th>
+          <th>日期</th>
+          <th class="typecho-radius-topright"> </th>
         </tr>
       </thead>
       <tbody>
@@ -69,6 +71,7 @@
           <td><a href="#" class="balloon-button size-10" title="查看最近采集的数据">0</a></td>
           <td></td>
           <td>{{ seed.update_time|timesince }}</td>
+          <td><a href="/seed/copynew/{{ seed.sid }}">复制</a></td>
         </tr>
         {% endfor %}
       </tbody>
