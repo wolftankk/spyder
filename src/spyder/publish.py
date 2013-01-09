@@ -19,7 +19,7 @@ from web.models import Site as Site_Model
 from web.models import Site_map
 from web.model import Model
 from spyder.field import get_field_from_cache
-import time
+import spyder.recipes as recipes
 
 __all__ = [
 
@@ -106,48 +106,67 @@ class Site(object):
 	return table_name, new_field
 
     def post_to_mysql(self, guid, data, field_map):
-	type = data["type"]
-	if type not in self.field_map:
-	    self.field_map[type] = {}
+	seed_type = data["type"]
+	if seed_type not in self.field_map:
+	    self.field_map[seed_type] = {}
 
-	if self.id not in self.field_map[type]:
+	if self.id not in self.field_map[seed_type]:
 	    table_name, field_mapping = self.get_field_mapping(field_map)
 	    profile = {
 	        "table_name" : table_name,
 	        "mapping" : field_mapping
 	    }
 	    profile["model"] = article_template(self.db_config, table_name)
-	    self.field_map[type][self.id] = profile
 
-	if self.id in self.field_map[type] and "model" in self.field_map[type][self.id]:
-	    db = self.field_map[type][self.id]["model"]
-	    map = self.field_map[type][self.id]["mapping"]
+	    #这里需要保证有数据库中的字段， 保证插入时候字段名正确 方式插入错误
+	    profile["table_fields"] = profile["model"].get_fields()
+	    self.field_map[seed_type][self.id] = profile
+
+	if (self.id in self.field_map[seed_type]) and ("model" in self.field_map[seed_type][self.id]) and ("table_fields" in self.field_map[seed_type][self.id]):
+	    db = self.field_map[seed_type][self.id]["model"]
+	    map = self.field_map[seed_type][self.id]["mapping"]
+	    table_fields = self.field_map[seed_type][self.id]["table_fields"]
+
+	    #先将映射的数据放入进去。
+	    insert_data = {
+		"guid" : guid		
+	    }
+	    for k in map:
+		field = map[k]
+		insert_data[k] = data[field["name"]].value
+
+
+	    if "hook" in self.profile:
+		hook_name = self.profile["hook"]
+	    hook_name = "kaifu"
+	    hook_method = getattr(recipes, hook_name);
+
+	    print hook_method
+	"""
 
 	    try:
-		'''
-		直接尝试插入， 这里以后需要写状态
-		'''
+
+		#对insert_data进行修正。 如果返回了None表示 此数据不符合 将不会插入进去
 		# 这里获取一些hook脚本
-		if "hook" in self.profile:
-		    hook = self.profile["hook"]
 		    # insert_data, data
+		hook_name = "kaifu"
+		hook_method = getattr(recipes, hook_name);
+		if hook_method and callable(hook_method):
+		    try:
+			insert_data = hook_method(insert_data, data)
+		    except:
+			pass
 
-		    
-		#insert_data = {}
-		#for k in map:
-		#    field = map[k]
-		#    insert_data[k] = data[field["name"]].value
 
-		#insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
-		#insert_data["guid"] = guid
-		#insert_data["src_url"] = data["url"]
-
-		#if "category_id" in fields:
-		#    insert_data["category_id"] = data["tags"]
+		#做字段的验证
+		print insert_data
+		if insert_data and isinstace(insert_data, dict):
+		    print insert_data
 
 		#db.insert(**insert_data)
 	    except:
 		pass;
+	"""
 
 
 class PublishServer():
