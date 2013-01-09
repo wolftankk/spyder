@@ -84,10 +84,7 @@ class Site(object):
 	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
 
-	#content <-> images
-	#这里需要多进程处理
 	images = data["images"] or []
-
 	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
 
 	# access_id, secret_access_key
@@ -136,38 +133,33 @@ class Site(object):
 		insert_data[k] = data[field["name"]].value
 
 
-	    if "hook" in self.profile:
-		hook_name = self.profile["hook"]
-	    hook_name = "kaifu"
-	    hook_method = getattr(recipes, hook_name);
+	    hook_name = self.sync_profile["hook_func"]
+	    hook_method = None;
+	    if hook_name in dir(recipes):
+		hook_method = getattr(recipes, hook_name)
 
-	    print hook_method
-	"""
+	    if hook_method and callable(hook_method):
+		try:
+		    insert_data = hook_method(insert_data, data)
+		except:
+		    pass
 
-	    try:
+	    #对insert_data进行修正。 如果返回了None表示 此数据不符合 将不会插入进去
+	    if insert_data and isinstance(insert_data, dict):
+		test_insert_data = insert_data;
+		insert_data = {}
 
-		#对insert_data进行修正。 如果返回了None表示 此数据不符合 将不会插入进去
-		# 这里获取一些hook脚本
-		    # insert_data, data
-		hook_name = "kaifu"
-		hook_method = getattr(recipes, hook_name);
-		if hook_method and callable(hook_method):
-		    try:
-			insert_data = hook_method(insert_data, data)
-		    except:
-			pass
-
-
-		#做字段的验证
+		for field in table_fields:
+		    if field in test_insert_data:
+			insert_data[field] = test_insert_data[field]
+	    
 		print insert_data
-		if insert_data and isinstace(insert_data, dict):
-		    print insert_data
-
-		#db.insert(**insert_data)
-	    except:
-		pass;
-	"""
-
+		"""
+		try:
+		    db.insert(**insert_data)
+		except:
+		    pass;
+		"""
 
 class PublishServer():
     '''

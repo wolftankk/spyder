@@ -1,5 +1,7 @@
 #coding: utf-8
 
+__name__ = "开服网"
+
 '''
 用于处理开服网采集后的数据 插入到库中时候进行一些数据上的调整
 '''
@@ -23,5 +25,10 @@ def process_article(insert_data, data):
 
     #验证数据如果title content不存在的话 就直接返回None
 
-    if insert_data["title"] is None or insert_data["content"] is None:
+    if insert_data["title"] is None or insert_data["title"] == "None":
 	return None
+
+    if insert_data["content"] is None or insert_data["content"] == "None":
+	return None
+    
+    return insert_data
