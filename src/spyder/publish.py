@@ -71,10 +71,11 @@ class Site(object):
 	    if method:
 		method(guid, data, field_map)
 
-    def upload_media(self, data, insert_data):
+    def upload_media(self, insert_data, data):
 	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
 	
+	print data["images"]
 	#这里会将所有的字段数据中的图片上传到服务上
 	#print data
 	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
