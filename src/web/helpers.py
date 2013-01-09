@@ -5,7 +5,7 @@ from datetime import datetime
 
 from flask import current_app, g, session, redirect, url_for, request
 import functools
-from web.models import Field, Seed_fields
+from web.models import Field, Seed_fields, Seed_tag, Tags
 #from flaskext.themes import static_file_url, render_theme_template
 #
 #_punct_re = re.compile(r'[\t !"#$%&\'()*\-/<=>?@\[\\\]^_`{|},.]+')
@@ -155,3 +155,15 @@ def createSalt():
     for i in range(4):
         chars.append(random.choice(ALPHABET))
     return "".join(chars)
+
+def getTagsBySeedId(seed_id):
+    tags = []
+    if seed_id:
+        seed_tag = Seed_tag(current_app)
+        tags_modle = Tags(current_app)
+        datas = seed_tag.list(seed_id)
+        for data in datas:
+            tid = data["tid"]
+            ishere = tags_modle.view(tid).list()[0]
+            tags.append(ishere)
+    return tags
