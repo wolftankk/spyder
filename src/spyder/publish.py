@@ -120,10 +120,8 @@ class Site(object):
 	    self.field_map[type][self.id] = profile
 
 	if self.id in self.field_map[type] and "model" in self.field_map[type][self.id]:
-
 	    db = self.field_map[type][self.id]["model"]
 	    map = self.field_map[type][self.id]["mapping"]
-
 
 	    try:
 		'''
@@ -132,7 +130,7 @@ class Site(object):
 		# 这里获取一些hook脚本
 		if "hook" in self.profile:
 		    hook = self.profile["hook"]
-		    # 从
+		    # insert_data, data
 
 		    
 		#insert_data = {}
