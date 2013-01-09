@@ -1,7 +1,7 @@
 #coding: utf-8
 from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
-from web.helpers import auth
+from web.helpers import auth, getTagsBySeedId
 from web.models import Seed, Pagination, Field, Seed_fields
 
 PER_PAGE = 10
@@ -36,9 +36,14 @@ def index(page=1):
     if request.args.get("type"):
         seed_type = request.args.get("type")
         filte["type"] = seed_type
-    seeds = seed.list(page, PER_PAGE, filte)
-    if not seeds and page != 1:
+    seeds1 = seed.list(page, PER_PAGE, filte)
+    seeds = []
+    if not seeds1 and page != 1:
         abort(404)
+    for seed_item in seeds1:
+        seed_item["tags"] = getTagsBySeedId(seed_item["sid"])
+        seeds.append(seed_item)
+    print seeds
     count = seed.totalcount()
     pagination = Pagination(page, PER_PAGE, count)
     fields = field.getSeedType()
