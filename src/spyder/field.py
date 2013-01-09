@@ -11,10 +11,17 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-from web.models import Field as Field_Model
-
+from UserDict import DictMixin
 import weakref
+import time
+
+from web.models import Field as Field_Model
+from libs.utils import safestr, now, object_ref
 from collections import defaultdict
+
+__all__ = [
+    'Field', "Item", "get_field_from_cache"
+]
 
 '''
 创建一个动态的弱key表
@@ -22,19 +29,13 @@ from collections import defaultdict
 其中包含了name, type, rule等等内容
 需要缓存一下数据库
 '''
-live_refs = defaultdict(weakref.WeakKeyDictionary)
+_fields_cache = defaultdict(weakref.WeakKeyDictionary)
 
 class Field(dict):
     def __init__(self, **kwargs):
-	self.db = Field_Model();
-
 	if kwargs['field_id']:
 	    field_id = kwargs['field_id']
-	    if live_refs[field_id]:
-		data = live_refs[field_id]
-	    else:
-		data = self.db.view(field_id).list()[0];
-		live_refs[field_id] = data
+	    data = get_field_from_cache(field_id)
 
 	    #直接赋值到self中
 	    if data is not None:
@@ -56,6 +57,17 @@ class Field(dict):
 	'''
 	转成timestamp
 	'''
+	t1 = "今日 17点"
+	t2 = "01月08日09点开服"
+	t3 = "01月07日14:10"
+	#str = safestr(str)
+	#print time.strptime(str, "今日 %H点")
+
+	#t2 = safestr(t2)
+	#print time.strptime(t2, safestr("%m月%d日%H点开服"))
+
+	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
+	#return int(now())
     
     def get_field(self):
 	'''
@@ -72,3 +84,57 @@ class Field(dict):
 
     def __str__(self):
 	return '< Field: %s >' % self['name']
+
+def get_field_from_cache(field_id):
+    db = Field_Model();
+    if _fields_cache[field_id]:
+	data = _fields_cache[field_id]
+    else:
+	data = db.view(field_id).list()[0];
+	_fields_cache[field_id] = data
+
+    return data
+
+
+class Item(object):
+    def __init__(self, *args, **kwargs):
+	self.fields = {}
+	self.attrs = {}
+    
+	if args or kwargs:
+	    for k, v in dict(*args, **kwargs).iteritems():
+		self[k] = v
+
+    def __setitem__(self, key, value):
+	if isinstance(value, Field):
+	    self.fields[key] = value
+	else:
+	    self.attrs[key] = value
+    
+    def __getitem__(self, key):
+	if key in self.fields:
+	    return self.fields[key]
+	elif key in self.attrs:
+	    return self.attrs[key]
+
+    def __contains__(self, key):
+	if key in self.fields:
+	    return True
+	elif key in self.attrs:
+	    return True
+	else:
+	    return False
+
+    def __repr__(self):
+	return '<Item Field: ' + repr(self.fields) + " Attrs: " + repr(self.attrs) + " >"
+
+if __name__ == "__main__":
+    #test Item
+    test_item = Item(test="a", ddd="ff")
+    print test_item.keys()
+    print "ddd" in test_item
+    print "adads" in test_item
+    test_item["aaa"] = "c"
+    print test_item["test"]
+    #test_item["a"] = "dad"
+    #print test_item

@@ -9,26 +9,27 @@ import urllib2, urlparse, io
 import hashlib, StringIO, struct
 from spyder.pybits import ansicolor
 
+__all__ [
+    'Image'	
+]
 
-
-
-"""""
-class DumpMedia():
-    def __init__(self, prefixUrl, url):
-        self.mediaUrl = urlparse.urljoin(prefixUrl, url)
+class Image():
+    def __init__(self, url):
+        self.mediaUrl = url
 
 	if isinstance(self.mediaUrl, unicode):
 	    self.mediaUrl = self.mediaUrl.replace(u"。", ".")
 	    self.mediaUrl = self.mediaUrl.encode("ascii", "ignore")
-
+	
+	#新的图片名称
 	self.filename = None
 	self.fetched = False
-        self.fetch()
+        self.fetchMedia()
 
     def getMediaUrl(self):
         return self.mediaUrl
 
-    def fetch(self):
+    def fetchMedia(self):
         try:
             self.media = urllib2.urlopen(self.mediaUrl)
 	    self.mediaData = self.media.read()
@@ -36,20 +37,16 @@ class DumpMedia():
 	    self.fetched = True
         finally:
             return None
-
-    def getPath(self, path):
-        staticPath = os.path.join(os.getcwd(), config.staticPath)
-        if not os.access(staticPath, os.W_OK):
-            print ansicolor.green(staticPath) + " " + ansicolor.red("NEED write permission")
-            sys.exit(2)
+    
+    def getPath(self):
+	image_hash, filename = self.getMediaName()
+	path = ""
 
         for i in range(0, 8, 2):
-            newpath = path[i:(i+2)]
-            staticPath = os.path.join(staticPath, newpath)
-            if not os.path.exists(staticPath):
-                os.mkdir(staticPath);
+            newpath = image_hash[i:(i+2)]
+            path = os.path.join(path, newpath)
 
-        return staticPath
+        return path
 
     def getSize(self):
 	data = self.mediaData
@@ -98,10 +95,64 @@ class DumpMedia():
 		pass
 
 	return width, height
+    
+    def getMediaName(self):
+	'''
+	获得图片的hash值， 并且将新的图片名返回回去
+	'''
+	image_hash = hashlib.sha1(self.mediaData)
+	newname = image_hash.hexdigest()
+	self.filename = newname+"."+self.getFileType()
 
+        return newname, self.filename
+    
+    def getFileType(self):
+        path = urlparse.urlsplit(self.mediaUrl).path;
+        spath = path.split(".")
+        if spath is not None:
+            return spath[-1].lower()
+        else:
+            subtype = self.getSubType()
+            maintype = self.getMainType()
+            if self.getType() and subtype:
+                if maintype == "image":
+                    if subtype == "jpeg" or subtype == "pjpeg":
+                        return "jpg"
+                    elif subtype == "png":
+                        return "png"
+                    elif subtype == "gif":
+                        return "gif"
+                    elif subtype == "bmp":
+                        return "bmp"
+                #elif maintype == "audio":
+                #elif maintype == "video":
+                elif maintype == "application" and subtype == "x-shockwave-flash":
+                    return "swf"
+                else:
+                    return None
+        return None
+
+    def getInfo(self):
+        return self.urlinfo
+
+    def getType(self):
+        return self.urlinfo.gettype()
+
+    def getMainType(self):
+        return self.urlinfo.getmaintype()
+
+    def getSubType(self):
+        return self.urlinfo.getsubtype()
+
+if __name__ == "__main__":
+    m = Image('http://res.kaifu.com/isy/upload/ueditor/image/20130108/32a5hpfyu8syexkq.jpg')
+    print m.getSize()
+    print m.getMediaName()
+    print m.getPath();
+
+
+"""""
     def write(self):
-        m = hashlib.sha1(self.mediaUrl)
-        newname = m.hexdigest()
 	
 	if config.imageSaveMethod == "locale":
 	    path = self.getPath(newname)
@@ -142,50 +193,4 @@ class DumpMedia():
 	    print "下载成功";
 	    return True
 
-    def getMediaName(self):
-        return self.filename
-    
-    def getFileType(self):
-        path = urlparse.urlsplit(self.mediaUrl).path;
-        spath = path.split(".")
-        if spath is not None:
-            return spath[-1].lower()
-        else:
-            subtype = self.getSubType()
-            maintype = self.getMainType()
-            if self.getType() and subtype:
-                if maintype == "image":
-                    if subtype == "jpeg" or subtype == "pjpeg":
-                        return "jpg"
-                    elif subtype == "png":
-                        return "png"
-                    elif subtype == "gif":
-                        return "gif"
-                    elif subtype == "bmp":
-                        return "bmp"
-                #elif maintype == "audio":
-                #elif maintype == "video":
-                elif maintype == "application" and subtype == "x-shockwave-flash":
-                    return "swf"
-                else:
-                    return None
-
-        return None
-
-    def getInfo(self):
-        return self.urlinfo
-
-    def getType(self):
-        return self.urlinfo.gettype()
-
-    def getMainType(self):
-        return self.urlinfo.getmaintype()
-
-    def getSubType(self):
-        return self.urlinfo.getsubtype()
-
-
-if __name__ == "__main__":
-    m = DumpMedia("http://p2.bahamut.com.tw", "http://p2。bahamut。com。tw/B/2KU/43/0000527843.PNG")
-    print m.getSize()
 """""

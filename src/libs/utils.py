@@ -2,10 +2,15 @@
 
 import itertools
 
-__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters', 'iterbetter', 'IterBetter', "now"]
+__all__ = ['safestr', 'safeunicode', 'ThreadedDict', 'threadeddict', 'storage', 'Storage', 'iters', 'iterbetter', 'IterBetter', "now",
+	"live_refs", "object_ref"
+	]
 
 import sys
 from threading import local as threadlocal
+import time
+import weakref
+from collections import defaultdict
 
 def now():
     return int(time.time())
@@ -222,3 +227,15 @@ class IterBetter:
                 return True
 
 iterbetter = IterBetter
+
+
+
+live_refs = defaultdict(weakref.WeakKeyDictionary)
+
+class object_ref(object):
+    __slots__ = []
+
+    def __new__(cls, *args, **kwargs):
+	obj = object.__new__(cls)
+	live_refs[cls][obj] = now()
+	return obj
