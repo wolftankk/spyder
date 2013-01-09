@@ -18,31 +18,36 @@ from libs.utils import safestr, safeunicode
 from web.models import Site as Site_Model
 from web.models import Site_map
 from web.model import Model
-
 from spyder.field import get_field_from_cache
 import time
 
-class cmdp_model(Model):
+__all__ = [
+
+]
+
+class article_template(Model):
+    '''
+    用于快速创建一个插入到外部数据库的model模板类
+    '''
     def __init__(self, db_config, table_name):	
 	self.db_config = db_config
 	self.db_setting = 'default'
 	self._table_name = table_name
 	Model.__init__(self)
 
-'''
-website
-'''
 class Site(object):
-    field_map = {}
+    post_type = ["mysql", "api"]
+    upload_res_type = [ "aliyun", "ftp"]
+
     def __init__(self, data):
+	self.field_map = {}
 	if "sync_profile" in data:
 	    sync_profile = data.pop("sync_profile")
 	    sync_profile = unserialize(sync_profile)
 	    self.sync_profile = sync_profile
 
 	self.profile = data
-	self.id = data["id"]
-	
+	self.id = str(data["id"])
 	self.db_config = {
 	    'default' : {
 		"table_prefix" : self.sync_profile["mysql_prefix"],
@@ -62,88 +67,95 @@ class Site(object):
     def push(self, guid, data, field_map):
 	'''
 	每条数据最终会通过此处发布到数据库或者api中
+	# mysql, api
 	if self.profile["sync_type"] == "mysql":
 	    self.post_to_mysql(guid, data, field_map)
 	'''
 	#处理数据， 看数据中的图片是否需要上传
 	self.upload_media(data)
 
+	#data中的图片链接地址将会替换成新的资源地址
+	if self.profile["sync_type"] in self.post_type:
+	    method = getattr(self, "post_to_" + self.profile["sync_type"])
+	    if method:
+		method(guid, data, field_map)
+
     def upload_media(self, data):
-	if self.static_type == "none" or not self.staticUrl:
+	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
 
 	#content <-> images
 	#这里需要多进程处理
 	images = data["images"] or []
-	print images
 
+	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
 
-    """
-    def init_fieldmap(self, field_map):
-	# new_field_name :  field_template_name
+	# access_id, secret_access_key
+
+    def get_field_mapping(self, field_map):
 	new_field = {}
-	table_name = ""
+	table_name = None
 
 	for f in field_map:
-	    if "field_id" in f:
-		if not table_name:
+	    if f["field_id"] and f["site_field"]:
+		if table_name is None:
 		    table_name = f["table_name"]
 
-		if f['site_field']:
-		    new_field[f["site_field"] ] = get_field_from_cache(f["field_id"])
+		new_field[f["site_field"]] = get_field_from_cache(f["field_id"])
 	
 	return table_name, new_field
 
     def post_to_mysql(self, guid, data, field_map):
 	type = data["type"]
-	if type not in field_map:
+	if type not in self.field_map:
 	    self.field_map[type] = {}
 
 	if self.id not in self.field_map[type]:
-	    table_name, new_field =  self.init_fieldmap(field_map)
-	    self.field_map[type][self.id] = {
-		"table_name" : table_name,
-		"new_field" : new_field
+	    table_name, field_mapping = self.get_field_mapping(field_map)
+	    profile = {
+	        "table_name" : table_name,
+	        "mapping" : field_mapping
 	    }
-
-	    #init db
-	    self.field_map[type][self.id]["model"] = cmdp_model(db_config, self.field_map[type][self.id]["table_name"])
+	    profile["model"] = article_template(self.db_config, table_name)
+	    self.field_map[type][self.id] = profile
 
 	if self.id in self.field_map[type] and "model" in self.field_map[type][self.id]:
+
 	    db = self.field_map[type][self.id]["model"]
-	    map = self.field_map[type][self.id]["new_field"]
-	    
+	    map = self.field_map[type][self.id]["mapping"]
 
-	    '''
+
 	    try:
-		#test link
-		fields = db.get_fields()
-		print "Connect database %s success" % db.db_config[db.db_setting]['db']
+		'''
+		直接尝试插入， 这里以后需要写状态
+		'''
+		# 这里获取一些hook脚本
+		if "hook" in self.profile:
+		    hook = self.profile["hook"]
+		    # 从
 
-		insert_data = {}
-		for k in map:
-		    field = map[k]
-		    insert_data[k] = data[field["name"]].value
+		    
+		#insert_data = {}
+		#for k in map:
+		#    field = map[k]
+		#    insert_data[k] = data[field["name"]].value
 
-		insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
-		insert_data["guid"] = guid
-		insert_data["src_url"] = data["url"]
+		#insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+		#insert_data["guid"] = guid
+		#insert_data["src_url"] = data["url"]
 
-		if "category_id" in fields:
-		    insert_data["category_id"] = data["tags"]
+		#if "category_id" in fields:
+		#    insert_data["category_id"] = data["tags"]
 
-		db.insert(**insert_data)
+		#db.insert(**insert_data)
 	    except:
 		pass;
-	    '''
-    """
 
 
-
-'''
-将采集的数据发布到网站
-'''
-class Publish():
+class PublishServer():
+    '''
+    发布服务器, 每次采集成功后， 会调用此服务中的push转发到各个站点
+    '''
     def __init__(self):
 	'''
 	初始化 把所有的网站都列出来， 并且进行数据推送
@@ -155,18 +167,24 @@ class Publish():
 
 	#初始化站点信息
 	self.init_sites()
-
 	self.mapdb = Site_map()
 
     def init_sites(self):
+	'''
+	初始化将所有的站点数据保存在sites中
+	'''
 	site_db = Site_Model();
-	#get all site data
 	query = site_db.select();
-	#return result
 	r = query.list();
 	for site in r:
 	    if site and "id" in site:
 		self.sites[site["id"]] = Site(site)
+
+    def update_sites(self):
+	'''
+	这里更新需要做一次安全的检测。 当push不在调用的时候执行此函数
+	'''
+	self.init_sites();
 
     def get_site(self, site_id):
 	'''
@@ -189,6 +207,11 @@ class Publish():
 		fields = self.mapdb.select( where = { "seed_type" : seed_type, "siteid" : site_id} ).list()
 		self.site_by_category[seed_type][site_id] = fields
 
+    def update_site_fieldmap(self, seed_type):
+	'''
+	这里更新时候需要做安全检测
+	'''
+
     def push(self, guid, data):
 	'''
 	发布接口
@@ -207,9 +230,11 @@ class Publish():
 		if site is not None:
 		    site.push(guid, data, site_profile)
 	
+#实例化
+publish_server = PublishServer()
+
 
 if __name__ == "__main__":
-    p = Publish()
     #p.push("adsdada", {"type" : "article"})
     print str(time.strftime("%Y-%m-%d %H:%M:%S"))
     '''

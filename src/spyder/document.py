@@ -15,7 +15,7 @@ from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
 from spyder.field import Field, Item
-from spyder.publish import Publish
+from spyder.publish import publish_server
 
 __all__ = [
     "getElementData",
@@ -237,7 +237,6 @@ class Grab(object):
 
     def push(self):
         print ansicolor.cyan("Start fetching these articles", True)
-	publish_server = Publish()
 	for k in self.keys():
 	    publish_server.push(k, self[k])
 
