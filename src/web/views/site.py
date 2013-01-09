@@ -6,6 +6,8 @@ from libs import phpserialize
 from web.helpers import auth
 from web.models import Site, Field, Site_map
 
+import spyder.recipes as hooks
+
 site = Module(__name__)
 
 @site.route("/add/", methods=("GET", "POST"))
@@ -14,6 +16,11 @@ def add():
     error = None
     site = {}
     site["sync_profile"] = {}
+    hook_funcs = [];
+    attrs = dir(hooks);
+    for attr in attrs:
+        if attr.find("__") == -1:
+            hook_funcs.append(attr)
     if request.method == "POST":
         name = request.form.get("name")
         url = request.form.get("url")
@@ -42,6 +49,7 @@ def add():
                 "ftp_password": request.form.get("ftp_password"),
                 "access_id": request.form.get("access_id"),
                 "secret_access_key": request.form.get("secret_access_key"),
+                "hook_func": request.form.get("hook_func"),
                 "api_url": request.form.get("api_url")
             }
             sync_profile = phpserialize.dumps(sync_profile)
@@ -50,7 +58,7 @@ def add():
                 return redirect(url_for('sites.index'))
             else:
                 error = "error"
-    return render_template("site/add.html", error=error, site=site)
+    return render_template("site/add.html", error=error, site=site, hook_funcs=hook_funcs)
     
 @site.route("/view/<int:site_id>/")
 @auth
@@ -121,6 +129,11 @@ def test_aliyun():
 @auth
 def edit(site_id):
     site = Site(current_app)
+    hook_funcs = [];
+    attrs = dir(hooks);
+    for attr in attrs:
+        if attr.find("__") == -1:
+            hook_funcs.append(attr)
     if request.method == "POST":
         name = request.form.get("name")
         url = request.form.get("url")
@@ -149,6 +162,7 @@ def edit(site_id):
                 "ftp_password": request.form.get("ftp_password"),
                 "access_id": request.form.get("access_id"),
                 "secret_access_key": request.form.get("secret_access_key"),
+                "hook_func": request.form.get("hook_func"),
                 "api_url": request.form.get("api_url")
             }
             sync_profile = phpserialize.dumps(sync_profile)
@@ -165,7 +179,7 @@ def edit(site_id):
     for website_map in website_maps:
         if website_map["seed_type"] not in maps:
             maps[website_map["seed_type"]] = website_map
-    return render_template("site/add.html", site=per, types=types, maps=maps)
+    return render_template("site/add.html", site=per, types=types, maps=maps, hook_funcs=hook_funcs)
 
 @site.route("/delete/<int:site_id>")
 @auth

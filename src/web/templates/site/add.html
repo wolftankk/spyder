@@ -138,6 +138,18 @@
           <p><input type="text" id="api_url" name="api_url" value="{{ site.sync_profile.api_url|default('',true) }}" class="mini" /></p>
           <p class="description">采用API方式入库请设定接口地址</p>
         </li>
+        <li>
+          <label for="sync_type" class="typecho-label">Hook脚本</label>
+          <p>
+            <select class="typecho-charset" name="hook_func" id="hook_func">
+              <option value="none">无</option>
+              {% for hook_func in hook_funcs %}
+              <option value="{{ hook_func }}"{% if site.sync_profile.hook_func==hook_func %} selected="true"{% endif %}>{{ hook_func }}</option>
+              {% endfor %}
+            </select>
+          </p>
+          <p class="description">可以为当前入库配置选择一个hook脚本，做一些特殊操作</p>
+        </li>
       </ul>
     </div>
   </form>
