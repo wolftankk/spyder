@@ -32,7 +32,7 @@ _is
 eq
 '''
 attrParrent = re.compile("(\w+)?\((.+)?\)");
-def getElementData(obj, rule):
+def getElementData(obj, rule, images=None):
     if not isinstance(obj, pq):
 	obj = pq(obj);
     
@@ -61,11 +61,11 @@ def getElementData(obj, rule):
 		    v = v.strip("\'").strip('\"');
 
 		if action == "attr" and hasattr(selecteddom, "attr") and v:
-		    if v == "href":
-			'''
-			this is a link
-			'''
-		    return selecteddom.attr(v)
+		    value = selecteddom.attr(v)
+		    if selecteddom and selecteddom[0].tag == "img" and v == "src" and images is not None:
+			images.append(value)
+
+		    return value
 		elif action == "eq" and hasattr(selecteddom, "eq"):
 		    #产生子元素？
 		    if len(rule) > 1:
@@ -110,9 +110,6 @@ def getElementData(obj, rule):
 		return None
     
     return None
-
-def is_image(url):
-    return True
 
 r"""
 从种子表中获得并且分析成文章数据
@@ -202,7 +199,7 @@ class Grab(object):
 
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
-		    value = getElementData(e, _rule)
+		    value = getElementData(e, _rule, _item["images"])
 		    if value:
 			field.value = value
 			_item[field["name"]] = field
@@ -310,7 +307,7 @@ class Document(object):
 	if len(extrarules):
 	    for key, rule in extrarules:
 		field = Field(field_id=key, rule=rule);
-		value = getElementData(doc, rule)
+		value = getElementData(doc, rule, self.data["images"])
 
 		self.data[field.get('name')] = field
 
@@ -334,7 +331,7 @@ class Document(object):
 	    images = content.getImages();
 
 	    self.data['content'].value = content.getContent();
-	    #self.data['images'] = images
+	    self.data['images'] += images
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -364,9 +361,9 @@ if __name__ == "__main__":
     r = db.view(2);
     seed = Seed(r.list()[0])
     articles = Grab(seed)
-    print articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
+    articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
-    #articles.push()
+    articles.push()
 
     #游戏测试
     #r = db.view(7);
