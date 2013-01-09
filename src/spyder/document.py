@@ -358,17 +358,18 @@ if __name__ == "__main__":
     db = Seed_Model();
 
     #文章测试
-    r = db.view(2);
-    seed = Seed(r.list()[0])
-    articles = Grab(seed)
-    articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
-    #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
-    articles.push()
+    #r = db.view(2);
+    #seed = Seed(r.list()[0])
+    #articles = Grab(seed)
+    ##articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
+    ##Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
+    #articles.push()
 
     #游戏测试
-    #r = db.view(7);
-    #seed = Seed(r.list()[0])
-    #games= Grab(seed)
+    r = db.view(7);
+    seed = Seed(r.list()[0])
+    games= Grab(seed)
+    games.push()
     #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
 

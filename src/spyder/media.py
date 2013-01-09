@@ -8,8 +8,11 @@ if parentdir not in sys.path:
 import urllib2, urlparse, io
 import hashlib, StringIO, struct
 from spyder.pybits import ansicolor
+import images_cache
 
-__all__ [
+images_dir = images_cache.__path__.pop()
+
+__all__ = [
     'Image'	
 ]
 
@@ -37,16 +40,26 @@ class Image():
 	    self.fetched = True
         finally:
             return None
+
+    def save(self, file_path):
+	if not os.path.exists(file_path):
+	    f = io.open(file_path, "wb")
+	f.write(self.mediaData)
+	f.close()
     
-    def getPath(self):
+    def getPath(self, need_mkdir=False):
 	image_hash, filename = self.getMediaName()
 	path = ""
+	cache_path = ""
 
         for i in range(0, 8, 2):
             newpath = image_hash[i:(i+2)]
             path = os.path.join(path, newpath)
+	    cache_path = os.path.join(images_dir, path)
+	    if need_mkdir and not os.path.exists(cache_path):
+                os.mkdir(cache_path);
 
-        return path
+        return path, cache_path
 
     def getSize(self):
 	data = self.mediaData

@@ -14,12 +14,14 @@ from libs.phpserialize import unserialize
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
 from libs.utils import safestr, safeunicode
+from urlparse import urljoin
 
 from web.models import Site as Site_Model
 from web.models import Site_map
 from web.model import Model
 from spyder.field import get_field_from_cache
 import spyder.recipes as recipes
+from spyder.media import Image
 
 __all__ = [
 
@@ -75,12 +77,40 @@ class Site(object):
 	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
 	
-	print data["images"]
+	images = data["images"]
+
+	if len(images) == 0:
+	    return
+
+	#download and get new name
+	for img_url in images:
+	    image = Image(img_url)
+	    if image.fetched:
+		image_hash, image_name = image.getMediaName()
+		relative_path, abs_path = image.getPath(False)
+		
+		#相对路径
+		image_relative_path = os.path.join(relative_path, image_name)
+		#绝对路径 用于保存图片以及上传
+		image_abs_path = os.path.join(abs_path, image_name)
+
+		for field in insert_data:
+		    data = insert_data[field]
+		    if data is not None:
+			insert_data[field] = data.replace(img_url, urljoin(self.staticUrl, image_relative_path))
+		    
+
+	#print insert_data
+
+	#  (old, path)
+	#先下载， 然后整理成一份文档。 上传到服务器
 	#这里会将所有的字段数据中的图片上传到服务上
 	#print data
 	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
-
 	# access_id, secret_access_key
+
+
+	return insert_data
 
     def get_field_mapping(self, field_map):
 	new_field = {}
@@ -145,9 +175,11 @@ class Site(object):
 		for field in table_fields:
 		    if field in test_insert_data:
 			insert_data[field] = test_insert_data[field]
+			if insert_data[field] == "None" or insert_data[field] is None:
+			    insert_data[field] = ""
 	    
 		#处理数据， 看数据中的图片是否需要上传
-		self.upload_media(insert_data, data)
+		insert_data = self.upload_media(insert_data, data)
 		#print insert_data
 		"""
 		try:
