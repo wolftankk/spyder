@@ -28,6 +28,7 @@ def add():
                     "siteid": site_id,
                     "table_name": table_name,
                     "field_id": field_ids[i],
+                    "seed_type": seed_type,
                     "site_field": site_fields[i]
                 }
                 site_map_id = site_map.add(**save)
