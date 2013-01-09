@@ -4,7 +4,7 @@ from flask import render_template
 
 from libs import phpserialize
 from web.helpers import auth
-from web.models import Site, Field
+from web.models import Site, Field, Site_map
 
 site = Module(__name__)
 
@@ -159,7 +159,13 @@ def edit(site_id):
         per["sync_profile"] = phpserialize.loads(per["sync_profile"])
     field = Field(current_app)
     types = field.getSeedType()
-    return render_template("site/add.html", site=per, types=types)
+    site_map = Site_map(current_app)
+    website_maps = site_map.list(site_id)
+    maps = {}
+    for website_map in website_maps:
+        if website_map["seed_type"] not in maps:
+            maps[website_map["seed_type"]] = website_map
+    return render_template("site/add.html", site=per, types=types, maps=maps)
 
 @site.route("/delete/<int:site_id>")
 @auth

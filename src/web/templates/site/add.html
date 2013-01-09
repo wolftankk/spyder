@@ -83,15 +83,27 @@
         <div style="clear:both;"></div>
         <label for="" class="typecho-label">备注</label>
         <p><textarea style="width:700px;height: 200px" autocomplete="off" name="descript">{{ site.descript }}</textarea></p>
-        {% if site.id %}<p>
-          <label for="seed_name" class="typecho-label">已配置入库规则</label>
+        {% if site.id %}
+          {% if maps %}
+          <ul class="typecho-post-option"><li>
+            <label for="seed_name" class="typecho-label">已配置入库规则</label>
+            <ul>
+            {% for type in maps %}
+              <li><a href="javascript:;" rel="{{type}}" class="edit_map" title="点击修改">{{type|getSeedTypeText}} 入库数据表 {{maps[type]["table_name"]}}</a></li>
+            {% endfor %}
+            </ul>
+          </li></ul>
+          {% endif %}
+          <p>
           <select class="typecho-charset" name="type" id="type">
             {% for type1 in types %}
-            <option value="{{ type1 }}">{{ type1 }}</option>
+            {% if type1 not in maps %}
+            <option value="{{ type1 }}">{{ type1|getSeedTypeText }}</option>
+            {% endif %}
             {% endfor %}
           </select> 
-          <a href="javascript:;" id="add_seed">配置入库规则</a>
-        </p>{% endif %}
+          <a href="javascript:;" id="add_map">配置入库规则</a></p>
+          {% endif %}
         <p class="submit">
           <span class="right">
             <input type="hidden" name="do" value="publish" />
@@ -181,9 +193,13 @@
       }
     }).send();
   }
-  function addSeed(){
+  function addMap(){
     var type = $("type").get("value");
     openWin('/site_map/add/?type='+type+"&site_id={{ site.id }}");
+  }
+  function editMap(){
+    var type = $(this).get("rel");
+    openWin('/site_map/edit/?type='+type+"&site_id={{ site.id }}");
   }
   function changeSyncType(){
     var v = $(this).get("value");
@@ -191,7 +207,8 @@
     $$(".sync_type_"+v).removeClass("hidden");
   }
   window.addEvent('domready', function() {
-    $("add_seed").addEvent("click", addSeed);
+    $("add_map").addEvent("click", addMap);
+    $$(".edit_map").addEvent("click", editMap);
     $("test_mysql").addEvent("click", testMysql);
     $("test_ftp").addEvent("click", testFtp);
     $("test_aliyun").addEvent("click", testAliyun);

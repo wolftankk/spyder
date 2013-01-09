@@ -33,16 +33,14 @@ class Site_map(Model):
     def edit(self, id, **args):
 	return self.update(where="id="+str(id), **args)
     
-    def view(self, id):
-	return self.select({"id":id})
+    def view(self, siteid, seed_type, field_id):
+	return self.select({"siteid":siteid, "seed_type":seed_type, "field_id": field_id})
     
-    def list(self, page, per_page, filte):
-        start = (page - 1) * per_page
-        end = per_page
-	return self.select(where=filte, limit=str(end), offset=start)
+    def list(self, siteid):
+	return self.select({"siteid":siteid})
     
     def totalcount(self):
 	return self.count()
     
-    def getlist(self, **args):
-	return self.select(**args)
+    def getlist(self, args):
+	return self.select(args)

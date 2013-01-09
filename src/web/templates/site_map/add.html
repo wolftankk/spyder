@@ -5,16 +5,24 @@
 {% block html %}
 <div class="main">
   <div class="body">
+    {% if error or succ %}
+    <div class="container message{% if error %} error{% endif %}{% if succ %} success{% endif %} popup typecho-radius-topleft typecho-radius-topright typecho-radius-bottomleft typecho-radius-bottomright">
+      <ul>
+        {% if error %}<li>{{ error }}</li>{% endif %}
+        {% if succ %}
+        <script type="text/javascript">
+          window.opener.document.location.reload(-1);
+        </script>
+        <li>{{ succ }}</li>
+        {% endif %}
+      </ul>
+    </div>
+    {% endif %}
     <div class="container typecho-page-main typecho-post-option typecho-post-area">
       <div class="column-24 start-01 typecho-list">
-        {% if succ %}
-          <script type="text/javascript">
-            window.opener.document.location.reload(-1);
-          </script>
-        {% endif %}
         <form action="." method="post" name="com_seed" style="padding: 0 10px;">
           <label for="link_name" class="typecho-label">入库的数据表名</label>
-          <p><input type="text" id="table_name" name="table_name" value="" class="mini" /></p>
+          <p><input type="text" id="table_name" name="table_name" value="{{ table_name|default('',true) }}" class="mini" /></p>
           <table class="typecho-list-table">
             <colgroup>
               <col width="50">
@@ -33,7 +41,7 @@
               <tr class="even">
                 <td>{{ field.id }}<input type="hidden" value="{{ field.id }}" name="field_id[]"></td>
                 <td>{{ field.title }}</td>
-                <td><input type="text" class="mini" value="" name="site_field[]"></td>
+                <td><input type="text" class="mini" value="{% if field.id in maps %}{{ maps[field.id] }}{% endif %}" name="site_field[]"></td>
               </tr>
               {% endfor %}
             </tbody>
