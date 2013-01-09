@@ -65,26 +65,18 @@ class Site(object):
 	self.static_type = self.sync_profile["staticType"]
 
     def push(self, guid, data, field_map):
-	'''
-	每条数据最终会通过此处发布到数据库或者api中
-	# mysql, api
-	if self.profile["sync_type"] == "mysql":
-	    self.post_to_mysql(guid, data, field_map)
-	'''
-	#处理数据， 看数据中的图片是否需要上传
-	self.upload_media(data)
-
 	#data中的图片链接地址将会替换成新的资源地址
 	if self.profile["sync_type"] in self.post_type:
 	    method = getattr(self, "post_to_" + self.profile["sync_type"])
 	    if method:
 		method(guid, data, field_map)
 
-    def upload_media(self, data):
+    def upload_media(self, data, insert_data):
 	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
-
-	images = data["images"] or []
+	
+	#这里会将所有的字段数据中的图片上传到服务上
+	#print data
 	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
 
 	# access_id, secret_access_key
@@ -153,7 +145,9 @@ class Site(object):
 		    if field in test_insert_data:
 			insert_data[field] = test_insert_data[field]
 	    
-		print insert_data
+		#处理数据， 看数据中的图片是否需要上传
+		self.upload_media(insert_data, data)
+		#print insert_data
 		"""
 		try:
 		    db.insert(**insert_data)

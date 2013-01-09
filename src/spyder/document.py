@@ -61,6 +61,10 @@ def getElementData(obj, rule):
 		    v = v.strip("\'").strip('\"');
 
 		if action == "attr" and hasattr(selecteddom, "attr") and v:
+		    if v == "href":
+			'''
+			this is a link
+			'''
 		    return selecteddom.attr(v)
 		elif action == "eq" and hasattr(selecteddom, "eq"):
 		    #产生子元素？
@@ -106,6 +110,9 @@ def getElementData(obj, rule):
 		return None
     
     return None
+
+def is_image(url):
+    return True
 
 r"""
 从种子表中获得并且分析成文章数据
@@ -189,7 +196,8 @@ class Grab(object):
 		guid = md5(link).hexdigest()
 
 		_item = Item({
-		    "type" : self.seed_type
+		    "type" : self.seed_type,
+		    "images" : []
 		})
 
 		for field_id, _rule in extrarules:
@@ -322,11 +330,11 @@ class Document(object):
 			content += next_page
 
 	if content and content_re:
-	    content = Readability(content)
+	    content = Readability(content, self.url)
 	    images = content.getImages();
 
 	    self.data['content'].value = content.getContent();
-	    self.data['images'] = images
+	    #self.data['images'] = images
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -356,21 +364,22 @@ if __name__ == "__main__":
     r = db.view(2);
     seed = Seed(r.list()[0])
     articles = Grab(seed)
+    print articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
     #Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
-    articles.push()
+    #articles.push()
 
     #游戏测试
     #r = db.view(7);
     #seed = Seed(r.list()[0])
-    ##Grab(seed)
-    #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    #games= Grab(seed)
+    #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
 
     #游戏开服
     #r = db.view(8);
     #seed = Seed(r.list()[0])
     #kaifus = Grab(seed)
-    #game = Document("http://www.kaifu.com/gameinfo-longj.html", seed)
+    #print kaifus[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
 
 #    url = "http://www.kaifu.com/articlecontent-39510-0.html"

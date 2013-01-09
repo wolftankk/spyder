@@ -8,8 +8,10 @@
 import re
 import lxml
 from spyder.pyquery import PyQuery as pq
+from urlparse import urljoin
 
 __all__ = [
+    'Readability'
 ]
 
 class Readability:
@@ -45,8 +47,10 @@ class Readability:
     '''
     image_attr = ["src", "alt", "width", "height"]
 
-    def __init__(self, content):
+    def __init__(self, content, baseurl):
 	self.content = content;
+
+	self.baseurl = baseurl
 	
 	self.replaceBrs();
 	self.replaceFonts();
@@ -57,7 +61,7 @@ class Readability:
 	self.clean_comments()
 	self.removeScript();
 	self.removeStyle();
-	#self.removeLink();
+	self.removeLink();
 
 	#移除所有 a 标记
 	for e in self.tags(self.html, "a"):
@@ -127,9 +131,6 @@ class Readability:
     def removeLink(self):
 	self.html.remove("link");
 
-    def removeAnchor(self):
-	self.html.remove("a");
-
     def clean_comments(self):
 	def clean_comment(i, element):
 	    if (isinstance(element, lxml.html.HtmlComment)):
@@ -179,6 +180,11 @@ class Readability:
 		del imgAttrs[k]
 
 	image_src = image.get("src");
+	'''
+	这里的图片url也要修正
+	'''
+	image_src = urljoin(self.baseurl, image_src)
+	image.set("src", image_src)
 	self.images.append(image_src)
 
 	#imgSrc = urlparse.urljoin(self.url, imgSrc);
