@@ -44,8 +44,8 @@ class Image():
     def save(self, file_path):
 	if not os.path.exists(file_path):
 	    f = io.open(file_path, "wb")
-	f.write(self.mediaData)
-	f.close()
+	    f.write(self.mediaData)
+	    f.close()
     
     def getPath(self, need_mkdir=False):
 	image_hash, filename = self.getMediaName()

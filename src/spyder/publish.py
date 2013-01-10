@@ -22,6 +22,7 @@ from web.model import Model
 from spyder.field import get_field_from_cache
 import spyder.recipes as recipes
 from spyder.media import Image
+from spyder import uploader
 
 __all__ = [
 
@@ -39,7 +40,7 @@ class article_template(Model):
 
 class Site(object):
     post_type = ["mysql", "api"]
-    upload_res_type = [ "aliyun", "ftp"]
+    upload_res_type = [ "aliyun", "ftp", "qbox" ]
 
     def __init__(self, data):
 	self.field_map = {}
@@ -66,6 +67,11 @@ class Site(object):
 	#静态上传类型 none, ftp, aliyun
 	self.static_type = self.sync_profile["staticType"]
 
+	if self.static_type == "aliyun":
+	    self.static_type = "qbox"
+
+	self.upload_handler = None
+
     def push(self, guid, data, field_map):
 	#data中的图片链接地址将会替换成新的资源地址
 	if self.profile["sync_type"] in self.post_type:
@@ -76,7 +82,12 @@ class Site(object):
     def upload_media(self, insert_data, data):
 	if (self.static_type not in self.upload_res_type) or not self.staticUrl:
 	    return;
-	
+
+	if self.upload_handler is None:
+	    self.upload_handler = getattr(uploader, self.static_type)(self.sync_profile)
+
+	self.upload_handler.update();
+
 	images = data["images"]
 
 	if len(images) == 0:
@@ -87,28 +98,21 @@ class Site(object):
 	    image = Image(img_url)
 	    if image.fetched:
 		image_hash, image_name = image.getMediaName()
-		relative_path, abs_path = image.getPath(False)
+		relative_path, abs_path = image.getPath(True)
 		
 		#相对路径
 		image_relative_path = os.path.join(relative_path, image_name)
 		#绝对路径 用于保存图片以及上传
 		image_abs_path = os.path.join(abs_path, image_name)
+		image.save(image_abs_path)
+
+		#print image_abs_path, image_relative_path
+		uploader.upload_image(self.upload_handler, image_abs_path, image_relative_path)
 
 		for field in insert_data:
 		    data = insert_data[field]
 		    if data is not None:
 			insert_data[field] = data.replace(img_url, urljoin(self.staticUrl, image_relative_path))
-		    
-
-	#print insert_data
-
-	#  (old, path)
-	#先下载， 然后整理成一份文档。 上传到服务器
-	#这里会将所有的字段数据中的图片上传到服务上
-	#print data
-	# ftp_server, ftp_port, ftp_path, ftp_password, ftp_username
-	# access_id, secret_access_key
-
 
 	return insert_data
 

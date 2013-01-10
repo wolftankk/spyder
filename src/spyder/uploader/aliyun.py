@@ -11,7 +11,7 @@ from libs.oss import oss_xml_handler
 
 #u'access_id': u'ACSUdnnvmrXfgall'
 #u'secret_access_key': u'r8wybyBOs5'
-class Aliyun():
+class aliyun():
     HOST="oss.aliyuncs.com"
     def __init__(self, access_id, secret_access_key):
 	access_id = access_id
