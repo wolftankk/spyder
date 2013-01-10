@@ -13,6 +13,8 @@ def kaifu(db, insert_data, data):
 
     if type == "article":
 	insert_data = process_article(db, insert_data, data)
+    elif type == "game":
+	insert_data = process_game(db, insert_data, data)
 
     return insert_data
 
@@ -22,7 +24,6 @@ def process_article(db, insert_data, data):
     insert_data["category_id"] = data["tags"]
 
     r = db.get_one(where={ "guid" : insert_data["guid"]})
-    
     if r:
 	return None;
 
@@ -41,6 +42,19 @@ def process_article(db, insert_data, data):
 
 
     return insert_data
+
+def process_game(db, insert_data, data):
+    r = db.get_one(where={ "game_name" : insert_data["game_name"]})
+    if r:
+	return None;
+
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+
+    if insert_data["game_name"] is None or insert_data["game_name"] == "None" or insert_data["game_name"] == "":
+	return None
+    
 
 """
     def __parseDate(self, str):

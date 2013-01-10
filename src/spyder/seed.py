@@ -107,12 +107,14 @@ class Seed(object):
 Base Rule
 '''
 class Rule(object):
+    db = None
     def __init__(self, rule, seed):
 	if not rule:
 	    raise RuleEmpty
 
 	self.seed = seed;
-	self.db = Seed_fields()
+	if self.db is None:
+	    self.db = Seed_fields()
 	
 	r = self.db.list(seed["sid"])
 	'''

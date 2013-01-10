@@ -9,6 +9,7 @@ if parentdir not in sys.path:
 from libs.db import MySQLDB, sqlquote, sqlwhere, SQLQuery
 from flask import g, current_app
 
+dbs = {}
 class Model(object):
     """
     custom user model
@@ -26,7 +27,12 @@ class Model(object):
 	config = self.db_config[self.db_setting]
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name
-	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
+
+	db = config['db']
+	if db not in dbs:
+	    dbs[db] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
+
+	self.db = dbs[db]
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
 	'''
