@@ -55,6 +55,9 @@ def getElementData(obj, rule, images=None):
 	selectRule = selectRule.replace("(", "");
 	selectRule = selectRule.replace(")", "");
 
+	selectRule = selectRule.replace("[", "(");
+	selectRule = selectRule.replace("]", ")");
+
 	selecteddom = obj.find(selectRule);
 
 	for attr in rule:
@@ -73,9 +76,17 @@ def getElementData(obj, rule, images=None):
 
 		    return value
 		elif action == "eq" and hasattr(selecteddom, "eq"):
-		    #产生子元素？
+		    _rules = attr.split(" ")
 		    if len(rule) > 1:
 			selecteddom = selecteddom.eq(int(v))
+			if len(_rules) > 1:
+			    '''
+			    假设eq后面还有子元素
+			    eq(1) a
+			    '''
+			    _rules.pop(0)
+			    _dom = " ".join(_rules)    
+			    selecteddom = selecteddom.find(_dom)
 		    else:
 			return selecteddom.eq(int(v))
 		elif action == "text" and hasattr(selecteddom, "text"):
