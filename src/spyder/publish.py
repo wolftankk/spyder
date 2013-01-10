@@ -85,8 +85,8 @@ class Site(object):
 
 	if self.upload_handler is None:
 	    self.upload_handler = getattr(uploader, self.static_type)(self.sync_profile)
-
-	self.upload_handler.update();
+	else:
+	    self.upload_handler.update();
 
 	images = data["images"]
 
@@ -167,7 +167,7 @@ class Site(object):
 
 	    if hook_method and callable(hook_method):
 		try:
-		    insert_data = hook_method(insert_data, data)
+		    insert_data = hook_method(db, insert_data, data)
 		except:
 		    pass
 
@@ -184,13 +184,10 @@ class Site(object):
 	    
 		#处理数据， 看数据中的图片是否需要上传
 		insert_data = self.upload_media(insert_data, data)
-		#print insert_data
-		"""
 		try:
 		    db.insert(**insert_data)
 		except:
 		    pass;
-		"""
 
 class PublishServer():
     '''
