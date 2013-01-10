@@ -187,34 +187,6 @@ class Readability:
 	image.set("src", image_src)
 	self.images.append(image_src)
 
-	#imgSrc = urlparse.urljoin(self.url, imgSrc);
-	#image.set("src", imgSrc);
-	#imageInfo = DumpMedia(self.url, imgSrc)
-
-	#if imageInfo.fetched:
-	#    width, height = imageInfo.getSize()
-	#    if width < ImageWidthThreshold:
-	#	image.set("class", "asideImg")
-	#    #if (width > ImageWidthThreshold):
-	#    #    image.set("class", "blockImage")
-	#    #else:
-	#    #    image.set("class", "leftImage")
-
-	#if config.storeImage and self.savable:
-	#    if imageInfo.write():
-	#	new_imgurl = imageInfo.getMediaName()
-	#	if new_imgurl:
-	#	    print new_imgurl
-	#	    self.images.append(new_imgurl)
-	#	    imgurl = image.set("src", new_imgurl)
-	#    else:
-	#	#remove
-	#	try:
-	#	    parent.remove(image)
-	#	except:
-	#	    pass
-
-
 '''
 def specialFilter( content):
     if len(self.articleRule.filters) > 0:

@@ -1,11 +1,4 @@
 #coding: utf-8
-
-'''
-Field class
-
-解析存储你需要的字段
-'''
-
 import os, sys
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
@@ -52,22 +45,6 @@ class Field(dict):
 	    return True
 
 	return False
-
-    def __parseDate(self, str):
-	'''
-	转成timestamp
-	'''
-	t1 = "今日 17点"
-	t2 = "01月08日09点开服"
-	t3 = "01月07日14:10"
-	#str = safestr(str)
-	#print time.strptime(str, "今日 %H点")
-
-	#t2 = safestr(t2)
-	#print time.strptime(t2, safestr("%m月%d日%H点开服"))
-
-	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
-	#return int(now())
     
     def get_field(self):
 	'''
@@ -76,9 +53,6 @@ class Field(dict):
 	return self['value']
 
     def set_field(self, value):
-	if self["name"].find("date") > 1:
-	    value = self.__parseDate(value)
-
 	self['value'] = value
     value = property(get_field, set_field);
 
@@ -94,7 +68,6 @@ def get_field_from_cache(field_id):
 	_fields_cache[field_id] = data
 
     return data
-
 
 class Item(object):
     def __init__(self, *args, **kwargs):

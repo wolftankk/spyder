@@ -23,25 +23,31 @@ __all__ = [
     "Grab"
 ]
 
-'''
-获得dom元素信息
-rule类似于Jquery的方式 所以只要提取出来即可
-attr
-text
-_is
-eq
-'''
 attrParrent = re.compile("(\w+)?\((.+)?\)");
 def getElementData(obj, rule, images=None):
+    """
+    根据rule对obj的进行解析
+    obj可以是pq后的对象， 也可以是html页面
+    images将会把解析过程的image连接插入此表中
+
+    规则可以有两种模式：
+    1. DOM selector
+	1.1 选择器类似于jquery 比如你要某个a的url
+	    >> a.attr("href")
+	1.2 需要一个标签内的文本内容
+	    >> div[id="content"].text()
+	1.3 需要获得某个子元素中的内容
+	    >> li.eq(1).text()    #li元素组中的第2个文本内容
+    2. 正则模式
+	正则模式需要的内容使用[arg]标签，其余可以使用(*)填充
+    """
     if not isinstance(obj, pq):
 	obj = pq(obj);
     
     old_rule = rule
     rule = rule.split(".")
     
-    '''
-	避免有url链接
-    '''
+    #避免有url链接
     if len(rule) > 1 and old_rule.find("[arg]") == -1:
 	#第一个永远是dom选择
 	selectRule = rule.pop(0)
@@ -78,11 +84,8 @@ def getElementData(obj, rule, images=None):
 		    return safeunicode(selecteddom.html()).strip()
 
     elif len(rule) == 1:
-	'''
-	可能时正则提取
-	'''
 	rule = rule.pop()
-	# [参数]
+	#正则模式
 	if rule.find('[arg]'):
 	    content = obj.html()
 	    content_text = obj.text()
@@ -113,6 +116,13 @@ def getElementData(obj, rule, images=None):
 
 r"""
 从种子表中获得并且分析成文章数据
+
+如果调用了.push 将会根据你的配置直接入库
+
+如果你需要进行调试
+直接使用 
+g = Grab(seed)
+g[guid]
 """
 class Grab(object):
     dont_craw_content = [
@@ -243,6 +253,9 @@ class Grab(object):
 	    return _item
 
     def push(self):
+	'''
+	发布推送
+	'''
         print ansicolor.cyan("Start fetching these articles", True)
 	for k in self.keys():
 	    publish_server.push(k, self[k])
@@ -250,11 +263,6 @@ class Grab(object):
 r"""
     文章数据
     包括抓取， 分析， 提取
-    
-    '''
-    包含的类型有article, game,
-    这些类型 全部调用repice下的处理函数
-    '''
 """
 class Document(object):
     def __init__(self, item, seed):

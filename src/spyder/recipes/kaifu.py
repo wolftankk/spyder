@@ -41,3 +41,21 @@ def process_article(db, insert_data, data):
 
 
     return insert_data
+
+"""
+    def __parseDate(self, str):
+	'''
+	转成timestamp
+	'''
+	t1 = "今日 17点"
+	t2 = "01月08日09点开服"
+	t3 = "01月07日14:10"
+	#str = safestr(str)
+	#print time.strptime(str, "今日 %H点")
+
+	#t2 = safestr(t2)
+	#print time.strptime(t2, safestr("%m月%d日%H点开服"))
+
+	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
+	#return int(now())
+"""
