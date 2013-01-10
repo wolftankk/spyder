@@ -217,9 +217,9 @@ class Grab(object):
 		if self.seed_type in self.dont_craw_content:
 		    s = ""
 		    for f in _item:
-			if _item[f] is None:
-			    _item[f] = ""
-			s += safestr(_item[f].value)
+			if _item[f] is not None:
+			    print _item[f]
+			    s += safestr(_item[f].value)
 
 		    guid = md5(s).hexdigest()
 		    self.items[guid] = _item
@@ -376,39 +376,16 @@ if __name__ == "__main__":
     #articles.push()
 
     #游戏测试
-    r = db.view(7);
-    seed = Seed(r.list()[0])
-    games= Grab(seed)
-    games.push()
+    #r = db.view(7);
+    #seed = Seed(r.list()[0])
+    #games= Grab(seed)
+    #games.push()
     #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
 
     #游戏开服
-    #r = db.view(8);
-    #seed = Seed(r.list()[0])
-    #kaifus = Grab(seed)
+    r = db.view(8);
+    seed = Seed(r.list()[0])
+    kaifus = Grab(seed)
     #print kaifus[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
-
-#    url = "http://www.kaifu.com/articlecontent-39510-0.html"
-#    doc = Fetch(url).read();
-#    doc = pq(doc)
-#
-#    content = doc.find("div[class='fl newsinfo_topline boder_base newsinfo_left']");
-#    #print doc.find('div.newsinfo_topline')
-#    #print content.eq(0).find("h6.lh40");
-#
-#    content = content.text();
-#    p = "来源：(.+)?浏"
-#    if isinstance(content, unicode):
-#	p = safeunicode(p)
-#    else:
-#	p = safestr(p)
-#
-#    print p
-#    p = re.compile(p, re.M | re.UNICODE);
-#    print p
-#    r = p.search(content);
-#    print r
-#    if r is not None:
-#	print r.group(1).strip()

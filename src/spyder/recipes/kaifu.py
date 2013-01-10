@@ -9,7 +9,6 @@ import time
 
 def kaifu(db, insert_data, data):
     type = data["type"]
-    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
 
     if type == "article":
 	insert_data = process_article(db, insert_data, data)
@@ -22,6 +21,7 @@ def kaifu(db, insert_data, data):
 def process_article(db, insert_data, data):
     insert_data["src_url"] = data["url"]
     insert_data["category_id"] = data["tags"]
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
 
     r = db.get_one(where={ "guid" : insert_data["guid"]})
     if r:
@@ -39,8 +39,6 @@ def process_article(db, insert_data, data):
     if "keywords" in insert_data:
 	keywords = insert_data["keywords"]
     """
-
-
     return insert_data
 
 def process_game(db, insert_data, data):
@@ -54,6 +52,8 @@ def process_game(db, insert_data, data):
 
     if insert_data["game_name"] is None or insert_data["game_name"] == "None" or insert_data["game_name"] == "":
 	return None
+
+    return insert_data
     
 
 """

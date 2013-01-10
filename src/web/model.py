@@ -8,6 +8,7 @@ if parentdir not in sys.path:
 
 from libs.db import MySQLDB, sqlquote, sqlwhere, SQLQuery
 from flask import g, current_app
+from hashlib import md5
 
 dbs = {}
 class Model(object):
@@ -28,11 +29,11 @@ class Model(object):
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name
 
-	db = config['db']
-	if db not in dbs:
-	    dbs[db] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
+	guid = md5(config['db']+config['host']).hexdigest()
+	if guid not in dbs:
+	    dbs[guid] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
 
-	self.db = dbs[db]
+	self.db = dbs[guid]
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
 	'''
