@@ -21,9 +21,9 @@ def process_article(db, insert_data, data):
     insert_data["src_url"] = data["url"]
     insert_data["category_id"] = data["tags"]
 
-    r = db.get_one(where={ "guid" : data["guid"]})
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
     
-    if len(r) > 0:
+    if r:
 	return None;
 
     #验证数据如果title content不存在的话 就直接返回None

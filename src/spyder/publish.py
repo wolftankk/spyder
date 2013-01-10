@@ -168,7 +168,8 @@ class Site(object):
 	    if hook_method and callable(hook_method):
 		try:
 		    insert_data = hook_method(db, insert_data, data)
-		except:
+		except Exception, e:
+		    print "hook script file error:", e
 		    pass
 
 	    #对insert_data进行修正。 如果返回了None表示 此数据不符合 将不会插入进去
