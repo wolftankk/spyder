@@ -59,20 +59,20 @@
         <div id="aliyun_form" class="column-08" style="float: right;">
           <table class="typecho-list-table">
             <colgroup>
-              <col width="80">
-              <col width="230">
+              <col width="100">
+              <col width="210">
             </colgroup>
             <thead>
               <tr>
-                <th colspan="2" class="typecho-radius-topleft typecho-radius-topright">设定阿里云的基本配置</th>
+                <th colspan="2" class="typecho-radius-topleft typecho-radius-topright">设定云服务器的基本配置</th>
               </tr>
             </thead>
             <tbody>
               <tr class="even">
-                <td>用户：</td><td><input type="text" name="access_id" value="{{ site.sync_profile.access_id|default('',true) }}" size="20" /></td>
+                <td>Access Key：</td><td><input type="text" name="access_id" value="{{ site.sync_profile.access_id|default('',true) }}" size="28" /></td>
               </tr>
               <tr class="even">
-                <td>私钥：</td><td><input type="text" name="secret_access_key" value="{{ site.sync_profile.secret_access_key|default('',true) }}" size="20" /></td>
+                <td>Secret Key：</td><td><input type="text" name="secret_access_key" value="{{ site.sync_profile.secret_access_key|default('',true) }}" size="28" /></td>
               </tr>
               <tr class="even">
                 <td colspan="2"><input type="button" id="test_aliyun" value="测试连接"></td>
