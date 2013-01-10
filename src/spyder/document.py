@@ -55,9 +55,6 @@ def getElementData(obj, rule, images=None):
 	selectRule = selectRule.replace("(", "");
 	selectRule = selectRule.replace(")", "");
 
-	selectRule = selectRule.replace("[", "(");
-	selectRule = selectRule.replace("]", ")");
-
 	selecteddom = obj.find(selectRule);
 
 	for attr in rule:
