@@ -1,8 +1,5 @@
 *.pyc
 .DS_Store
-vendor/
 *~
-temp/
-src/spyder/config.py
-src/spyder/games.py
 doc/permissions
+src/spyder/images_cache
