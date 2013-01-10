@@ -43,7 +43,6 @@ def index(page=1):
     for seed_item in seeds1:
         seed_item["tags"] = getTagsBySeedId(seed_item["sid"])
         seeds.append(seed_item)
-    print seeds
     count = seed.totalcount()
     pagination = Pagination(page, PER_PAGE, count)
     fields = field.getSeedType()

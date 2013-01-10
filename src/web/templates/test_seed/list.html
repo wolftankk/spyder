@@ -1,0 +1,25 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+  <meta charset="UTF-8">
+  <title>种子测试</title>
+  <style type="text/css">
+  div { margin: 0 0 10px; }
+  .name { color: #000;font-weight:bold;background: #aaa;line-height: 24px;text-indent: 5px; }
+  .value { max-height: 200px; overflow-y: auto; }
+  </style>
+</head>
+<body>
+  {% if items %}
+  <h2>以下列出来源页面的一条数据：</h2>
+    {% for item in items.fields %}
+    <div class="name">{{ fields[item] }}: </div>
+    <div class="value">
+      {% autoescape false %}
+      {{ items.fields[item].value }}
+      {% endautoescape %}
+    </div>
+    {% endfor %}
+  {% endif %}
+</body>
+</html>
