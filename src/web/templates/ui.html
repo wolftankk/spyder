@@ -24,7 +24,7 @@
 {% endmacro %}
 
 {% macro render_staticType(current) %}
-  {% set staticTypes = [("none", "不上传"), ("ftp", "FTP"), ("aliyun", "阿里云")] %}
+  {% set staticTypes = [("none", "不上传"), ("ftp", "FTP"), ("aliyun", "云服务器")] %}
   {%- for staticType in staticTypes %}
   <option value="{{ staticType[0] }}"{% if staticType[0] == current %} selected="true"{% endif %}>{{ staticType[1] }}</option>
   {%- endfor %}

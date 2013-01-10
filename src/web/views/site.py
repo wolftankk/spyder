@@ -114,15 +114,15 @@ def test_aliyun():
         ACCESS_ID = request.form.get("access_id")
         SECRET_ACCESS_KEY = request.form.get("secret_access_key")
         if len(ACCESS_ID) == 0 or len(SECRET_ACCESS_KEY) == 0:
-            mess = u"请配置 用户 和 私钥"
+            mess = u"请配置 Access Key 和 Secret Key"
             return mess
         oss = OssAPI(HOST, ACCESS_ID, SECRET_ACCESS_KEY)
         
         res = oss.list_all_my_buckets()
         if (res.status / 100) == 2:
-            mess = "阿里云接口连接成功"
+            mess = "云服务器接口连接成功"
         else:
-            mess = "阿里云接口连接失败"
+            mess = "云服务器接口连接失败"
     return mess
 
 @site.route("/edit/<int:site_id>/", methods=("GET", "POST"))
