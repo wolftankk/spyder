@@ -91,7 +91,7 @@ class Site(object):
 	images = data["images"]
 
 	if len(images) == 0:
-	    return
+	    return insert_data
 
 	#download and get new name
 	for img_url in images:
@@ -185,10 +185,12 @@ class Site(object):
 	    
 		#处理数据， 看数据中的图片是否需要上传
 		insert_data = self.upload_media(insert_data, data)
+
 		try:
 		    db.insert(**insert_data)
 		except:
 		    pass;
+
 
 class PublishServer():
     '''

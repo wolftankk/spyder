@@ -221,9 +221,8 @@ class Grab(object):
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
-		    if value:
-			field.value = value
-			_item[field["name"]] = field
+		    field.value = value
+		    _item[field["name"]] = field
 
 		if self.seed_type in self.dont_craw_content:
 		    s = ""
@@ -396,7 +395,7 @@ if __name__ == "__main__":
     r = db.view(8);
     seed = Seed(r.list()[0])
     kaifus = Grab(seed)
-    #print kaifus.items
-    print kaifus['9534f7d6a60c6f4c8a8f9f6255017f14']
+    kaifus.push()
+    #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
     #print kaifus[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
