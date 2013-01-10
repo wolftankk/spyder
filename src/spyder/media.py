@@ -165,22 +165,6 @@ if __name__ == "__main__":
 
 
 """""
-    def write(self):
-	
-	if config.imageSaveMethod == "locale":
-	    path = self.getPath(newname)
-	    filename = os.path.join(path, newname+"."+self.getFileType());
-	    if not os.path.exists(filename):
-		f = io.open(filename, "wb")
-		f.write(self.mediaData)
-		f.close()
-		self.filename = filename
-		return True
-	elif config.imageSaveMethod == "remote":
-	    return self.postMedia(newname)
-
-	return False
-
     def postMedia(self, newname):
 	if not self.fetched:
 	    return False
@@ -205,5 +189,4 @@ if __name__ == "__main__":
 
 	    print "下载成功";
 	    return True
-
 """""
