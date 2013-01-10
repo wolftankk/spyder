@@ -216,11 +216,9 @@ class Grab(object):
 
 		if self.seed_type in self.dont_craw_content:
 		    s = ""
-		    for f in _item:
+		    for f in _item.fields:
 			if _item[f] is not None:
-			    print _item[f]
 			    s += safestr(_item[f].value)
-
 		    guid = md5(s).hexdigest()
 		    self.items[guid] = _item
 		else:
@@ -387,5 +385,7 @@ if __name__ == "__main__":
     r = db.view(8);
     seed = Seed(r.list()[0])
     kaifus = Grab(seed)
+    #print kaifus.items
+    print kaifus['9534f7d6a60c6f4c8a8f9f6255017f14']
     #print kaifus[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
     #print game.data
