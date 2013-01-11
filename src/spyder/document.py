@@ -472,13 +472,13 @@ if __name__ == "__main__":
     #gifts.push()
 
     #厂商
-    #r = db.view(22);
-    #seed = Seed(r.list()[0])
-    #c = Grab(seed)
-    #c.push()
+    r = db.view(22);
+    seed = Seed(r.list()[0])
+    c = Grab(seed)
+    c.push()
 
     #图库
-    r = db.view(23)
-    seed = Seed(r.list()[0])
-    gas = Grab(seed)
-    print gas['f1b79077b8fdd075ed2a15a60c389b60']
+    #r = db.view(23)
+    #seed = Seed(r.list()[0])
+    #gas = Grab(seed)
+    #print gas['f1b79077b8fdd075ed2a15a60c389b60']
