@@ -9,7 +9,6 @@ from libs.utils import safestr, safeunicode, now
 from libs.qbox import config
 from libs.qbox import uptoken
 from libs.qbox import rscli
-import os
 
 class qbox():
     def __init__(self, profile):
@@ -40,8 +39,11 @@ class qbox():
 	    文件存放路径
 	    path 上传的路径
 	'''
+	print "enter upload ", path
 	resp = rscli.UploadFile(self.bucket, path, '', file_path, '', '', self.uploadToken)
 	print resp
 	if resp:
 	    print "%s upload success!" % path
 	    os.unlink(file_path)
+	else:
+	    print path, "failed"

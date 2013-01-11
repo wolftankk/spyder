@@ -145,7 +145,6 @@ class RuleList(object):
     def __init__(self, parent):
         self.parent = parent
         self.type = parent.seed["listtype"];
-
 	'''
 	列表额外配置
 	'''
