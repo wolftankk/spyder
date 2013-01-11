@@ -145,7 +145,6 @@ class RuleList(object):
     def __init__(self, parent):
         self.parent = parent
         self.type = parent.seed["listtype"];
-
 	'''
 	列表额外配置
 	'''
@@ -203,10 +202,9 @@ class RuleList(object):
 	startpage = rule["startpage"]
 
 	if urltype == "inputLink":
-	    print urltype
-	    '''
-	    手动输入的url采集地址
-	    '''
+	    urls = urlformat.split("\r\n")
+
+	    listUrls = urls
 	elif urltype == "createLink":
 	    '''
 	    手动格式化的数字版本
@@ -233,8 +231,6 @@ class RuleList(object):
 		datetime	
 	    except:
 		import datetime
-
-
 
 	    maxpage = int(maxpage)
 	    if not startpage:

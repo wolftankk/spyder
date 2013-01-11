@@ -10,15 +10,16 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-from libs.phpserialize import unserialize
-from spyder.pyquery import PyQuery as pq
-from spyder.pybits import ansicolor
-from libs.utils import safestr, safeunicode
 from urlparse import urljoin
 
+from libs.phpserialize import unserialize
+from libs.utils import safestr, safeunicode
 from web.models import Site as Site_Model
 from web.models import Site_map
 from web.model import Model
+
+from spyder.pyquery import PyQuery as pq
+from spyder.pybits import ansicolor
 from spyder.field import get_field_from_cache
 import spyder.recipes as recipes
 from spyder.media import Image
@@ -91,7 +92,7 @@ class Site(object):
 	images = data["images"]
 
 	if len(images) == 0:
-	    return
+	    return insert_data
 
 	#download and get new name
 	for img_url in images:
@@ -185,10 +186,12 @@ class Site(object):
 	    
 		#处理数据， 看数据中的图片是否需要上传
 		insert_data = self.upload_media(insert_data, data)
+
 		try:
 		    db.insert(**insert_data)
 		except:
 		    pass;
+
 
 class PublishServer():
     '''
@@ -270,17 +273,3 @@ class PublishServer():
 	
 #实例化
 publish_server = PublishServer()
-
-
-if __name__ == "__main__":
-    #p.push("adsdada", {"type" : "article"})
-    print str(time.strftime("%Y-%m-%d %H:%M:%S"))
-    '''
-    db = Site_Model()
-    r = db.view(1);
-    if len(r):
-	r = r.list()[0]
-	sync_profile = r["sync_profile"]
-	print unserialize(sync_profile)
-    '''
-

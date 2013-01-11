@@ -1,19 +1,25 @@
 #coding: utf-8
 
-__name__ = "开服网"
-
 '''
 用于处理开服网采集后的数据 插入到库中时候进行一些数据上的调整
 '''
-import time
+import time, datetime
+from libs.utils import safestr, now
 
 def kaifu(db, insert_data, data):
     type = data["type"]
-
     if type == "article":
 	insert_data = process_article(db, insert_data, data)
     elif type == "game":
 	insert_data = process_game(db, insert_data, data)
+    elif type == "kaifu":
+	insert_data = process_kaifu(db, insert_data, data)
+    elif type == "kaice":
+	insert_data = process_kaice(db, insert_data, data)
+    elif type == "gift":
+	insert_data = process_gift(db, insert_data, data)
+    elif type == "company":
+	insert_data = process_company(db, insert_data, data)
 
     return insert_data
 
@@ -55,21 +61,87 @@ def process_game(db, insert_data, data):
 
     return insert_data
     
+date_rule = [
+    "%m月%d日%H点开服",
+    "%m月%d日%H:%M",
+    "%m月%d日%H点",
+    "%m月%d日 %H点"
+]
+def process_kaifu(db, insert_data, data):
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
 
-"""
-    def __parseDate(self, str):
-	'''
-	转成timestamp
-	'''
-	t1 = "今日 17点"
-	t2 = "01月08日09点开服"
-	t3 = "01月07日14:10"
-	#str = safestr(str)
-	#print time.strptime(str, "今日 %H点")
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
 
-	#t2 = safestr(t2)
-	#print time.strptime(t2, safestr("%m月%d日%H点开服"))
+    test_date = safestr(insert_data['test_date'])
+    
+    today = datetime.datetime.today()
 
-	#print time.strptime(t3, safestr("%m月%d日%H:%M"))
-	#return int(now())
-"""
+    today_month = today.month
+    today_day = today.day
+    today_year = today.year
+
+    today_string = "%.2d月%.2d日" % (today_month, today_day)
+    test_date = test_date.replace("今日", today_string)
+
+    for rule in date_rule:
+	try:
+	    new_test_date = time.strptime(safestr(test_date), rule)
+	    if new_test_date:
+		y = new_test_date[0]
+		m = new_test_date[1]
+		d = new_test_date[2]
+		h = new_test_date[3]
+		if y == 1900:
+		    y = today_year
+
+		new_test_date = datetime.datetime(y, m, d, h)
+		insert_data["test_date"] = str(new_test_date)
+		break;
+	except:
+	    pass
+
+    if insert_data["game_name"] is None or insert_data["game_name"] == "None" or insert_data["game_name"] == "":
+	return None
+
+    return insert_data
+
+def process_kaice(db, insert_data, data):
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+    
+    if safestr(data['kaice_type'].value) == "网页游戏":
+	if "test_date" in insert_data:
+	    insert_data["test_date"] = safestr(insert_data["test_date"]).replace("今日", str(time.strftime("%Y-%m-%d")))
+
+	if insert_data["game_name"] is None or insert_data["game_name"] == "None" or insert_data["game_name"] == "":
+	    return None
+
+	return insert_data
+    else:
+	return None
+
+def process_gift(db, insert_data, data):
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+
+    if insert_data["gift_title"] is None or insert_data["gift_title"] == "None" or insert_data["gift_title"] == "":
+	return None
+
+    return insert_data
+
+def process_company(db, insert_data, data):
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+
+    return insert_data

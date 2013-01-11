@@ -17,11 +17,12 @@ def async(decorated):
 
     return send
 
-@async
+#@async
 def upload_image(handler, image_path, upload_path):
     if handler and "upload" in dir(handler):
 	method = getattr(handler, "upload");
 	if method:
+	    print "DEBUG:  starting upload"
 	    r = method(image_path, upload_path)
 
-async.pool = Pool(1)
+#async.pool = Pool(4)

@@ -14,6 +14,7 @@ from libs.utils import safestr, safeunicode
 from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
+import json
 from spyder.field import Field, Item
 from spyder.publish import publish_server
 
@@ -22,6 +23,16 @@ __all__ = [
     "Document",
     "Grab"
 ]
+
+images_type = ["jpg", "jpeg", "png", "gif"]
+
+def is_image(url):
+    attrs = url.split(".")
+    attr = attrs[-1]
+    if attr in images_type:
+	return True
+    else:
+	return False
 
 attrParrent = re.compile("(\w+)?\((.+)?\)");
 def getElementData(obj, rule, images=None):
@@ -55,9 +66,6 @@ def getElementData(obj, rule, images=None):
 	selectRule = selectRule.replace("(", "");
 	selectRule = selectRule.replace(")", "");
 
-	selectRule = selectRule.replace("[", "(");
-	selectRule = selectRule.replace("]", ")");
-
 	selecteddom = obj.find(selectRule);
 
 	for attr in rule:
@@ -73,6 +81,7 @@ def getElementData(obj, rule, images=None):
 		    value = selecteddom.attr(v)
 		    if selecteddom and selecteddom[0].tag == "img" and v == "src" and images is not None:
 			images.append(value)
+		    #elif v == "pic"
 
 		    return value
 		elif action == "eq" and hasattr(selecteddom, "eq"):
@@ -137,7 +146,7 @@ g[guid]
 """
 class Grab(object):
     dont_craw_content = [
-	'kaifu', 'kaice'	    
+	'kaifu', 'kaice', "gift"    
     ]
 
     def __init__(self, seed):
@@ -152,10 +161,11 @@ class Grab(object):
 
 	    if listtype == "feed":
 		self.parseFeed();
-	    else:
-		'html'
+	    elif listtype == "html" or listtype == "json":
 		self.listRule = rule.getListRule();
-	        self.fetchListPages();
+	        self.fetchListPages(listtype);
+	    else:
+		print "传入的页面列表类型"
 	else:
 	    print "传入的种子不是Seed类型"
 
@@ -178,7 +188,7 @@ class Grab(object):
 
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
-    def fetchListPages(self):
+    def fetchListPages(self, listtype="html"):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
 	#这里需要采用多线程方式
@@ -187,7 +197,10 @@ class Grab(object):
             doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if doc.isReady():
 		doc = doc.read()
-                self.parseListPage(doc, url)
+		if listtype == "html":
+		    self.parseListPage(doc, url)
+		elif listtype == "json":
+		    self.parseJsonPage(doc, url)
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def parseListPage(self, doc, listurl):
@@ -221,9 +234,8 @@ class Grab(object):
 		for field_id, _rule in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
-		    if value:
-			field.value = value
-			_item[field["name"]] = field
+		    field.value = value
+		    _item[field["name"]] = field
 
 		if self.seed_type in self.dont_craw_content:
 		    s = ""
@@ -240,6 +252,54 @@ class Grab(object):
 		list.children().map(entry)
 	    else:	
 		list.find(self.listRule.getEntryItem()).map(entry)
+
+    def parseJsonPage(self, doc, listurl):
+	try:
+	    doc = json.loads(doc)
+	    item = self.listRule.getEntryItem()
+	    if item and item in doc:
+		data = doc[item]
+	    else:
+		data = doc
+
+	    urlParent = self.listRule.getContentUrl()
+	    extrarules = self.listRule.extrarules
+
+	    if isinstance(data, list) and urlParent:
+		for _data in data:
+		    if urlParent in _data:
+			link = urlparse.urljoin(listurl, _data[urlParent])
+			guid = md5(link).hexdigest()
+
+			_item = ({
+			    "type" : self.seed_type,
+			    "images" : []
+			})
+
+			#取出需要的key数据
+			for field_id, _rule in extrarules:
+			    field = Field(field_id = field_id, rule=_rule)
+			    if _rule in _data:
+				value = _data[_rule]
+				if is_image(value):
+				    _item["images"].append(value)
+				    field.value = value
+				    _item[field["name"]] = field
+
+			#将数据保存到总分支上
+			if self.seed_type in self.dont_craw_content:
+			    s = ""
+			    for f in _item.fields:
+				if _item[f] is not None:
+				    s += safestr(_item[f].value)
+			    guid = md5(s).hexdigest()
+			    self.items[guid] = _item
+			else:
+			    _item["url"] = link
+			    self.items[guid] = _item
+
+	except:
+	    print "该json文本无法解析"
 
     def __len__(self):
 	'''
@@ -390,13 +450,35 @@ if __name__ == "__main__":
     #games= Grab(seed)
     #games.push()
     #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
-    #print game.data
 
     #游戏开服
-    r = db.view(8);
+    #r = db.view(8);
+    #seed = Seed(r.list()[0])
+    #kaifus = Grab(seed)
+    #kaifus.push()
+    #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
+
+    #游戏开测
+    #r = db.view(20);
+    #seed = Seed(r.list()[0])
+    #kaices = Grab(seed)
+    #kaices.push()
+    ##print kaifus['43d4eaccab7675ac175c030455d0cbb2']
+
+    #礼包
+    #r = db.view(21);
+    #seed = Seed(r.list()[0])
+    #gifts = Grab(seed)
+    #gifts.push()
+
+    #厂商
+    #r = db.view(22);
+    #seed = Seed(r.list()[0])
+    #c = Grab(seed)
+    #c.push()
+
+    #图库
+    r = db.view(23)
     seed = Seed(r.list()[0])
-    kaifus = Grab(seed)
-    #print kaifus.items
-    print kaifus['9534f7d6a60c6f4c8a8f9f6255017f14']
-    #print kaifus[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
-    #print game.data
+    gas = Grab(seed)
+    print gas['f1b79077b8fdd075ed2a15a60c389b60']
