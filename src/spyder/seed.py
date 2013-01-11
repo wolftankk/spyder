@@ -155,7 +155,8 @@ class RuleList(object):
 	    if rule and rule["page_type"] == "list":
 		field_id = rule["field_id"]
 		value = rule["value"]
-		self.extrarules.append((field_id, value))
+		fetch_all = rule["fetch_all"]
+		self.extrarules.append((field_id, value, fetch_all))
 
 
     def getListParent(self):
@@ -290,7 +291,8 @@ class RuleArticle(object):
 	    if rule and rule["page_type"] == "content":
 		field_id = rule["field_id"]
 		value = rule["value"]
-		self.extrarules.append((field_id, value))
+		fetch_all = rule["fetch_all"]
+		self.extrarules.append((field_id, value, fetch_all))
 
         if "filters" in parent.rule:
 	    self.filters = []

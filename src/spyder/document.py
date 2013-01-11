@@ -35,7 +35,7 @@ def is_image(url):
 	return False
 
 attrParrent = re.compile("(\w+)?\((.+)?\)");
-def getElementData(obj, rule, images=None):
+def getElementData(obj, rule, images=None, fetch_all=0):
     """
     根据rule对obj的进行解析
     obj可以是pq后的对象， 也可以是html页面
@@ -78,12 +78,24 @@ def getElementData(obj, rule, images=None):
 		    v = v.strip("\'").strip('\"');
 
 		if action == "attr" and hasattr(selecteddom, "attr") and v:
-		    value = selecteddom.attr(v)
-		    if selecteddom and selecteddom[0].tag == "img" and v == "src" and images is not None:
-			images.append(value)
-		    #elif v == "pic"
+		    if fetch_all == 1:
+			values = []
+			dom_count = len(selecteddom)
 
-		    return value
+			for i in range(dom_count):
+			    vv = selecteddom.eq(i).attr(v)
+			    if vv:
+				values.append(vv)
+				if is_image(vv):
+				    images.append(vv)
+			
+			return values
+		    else:
+			value = selecteddom.attr(v)
+			if selecteddom and selecteddom[0].tag == "img" and v == "src" and images is not None:
+			    images.append(value)
+
+			return value
 		elif action == "eq" and hasattr(selecteddom, "eq"):
 		    _rules = attr.split(" ")
 		    if len(rule) > 1:
@@ -231,7 +243,7 @@ class Grab(object):
 		    "images" : []
 		})
 
-		for field_id, _rule in extrarules:
+		for field_id, _rule, fetch_all in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
 		    field.value = value
@@ -277,7 +289,7 @@ class Grab(object):
 			})
 
 			#取出需要的key数据
-			for field_id, _rule in extrarules:
+			for field_id, _rule, fetch_all in extrarules:
 			    field = Field(field_id = field_id, rule=_rule)
 			    if _rule in _data:
 				value = _data[_rule]
@@ -384,9 +396,9 @@ class Document(object):
 
 	#只有文章是有content
 	if len(extrarules):
-	    for key, rule in extrarules:
+	    for key, rule, fetch_all in extrarules:
 		field = Field(field_id=key, rule=rule);
-		value = getElementData(doc, rule, self.data["images"])
+		value = getElementData(doc, rule, self.data["images"], fetch_all)
 
 		self.data[field.get('name')] = field
 
@@ -472,13 +484,14 @@ if __name__ == "__main__":
     #gifts.push()
 
     #厂商
-    r = db.view(22);
-    seed = Seed(r.list()[0])
-    c = Grab(seed)
-    c.push()
+    #r = db.view(22);
+    #seed = Seed(r.list()[0])
+    #c = Grab(seed)
+    #c.push()
 
     #图库
-    #r = db.view(23)
-    #seed = Seed(r.list()[0])
-    #gas = Grab(seed)
+    r = db.view(23)
+    seed = Seed(r.list()[0])
+    gas = Grab(seed)
+    gas.push()
     #print gas['f1b79077b8fdd075ed2a15a60c389b60']

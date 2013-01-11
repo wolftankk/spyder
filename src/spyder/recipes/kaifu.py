@@ -20,6 +20,8 @@ def kaifu(db, insert_data, data):
 	insert_data = process_gift(db, insert_data, data)
     elif type == "company":
 	insert_data = process_company(db, insert_data, data)
+    elif type == "gallery":
+	insert_data = process_gallery(db, insert_data, data)
 
     return insert_data
 
@@ -145,3 +147,27 @@ def process_company(db, insert_data, data):
 	return None;
 
     return insert_data
+
+def process_gallery(db, insert_data, data):
+    insert_data["src_url"] = data["url"]
+    insert_data["category_id"] = data["tags"]
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+    
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+
+    if insert_data["title"] is None or insert_data["title"] == "None" or insert_data["title"] == "":
+	return None
+
+    if "gallery_path" in insert_data and isinstance(insert_data["gallery_path"], list):
+	body = ""
+	image_template = '<img src="%s">'
+	for img in insert_data["gallery_path"]:
+	    body += image_template % img
+	
+	insert_data["gallery_path"] = body
+
+	return insert_data
+    else:
+	return None
