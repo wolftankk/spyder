@@ -134,9 +134,11 @@ def getSeedFieldsBySid(sid, seed_type):
         if len(v) > 0:
             new2["value"] = v[0]["value"]
             new2["page_type"] = v[0]["page_type"]
+            new2["fetch_all"] = v[0]["fetch_all"]
         else:
             new2["value"] = ""
             new2["page_type"] = ""
+            new2["fetch_all"] = 0
         new.append(new2)
     return new
 

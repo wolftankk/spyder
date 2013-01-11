@@ -35,8 +35,8 @@ class Seed_fields(Model):
                 self.insert(**save)
 	return True
     
-    def edit(self, sid, fid, value, page_type):
-	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value, page_type=page_type)
+    def edit(self, sid, fid, value, page_type, fetch_all):
+	return self.update(where="seed_id="+sid+" and field_id="+str(fid), value=value, page_type=page_type, fetch_all=fetch_all)
     
     def remove(self, seed_id):
 	return self.delete("seed_id="+str(seed_id))

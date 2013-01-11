@@ -54,6 +54,7 @@ def add():
                 seed_value["field_id"] = field.id
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
+                seed_value["fetch_all"] = request.form.get("fetch_all_"+field.name)
                 seed_field.add(**seed_value)
             #插入标签
             tags_data = request.form.get("tags")
@@ -164,13 +165,14 @@ def edit(seed_id):
         for field in fields:
             field_data = seed_field.view(sid, field.id).list()
             if len(field_data) > 0:
-                seed_field.edit(sid, field.id, request.form.get(field.name), request.form.get("page_type_"+field.name))
+                seed_field.edit(sid, field.id, request.form.get(field.name), request.form.get("page_type_"+field.name), request.form.get("fetch_all_"+field.name))
             else:
                 seed_value = {}
                 seed_value["seed_id"] = sid
                 seed_value["field_id"] = field.id
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
+                seed_value["fetch_all"] = request.form.get("fetch_all_"+field.name)
                 seed_field.add(**seed_value)
         #更改标签
         tags_data = request.form.get("tags")
