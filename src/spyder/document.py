@@ -393,3 +393,10 @@ if __name__ == "__main__":
     #kaifus = Grab(seed)
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
+
+    #游戏开测
+    r = db.view(20);
+    seed = Seed(r.list()[0])
+    kaices = Grab(seed)
+    kaices.push()
+    #print kaifus['43d4eaccab7675ac175c030455d0cbb2']

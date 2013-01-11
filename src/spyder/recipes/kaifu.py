@@ -8,13 +8,14 @@ from libs.utils import safestr, now
 
 def kaifu(db, insert_data, data):
     type = data["type"]
-
     if type == "article":
 	insert_data = process_article(db, insert_data, data)
     elif type == "game":
 	insert_data = process_game(db, insert_data, data)
     elif type == "kaifu":
 	insert_data = process_kaifu(db, insert_data, data)
+    elif type == "kaice":
+	insert_data = process_kaice(db, insert_data, data)
 
     return insert_data
 
@@ -101,3 +102,21 @@ def process_kaifu(db, insert_data, data):
 	return None
 
     return insert_data
+
+def process_kaice(db, insert_data, data):
+    insert_data["insert_time"] = str(time.strftime("%Y-%m-%d %H:%M:%S"))
+
+    r = db.get_one(where={ "guid" : insert_data["guid"]})
+    if r:
+	return None;
+    
+    if safestr(data['kaice_type'].value) == "网页游戏":
+	if "test_date" in insert_data:
+	    insert_data["test_date"] = safestr(insert_data["test_date"]).replace("今日", str(time.strftime("%Y-%m-%d")))
+
+	if insert_data["game_name"] is None or insert_data["game_name"] == "None" or insert_data["game_name"] == "":
+	    return None
+
+	return insert_data
+    else:
+	return None
