@@ -63,14 +63,15 @@ def add():
             seed_tag = Seed_tag(current_app)
             for tag in tags_data:
                 tag = tag.strip()
-                ishere = tags_model.findByName(tag).list()
-                if len(ishere) > 0:
-                    tid = ishere[0]["id"]
-                else:
-                    tid = tags_model.add(name=tag)
-                ishere = seed_tag.view(sid,tid).list() 
-                if len(ishere) == 0:
-                    seed_tag.add(sid=sid, tid=tid)
+                if tag:
+                    ishere = tags_model.findByName(tag).list()
+                    if len(ishere) > 0:
+                        tid = ishere[0]["id"]
+                    else:
+                        tid = tags_model.add(name=tag)
+                    ishere = seed_tag.view(sid,tid).list() 
+                    if len(ishere) == 0:
+                        seed_tag.add(sid=sid, tid=tid)
         return redirect(url_for("seeds.index"));
     fields = field.getSeedType()
     if request.method == "GET" and request.args.get("type"):
@@ -185,16 +186,17 @@ def edit(seed_id):
             del_tags_data[current_tag["tid"]] = current_tag;
         for tag in tags_data:
             tag = tag.strip()
-            ishere = tags_model.findByName(tag).list()
-            if len(ishere) > 0:
-                tid = ishere[0]["id"]
-            else:
-                tid = tags_model.add(name=tag)
-            if tid in del_tags_data:
-                del del_tags_data[tid]
-            ishere = seed_tag.view(sid,tid).list() 
-            if len(ishere) == 0:
-                seed_tag.add(sid=sid, tid=tid)
+            if tag:
+                ishere = tags_model.findByName(tag).list()
+                if len(ishere) > 0:
+                    tid = ishere[0]["id"]
+                else:
+                    tid = tags_model.add(name=tag)
+                if tid in del_tags_data:
+                    del del_tags_data[tid]
+                ishere = seed_tag.view(sid,tid).list() 
+                if len(ishere) == 0:
+                    seed_tag.add(sid=sid, tid=tid)
         for k in del_tags_data:
             seed_tag.remove(del_tags_data[k]["sid"],del_tags_data[k]["tid"])
         return redirect(url_for("seeds.index"))

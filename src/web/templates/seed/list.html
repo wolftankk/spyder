@@ -71,7 +71,7 @@
           <td><a href="#" class="balloon-button size-10" title="查看最近采集的数据">0</a></td>
           <td>
             {% for tag in seed["tags"] %}
-            {{ tag["name"] }},
+            <a href="#{{ tag['id'] }}">{{ tag["name"] }}</a>
             {% endfor %}
           </td>
           <td>{{ seed.update_time|timesince }}</td>
