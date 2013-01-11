@@ -26,15 +26,16 @@
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
           <p>
-            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 540px;" />
+            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 480px;" />
             {% if page_types %}
-            &nbsp;&nbsp;目标页面：
+            &nbsp;&nbsp;页面：
             <select class="typecho-charset" name="page_type_{{ field.name }}">
               {% for page_type in page_types %}
               <option value="{{ page_type }}"{% if page_type == field.page_type %} selected="true"{% endif %}>{{ page_type|getPageTypeText }}</option>
               {% endfor %}
             </select>
             {% endif %}
+            <label><input type="checkbox" name="fetch_all_{{ field.name }}" value="1"{% if field.fetch_all == 1 %} checked="true"{% endif %}> 匹配所有</label>
           </p>
           {% endfor %}
         </div>
@@ -73,8 +74,10 @@
           <label for="listtype" class="typecho-label">采集链接格式</label>
           <p>
             <select class="typecho-charset" name="listtype" id="listtype">
-              <option value="html" selected>普通 HTML 格式</option>
-              <option value="feed" disabled>标准 RSS Feed 格式</option>
+              {% set listtypes = {"html":"普通 HTML 格式", "feed":"标准 RSS Feed 格式", "json":"JSON 格式"} %}
+              {% for listtype in listtypes %}
+              <option value="{{ listtype }}"{% if listtype == seed_data.listtype %} selected="true"{% endif %}>{{ listtypes[listtype] }}</option>
+              {% endfor %}
             </select>
           </p>
           <p class="description">请选择采集链接格式</p>
