@@ -283,7 +283,7 @@ class Grab(object):
 			link = urlparse.urljoin(listurl, _data[urlParent])
 			guid = md5(link).hexdigest()
 
-			_item = ({
+			_item = Item({
 			    "type" : self.seed_type,
 			    "images" : []
 			})
@@ -297,7 +297,7 @@ class Grab(object):
 				    _item["images"].append(value)
 				    field.value = value
 				    _item[field["name"]] = field
-
+			
 			#将数据保存到总分支上
 			if self.seed_type in self.dont_craw_content:
 			    s = ""
@@ -493,5 +493,5 @@ if __name__ == "__main__":
     r = db.view(23)
     seed = Seed(r.list()[0])
     gas = Grab(seed)
-    gas.push()
-    #print gas['f1b79077b8fdd075ed2a15a60c389b60']
+    #gas.push()
+    print gas['f1b79077b8fdd075ed2a15a60c389b60']
