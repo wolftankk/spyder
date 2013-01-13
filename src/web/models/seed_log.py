@@ -10,5 +10,5 @@ class Seed_log(Model):
 	    self.app = app
 	    self.db_config = self.app.config.get('DBS')
 	self.db_setting = 'default'
-	self._table_name = 'seed_tag'
+	self._table_name = 'seed_logs'
 	Model.__init__(self)
