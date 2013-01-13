@@ -96,14 +96,13 @@ class WebServer(Daemon):
 
 web_server = WebServer(os.getcwd()+"/web.pid")
 if __name__ == "__main__":
-    web_server.start()
+    web_server.run()
     """
     import getopt
     actions = ["start", "stop", "restart"]
     argv = sys.argv
 
-    if (len(argv) == 3):
-	if argv[1] == "web":
-	    if (argv[2] in actions):
-		getattr(web_server, argv[2])()
+    if (len(argv) == 2):
+	if (argv[1] in actions):
+	    getattr(web_server, argv[1])()
     """
