@@ -1,0 +1,1 @@
+{"name":"Spyder","body":"# Spyder\r\nAnother website spiders\r\n\r\n## Require\r\n* Flask\r\n* Jinja2\r\n* lxml\r\n* mysql-python\r\n","tagline":"Awesome spider client","note":"Don't delete this file! It's used internally to help with page regeneration.","google":""}
