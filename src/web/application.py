@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 #coding: utf-8
 
 import os, sys
@@ -10,6 +11,7 @@ from web import views
 from web.config import DefaultConfig
 from web import model
 from web import helpers
+from libs.daemon import Daemon
 
 __all__ = ['spyder_web']
 
@@ -87,6 +89,21 @@ class spyder_web:
 	debug = self.app.config.get("DEBUG", False);
 	self.app.run(host, port, debug, **options);
 
+class WebServer(Daemon):
+    def run(self):
+	app = spyder_web();
+	app = app.run(host="0.0.0.0");
+
+web_server = WebServer(os.getcwd()+"/web.pid")
 if __name__ == "__main__":
-    application = spyder_web();
-    application.run(host="0.0.0.0");
+    web_server.start()
+    """
+    import getopt
+    actions = ["start", "stop", "restart"]
+    argv = sys.argv
+
+    if (len(argv) == 3):
+	if argv[1] == "web":
+	    if (argv[2] in actions):
+		getattr(web_server, argv[2])()
+    """

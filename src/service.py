@@ -15,11 +15,11 @@ def help():
     print ansicolor.green("Welcome, thank you for using ``Spyder``", True)
     print "``Spyder`` website: http://wolftankk.github.com/spyder"
     print "``Spyder`` help:"
-    print "service web (start|stop|reload) for launching web server"
-    print "service spider (start|stop|reload) for launching spyder"
+    print "service web (start|stop|restart) for launching web server"
+    print "service spider (start|stop|restart) for launching spyder"
     print "server version for cat ``Spyder`` version"
 
-actions = ["start", "stop", "reoad"]
+actions = ["start", "stop", "restart"]
 
 class WebServer(Daemon):
     def run(self):
@@ -46,6 +46,11 @@ def main():
 	    help()
     elif (len(argv) == 3):
 	if argv[1] == "web":
+	    if (argv[2] in actions):
+		getattr(web_server, argv[2])()
+	elif argv[1] == "spider":
+	    if (argv[2] in actions):
+		getattr(spider_server, argv[2])()
 	else:
 	    help()
 
