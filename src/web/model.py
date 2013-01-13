@@ -31,7 +31,7 @@ class Model(object):
 
 	guid = md5(config['db']+config['host']).hexdigest()
 	if guid not in dbs:
-	    dbs[guid] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'])
+	    dbs[guid] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'], connect_timeout=30)
 
 	self.db = dbs[guid]
 
