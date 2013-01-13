@@ -1,17 +1,9 @@
 #coding: utf-8
-#!/usr/bin/env python
 
 import os, sys
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0,parentdir)
-
-import threading
-import io, time
-from spyder.pybits import ansicolor
-from spyder.seed import Seed
-from document import Grab 
-from web.models import Seed as Seed_Model
-from libs.utils import now, safestr
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
 
 class Spyder(object):
     def __init__(self):
