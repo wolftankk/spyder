@@ -51,5 +51,3 @@ def run():
 	time.sleep(next_time)
 
 	run()
-
-run()
