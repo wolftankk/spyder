@@ -44,7 +44,7 @@ class spyder_web:
 	# @param template_folder (default: templates)
 	# @param instance_path
 	# @param instance_relative_config 
-	self.app = Flask(self.DEFAULT_APP_NAME, template_folder=os.path.join(app_dir, "templates"))
+	self.app = Flask(self.DEFAULT_APP_NAME, static_folder=os.path.join(app_dir, "static"),template_folder=os.path.join(app_dir, "templates"))
 	#load config
 	self.app.config.from_object(DefaultConfig());
 	self.configure_modules()
