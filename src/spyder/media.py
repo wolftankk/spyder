@@ -5,9 +5,10 @@ parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
     sys.path.insert(0,parentdir) 
 
-import urllib2, urlparse, io
+import urlparse, io
 import hashlib, StringIO, struct
 from spyder.pybits import ansicolor
+from spyder.fetch import Fetch
 import images_cache
 
 images_dir = images_cache.__path__.pop()
@@ -16,7 +17,7 @@ __all__ = [
     'Image'	
 ]
 
-class Image():
+class Image(object):
     def __init__(self, url):
         self.mediaUrl = url
 
@@ -33,13 +34,12 @@ class Image():
         return self.mediaUrl
 
     def fetchMedia(self):
-        try:
-            self.media = urllib2.urlopen(self.mediaUrl)
+	f = Fetch(self.mediaUrl)
+	if f.connected:
+	    self.media = f.site
 	    self.mediaData = self.media.read()
-            self.urlinfo = self.media.info()
+	    self.urlinfo = self.media.info()
 	    self.fetched = True
-        finally:
-            return None
 
     def save(self, file_path):
 	if not os.path.exists(file_path):
@@ -162,31 +162,3 @@ if __name__ == "__main__":
     print m.getSize()
     print m.getMediaName()
     print m.getPath();
-
-
-"""""
-    def postMedia(self, newname):
-	if not self.fetched:
-	    return False
-
-	data = self.mediaData
-
-	'''
-	datagen, headers = multipart_encode({
-	    "XiMaGe" : base64.b64encode(data),
-	    "imageName" : newname,
-	    "imageType"    : self.getFileType()
-	})
-	request = urllib2.Request(config.uploadPath, datagen, headers);
-	request.add_header("User-Agent", "Python-Spyder/1.1");
-	path = urllib2.urlopen(request).read()
-	path = path.strip()
-	'''
-
-	if path:
-	    path = config.staticUrl + path;
-	    self.filename = path
-
-	    print "下载成功";
-	    return True
-"""""

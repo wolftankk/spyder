@@ -177,27 +177,27 @@ class Grab(object):
 		self.listRule = rule.getListRule();
 	        self.fetchListPages(listtype);
 	    else:
-		print "传入的页面列表类型"
+		print "Cant support `%s` type" % listtype
 	else:
-	    print "传入的种子不是Seed类型"
+	    print "You must give `Seed` instance"
 
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
         seed = self.seed
-        doc = Fetch(seed.prefixurl, seed.charset, self.seed.timeout).read();
-        feed = feedparser.parse(doc)
-        items = feed["entries"]
-        if len(items) > 0:
-            for item in items:
-                link = item["link"]
-		guid = md5(link).hexdigest()
+        f = Fetch(seed.prefixurl, seed.charset, self.seed.timeout);
+	if f.isReady():
+	    feed = feedparser.parse(f.read())
+	    items = feed["entries"]
+	    if len(items) > 0:
+		for item in items:
+		    link = item["link"]
+		    guid = md5(link).hexdigest()
 
-		_item = Item({
-		    "url" : link,
-		    "type" : self.seed_type
-		})
-                self.items[guid] = _item
-
+		    _item = Item({
+			"url" : link,
+			"type" : self.seed_type
+		    })
+		    self.items[guid] = _item
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def fetchListPages(self, listtype="html"):
@@ -205,19 +205,20 @@ class Grab(object):
 	urls = self.listRule.getListUrls()
 	#这里需要采用多线程方式
         for url in urls:
-	    print u"正在抓取列表页面：", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
-            doc = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
-	    if doc.isReady():
-		doc = doc.read()
+	    print "Fetching list page：", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
+            f = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
+	    if f.isReady():
+		doc = f.read()
 		if listtype == "html":
-		    self.parseListPage(doc, url)
+		    self.parseListPage(f, doc, url)
 		elif listtype == "json":
-		    self.parseJsonPage(doc, url)
+		    self.parseJsonPage(f, doc, url)
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
-    def parseListPage(self, doc, listurl):
+    def parseListPage(self, site, doc, listurl):
 	'''
 	分析采集回来的页面
+	@param site Fetch instance
 	@param doc 页面String stream
 	@param url link
 	'''
@@ -265,9 +266,9 @@ class Grab(object):
 	    else:	
 		list.find(self.listRule.getEntryItem()).map(entry)
 
-    def parseJsonPage(self, doc, listurl):
+    def parseJsonPage(self, site, doc, listurl):
 	try:
-	    doc = json.loads(doc)
+	    doc = json.loads(doc, encoding=site.getCharset())
 	    item = self.listRule.getEntryItem()
 	    if item and item in doc:
 		data = doc[item]
@@ -311,7 +312,7 @@ class Grab(object):
 			    self.items[guid] = _item
 
 	except:
-	    print "该json文本无法解析"
+	    raise "Cant parse json file"
 
     def __len__(self):
 	'''
@@ -494,4 +495,3 @@ if __name__ == "__main__":
     seed = Seed(r.list()[0])
     gas = Grab(seed)
     #gas.push()
-    print gas['f1b79077b8fdd075ed2a15a60c389b60']

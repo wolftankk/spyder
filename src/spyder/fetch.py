@@ -13,8 +13,7 @@ from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
 
 __all__ = [
-    'Fetch',
-    'opener'
+    'Fetch', 'opener', "ConnectError"
 ]
 
 def deflate(data):
@@ -24,7 +23,7 @@ def deflate(data):
 	return zlib.decompress(data)
 
 '''
-支持gzip格式的网页， 加快页面采集速度
+support gzip/deflate page
 '''
 class ContentEncodingProcessor(urllib2.BaseHandler):
     #add header to request
@@ -51,14 +50,15 @@ class ContentEncodingProcessor(urllib2.BaseHandler):
 encoding_support = ContentEncodingProcessor
 opener = urllib2.build_opener(encoding_support, urllib2.HTTPHandler)
 
-'''
-页面抓取
-'''
+class ConnectError(Exception):
+    pass
+
 class Fetch(object):
     def __init__(self, url, **config):
         self.url = url
+
 	if "charset" in config:
-	    self.charset = config['charset'];
+	    self.charset = config['charset']
 	    if self.charset == "auto":
 		self.charset = "utf-8"
 	else:
@@ -76,9 +76,8 @@ class Fetch(object):
 
         self.site = None
 	self.count = 1
-	self.error = None
-
-        self.connect();
+	self.connected = False
+        self.connect()
 
     def retryConnection(self):
 	if self.count <= self.tries:
@@ -86,10 +85,16 @@ class Fetch(object):
 	    self.count = self.count + 1
 	    print "Retry connection %s, now Count %s" % (self.site, self.count)
 	else:
-	    return
+	    raise ConnectError, "Try to number more then %s times" % self.tries
         
     def getCode(self):
-	return self.site.getcode()
+	if self.connected:
+	    return self.site.getcode() 
+	else:
+	    print 400
+
+    def getCharset(self):
+	return self.charset
 
     def isReady(self):
 	return self.site.msg == "OK" if self.site else False
@@ -97,28 +102,24 @@ class Fetch(object):
     def reset(self):
 	self.count = 1
 	self.site = None
-
-    def getError(self):
-	return self.error
+	self.connected = False
 
     def connect(self):
         self.request = urllib2.Request(self.url);
         try:
-	    #code, url, headers, msg
             self.site = opener.open(self.request, timeout = self.timeout)
+	    self.connected = True
 	except urllib2.HTTPError, e:
-	    self.error = e
-	    pass
+	    raise ConnectError, str(e)
         except urllib2.URLError, e:
 	    if isinstance(e.reason, socket.timeout):
 		self.retryConnection();
 	    else:
-		self.error = e
-		pass
+		raise ConnectError, str(e)
 	except socket.error, e:
 	    self.retryConnection();
 	finally:
-	    pass
+	    return
 
     def read(self):
         if self.site:
@@ -137,11 +138,9 @@ class Fetch(object):
                     # rss
                     #<?xml version="1.0" encoding="gb2312"?>
                     result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
-                if result:
+                
+		if result:
                     charset = result.group(1)
-		    '''
-		    get new charset
-		    '''
 		    self.charset = charset;
                     try:
                         doc = doc.decode(charset)
@@ -155,5 +154,9 @@ class Fetch(object):
 
 
 if __name__ == "__main__":
-    f = Fetch("http://wow.178.com/", timeout=300, charset="gbk")
-    print f.read() if f.isReady() else "111"
+    try:
+	f = Fetch("http://www.google.com")
+	if f.connected:
+	    print f.read()
+    except Exception, e:
+	print e
