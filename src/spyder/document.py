@@ -493,5 +493,5 @@ if __name__ == "__main__":
     #图库
     r = db.view(23)
     seed = Seed(r.list()[0])
-    gas = Grab(seed)
+    #gas = Grab(seed)
     #gas.push()

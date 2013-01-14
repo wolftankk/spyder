@@ -63,6 +63,11 @@ class Seed(object):
 	    '''
 	    self.get_tags()
 	    self.name = self.__seed["seed_name"].encode("utf-8")
+
+	    self.guid_rule = None
+	    if seed["guid_rule"]:
+		self.guid_rule = seed["guid_rule"].split(",")
+		self.guid_rule = map(lambda x: int(x), self.guid_rule)
 	else:
 	    raise SeedError("Seed instance error.")
 
@@ -305,7 +310,7 @@ class RuleArticle(object):
 if __name__ == "__main__":
     from web.models import Seed as Seed_Model
     db = Seed_Model();
-    r = db.view(2);
+    r = db.view(8);
     t = Seed(r.list()[0])
     
     # test Seed info
