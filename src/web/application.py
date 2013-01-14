@@ -5,7 +5,8 @@ import os, sys
 from flask import Flask, g
 
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.insert(0,parentdir) 
+if parentdir not in sys.path:
+    sys.path.insert(0,parentdir) 
 
 from web import views
 from web.config import DefaultConfig
@@ -13,14 +14,16 @@ from web import model
 from web import helpers
 from libs.daemon import Daemon
 
+app_dir = os.path.dirname(os.path.abspath(__file__))
+
 __all__ = ['spyder_web']
 
 class spyder_web:
     DEFAULT_APP_NAME = "spyder_web"
     MODULES = (
 	(views.home, ""),
-    (views.settings, "/settings"),
-    (views.site_map, "/site_map"),
+	(views.settings, "/settings"),
+	(views.site_map, "/site_map"),
 	(views.seed, "/seed"),
 	(views.seeds, "/seeds"),
 	(views.article, "/article"),
@@ -29,9 +32,9 @@ class spyder_web:
 	(views.user, "/user"),
 	(views.users, "/users"),
 	(views.status, "/status"),
-    (views.test_seed, "/test_seed")
+	(views.test_seed, "/test_seed")
     );
-    
+
     def __init__(self):
 	# Register an application in Flask
 	# @param appName
@@ -41,7 +44,7 @@ class spyder_web:
 	# @param template_folder (default: templates)
 	# @param instance_path
 	# @param instance_relative_config 
-	self.app = Flask(self.DEFAULT_APP_NAME)
+	self.app = Flask(self.DEFAULT_APP_NAME, template_folder=os.path.join(app_dir, "templates"))
 	#load config
 	self.app.config.from_object(DefaultConfig());
 	self.configure_modules()
@@ -49,25 +52,25 @@ class spyder_web:
 
 	@self.app.template_filter()
 	def timesince(value):
-		return helpers.timesince(value)
+	    return helpers.timesince(value)
 
 	@self.app.template_filter()
 	def getSiteStatus(value):
-		return helpers.getSiteStatus(value)
+	    return helpers.getSiteStatus(value)
 
 	@self.app.template_filter()
 	def getPageTypeText(value):
-		return helpers.getPageTypeText(value)
+	    return helpers.getPageTypeText(value)
 
 	@self.app.template_filter()
 	def getSeedTypeText(value):
-		return helpers.getSeedTypeText(value)
+	    return helpers.getSeedTypeText(value)
 
 	@self.app.context_processor
 	def utility_processor():
-		def somefunc(name):
-			return helpers.somefunc(name)
-		return dict(somefunc=somefunc)
+	    def somefunc(name):
+		return helpers.somefunc(name)
+	    return dict(somefunc=somefunc)
 
     def configure_modules(self):
 	"""
@@ -94,7 +97,9 @@ class WebServer(Daemon):
 	app = spyder_web();
 	app = app.run(host="0.0.0.0");
 
-web_server = WebServer(os.getcwd()+"/web.pid")
+
+
+web_server = WebServer(app_dir+"/web.pid")
 if __name__ == "__main__":
     web_server.run()
     """
