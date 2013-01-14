@@ -29,19 +29,24 @@ def run():
 	    starttime = seed["start_time"]
 	    finishtime = seed["finish_time"]
 
-	    if seed["enabled"] == 1 and (frequency + finishtime) <= now():
-		starttime = now()
-		s = Seed(seed)
-		try:
-		    g = Grab(s)
-		    g.push()
-		    finishtime = now()
-		    next_queue.append(finishtime + frequency)
+	    if seed["enabled"] == 1:
+		if (frequency + finishtime) <= now():
 
-		    seed_db.edit(sid, **{"start_time":starttime, "finish_time":finishtime})
-		    log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : finishtime, "`status`" : 1, "message" : "采集成功"})
-		except Exception, e:
-		    log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : now(), "`status`" : 0, "message" : "采集失败, 原因:" + str(e)})
+		    starttime = now()
+		    s = Seed(seed)
+		    try:
+			g = Grab(s)
+			g.push()
+			finishtime = now()
+			next_queue.append(finishtime + frequency)
+
+			seed_db.edit(sid, **{"start_time":starttime, "finish_time":finishtime})
+			log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : finishtime, "`status`" : 1, "message" : "采集成功"})
+		    except Exception, e:
+			log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : now(), "`status`" : 0, "message" : "采集失败, 原因:" + str(e)})
+
+		else:
+		    next_queue.append(finishtime + frequency)
 
 	if len(next_queue) == 0:
 	    next_time = 600
