@@ -97,22 +97,6 @@ class spyder_web:
 	debug = self.app.config.get("DEBUG", False);
 	self.app.run(host, port, debug, **options);
 
-class WebServer(Daemon):
-    def run(self):
-	app = spyder_web();
-	app = app.run(host="0.0.0.0");
-
-
-
-web_server = WebServer(app_dir+"/web.pid")
 if __name__ == "__main__":
-    web_server.run()
-    """
-    import getopt
-    actions = ["start", "stop", "restart"]
-    argv = sys.argv
-
-    if (len(argv) == 2):
-	if (argv[1] in actions):
-	    getattr(web_server, argv[1])()
-    """
+    app = spyder_web();
+    app = app.run(host="0.0.0.0");
