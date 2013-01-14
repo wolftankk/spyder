@@ -169,3 +169,21 @@ def getTagsBySeedId(seed_id):
             ishere = tags_modle.view(tid).list()[0]
             tags.append(ishere)
     return tags
+
+def getFeildIdByTitle(title,fields):
+    guid_rule_datas = title.split(",")
+    guid_rule = []
+    for field in fields:
+        for guid_rule_data in guid_rule_datas:
+            if field.title == guid_rule_data:
+                guid_rule.append(str(field.id))
+    return  ",".join(guid_rule)
+
+def getFeildTitleById(fid,fields):
+    guid_rule_datas = fid.split(",")
+    guid_rule = []
+    for field in fields:
+        for guid_rule_data in guid_rule_datas:
+            if field["id"] == int(guid_rule_data):
+                guid_rule.append(field["title"])
+    return  ",".join(guid_rule)

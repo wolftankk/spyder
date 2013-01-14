@@ -30,6 +30,17 @@ def index(page=1):
                 return redirect(url_for('seeds.index'))
             else:
                 error = "请选择要删除的数据"
+        if action == "enable" or action == "disable":
+            edid = (action == "enable") and 1 or 0
+            sids = request.form.getlist("sid[]")
+            if len(sids) > 0:
+                for sid in sids:
+                    if sid:
+                        save = {"enabled":edid}
+                        seed.edit(sid,**save)
+                return redirect(url_for('seeds.index'))
+            else:
+                error = "请选择要启用的数据"
         return error
     if request.args.get("keywords"):
         filte["seed_name"] = request.args.get("keywords")

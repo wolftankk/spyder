@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- 主机: local.site
--- 生成日期: 2013 年 01 月 11 日 18:40
+-- 生成日期: 2013 年 01 月 14 日 12:26
 -- 服务器版本: 5.5.21
 -- PHP 版本: 5.3.15
 
@@ -112,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `seeds` (
   `sid` int(11) NOT NULL AUTO_INCREMENT,
   `seed_name` varchar(64) NOT NULL,
   `type` enum('article','game','kaifu','kaice','gift','company','gallery') NOT NULL DEFAULT 'article',
-  `base_url` varchar(255) DEFAULT NULL,
+  `guid_rule` varchar(255) DEFAULT NULL,
   `charset` char(10) NOT NULL DEFAULT 'utf-8',
   `lang` char(4) NOT NULL,
   `enabled` tinyint(1) NOT NULL DEFAULT '1',
@@ -126,22 +126,22 @@ CREATE TABLE IF NOT EXISTS `seeds` (
   `start_time` int(11) NOT NULL,
   `finish_time` int(11) NOT NULL,
   PRIMARY KEY (`sid`),
-  UNIQUE KEY `url` (`base_url`)
+  UNIQUE KEY `url` (`guid_rule`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=24 ;
 
 --
 -- 转存表中的数据 `seeds`
 --
 
-INSERT INTO `seeds` (`sid`, `seed_name`, `type`, `base_url`, `charset`, `lang`, `enabled`, `listtype`, `rule`, `frequency`, `timeout`, `tries`, `created_time`, `update_time`, `start_time`, `finish_time`) VALUES
-(2, '开服网新闻', 'article', NULL, 'utf-8', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:55:"http://www.kaifu.com/article-60--0-0-0-0-0-0-$page.html";s:10:"pageparent";s:18:"div[class=''pages'']";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"10";s:7:"filters";s:0:"";s:10:"contenturl";s:76:"div[class=''fl p14 blue news_detailliset lh40'']  a[class=''blue''].attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:10:"listparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:18:"li[class=''b_line'']";}', 7200, 30, 5, 0, 1357631062, 0, 0),
-(20, '开服网开测表', 'kaice', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:36:"http://www.kaifu.com/gametest-0.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:9:"inputLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:0:"";s:10:"listparent";s:16:"div[id=leftlist]";s:9:"startpage";s:1:"1";s:11:"entryparent";s:2:"ul";}', 3600, 10, 5, 1357874593, 1357875408, 0, 0),
-(21, '开服网礼包', 'gift', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:56:"http://ka.kaifu.com/gift-0-0-0-0-0-0-1-0-$page-list.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"22";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:0:"";s:10:"listparent";s:22:"div[class="gift_list"]";s:9:"startpage";s:1:"0";s:11:"entryparent";s:2:"ul";}', 3600, 10, 5, 1357880497, 1357880497, 0, 0),
-(8, '开服网开服', 'kaifu', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:51:"http://kf.kaifu.com/index-0-1-$page----0-0-0-0.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:8:"dateLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:0:"";s:10:"listparent";s:17:"div[id="content"]";s:9:"startpage";s:10:"YYYY-MM-DD";s:11:"entryparent";s:20:"div[id="kflist"] >ul";}', 3600, 5, 5, 1357542329, 1357815910, 0, 0),
+INSERT INTO `seeds` (`sid`, `seed_name`, `type`, `guid_rule`, `charset`, `lang`, `enabled`, `listtype`, `rule`, `frequency`, `timeout`, `tries`, `created_time`, `update_time`, `start_time`, `finish_time`) VALUES
+(2, '开服网新闻', 'article', NULL, 'utf-8', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:55:"http://www.kaifu.com/article-60--0-0-0-0-0-0-$page.html";s:10:"pageparent";s:18:"div[class=''pages'']";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"10";s:7:"filters";s:0:"";s:10:"contenturl";s:76:"div[class=''fl p14 blue news_detailliset lh40'']  a[class=''blue''].attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:10:"listparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:18:"li[class=''b_line'']";}', 7200, 30, 5, 0, 1357631062, 1358132468, 1358132898),
+(20, '开服网开测表', 'kaice', NULL, 'auto', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:36:"http://www.kaifu.com/gametest-0.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:9:"inputLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:0:"";s:10:"listparent";s:16:"div[id=leftlist]";s:9:"startpage";s:1:"1";s:11:"entryparent";s:2:"ul";}', 3600, 10, 5, 1357874593, 1358131137, 1358136512, 1358136520),
+(21, '开服网礼包', 'gift', NULL, 'auto', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:56:"http://ka.kaifu.com/gift-0-0-0-0-0-0-1-0-$page-list.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"22";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:0:"";s:10:"listparent";s:22:"div[class="gift_list"]";s:9:"startpage";s:1:"0";s:11:"entryparent";s:2:"ul";}', 3600, 10, 5, 1357880497, 1358131142, 1358136520, 1358136528),
+(8, '开服网开服', 'kaifu', NULL, 'auto', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:51:"http://kf.kaifu.com/index-0-1-$page----0-0-0-0.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:0:"";s:7:"urltype";s:8:"dateLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:0:"";s:10:"listparent";s:17:"div[id="content"]";s:9:"startpage";s:10:"YYYY-MM-DD";s:11:"entryparent";s:20:"div[id="kflist"] >ul";}', 3600, 5, 5, 1357542329, 1358131149, 1358132908, 1358132930),
 (18, '开服网新闻20130108125238', 'article', NULL, 'utf-8', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:55:"http://www.kaifu.com/article-60--0-0-0-0-0-0-$page.html";s:10:"pageparent";s:18:"div[class=''pages'']";s:7:"maxpage";s:1:"5";s:4:"step";s:2:"10";s:7:"filters";s:0:"";s:10:"contenturl";s:76:"div[class=''fl p14 blue news_detailliset lh40'']  a[class=''blue''].attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:10:"listparent";s:57:"div[class=''fl newsinfo_topline boder_base newsinfo_left'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:18:"li[class=''b_line'']";}', 7200, 30, 5, 1357620758, 1357620758, 0, 0),
-(7, '开服网游戏', 'game', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:62:"http://www.kaifu.com/gamelist-1-0-0-0-0-0-0-0-0-0-1-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:2:"64";s:7:"filters";s:0:"";s:10:"contenturl";s:38:"(p[class=''gl_gname''] > a).attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:50:"div[class=''fl boder_base newsinfo_left game_info'']";s:10:"listparent";s:28:"div[class=''box_line picbox'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:27:"ul[class=''position_div fl'']";}', 3600, 30, 5, 1356075535, 1357813990, 0, 0),
-(22, '开服网运营商', 'company', NULL, 'auto', 'zhCN', 0, 'html', 'a:12:{s:9:"urlformat";s:50:"http://www.kaifu.com/platformlist-0-0-2-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:2:"29";s:4:"step";s:2:"45";s:7:"filters";s:0:"";s:10:"contenturl";s:18:"p > a.attr("href")";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:20:"div[class="ptsport"]";s:10:"listparent";s:33:"div[class=''boxmodel operator''] ul";s:9:"startpage";s:1:"0";s:11:"entryparent";s:2:"li";}', 3600, 10, 5, 1357883479, 1357884369, 0, 0),
-(23, '开服网游戏截图', 'gallery', NULL, 'auto', 'zhCN', 0, 'json', 'a:12:{s:9:"urlformat";s:74:"http://www.kaifu.com/picturebooklet.php?action=getList&type=3&tag=0&page=1";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:3:"url";s:7:"urltype";s:9:"inputLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:21:"div[class="box-list"]";s:10:"listparent";s:0:"";s:9:"startpage";s:1:"1";s:11:"entryparent";s:0:"";}', 3600, 30, 5, 1357884365, 1357897381, 0, 0);
+(7, '开服网游戏', 'game', NULL, 'auto', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:62:"http://www.kaifu.com/gamelist-1-0-0-0-0-0-0-0-0-0-1-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:2:"64";s:7:"filters";s:0:"";s:10:"contenturl";s:38:"(p[class=''gl_gname''] > a).attr(''href'')";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:50:"div[class=''fl boder_base newsinfo_left game_info'']";s:10:"listparent";s:28:"div[class=''box_line picbox'']";s:9:"startpage";s:1:"0";s:11:"entryparent";s:27:"ul[class=''position_div fl'']";}', 3600, 30, 5, 1356075535, 1358131158, 1358132930, 1358133126),
+(22, '开服网运营商', 'company', NULL, 'auto', 'zhCN', 1, 'html', 'a:12:{s:9:"urlformat";s:50:"http://www.kaifu.com/platformlist-0-0-2-$page.html";s:10:"pageparent";s:0:"";s:7:"maxpage";s:2:"29";s:4:"step";s:2:"45";s:7:"filters";s:0:"";s:10:"contenturl";s:18:"p > a.attr("href")";s:7:"urltype";s:10:"createLink";s:4:"zero";s:1:"1";s:13:"contentparent";s:20:"div[class="ptsport"]";s:10:"listparent";s:33:"div[class=''boxmodel operator''] ul";s:9:"startpage";s:1:"0";s:11:"entryparent";s:2:"li";}', 3600, 10, 5, 1357883479, 1358131163, 1358133126, 1358133467),
+(23, '开服网游戏截图', 'gallery', NULL, 'auto', 'zhCN', 1, 'json', 'a:12:{s:9:"urlformat";s:74:"http://www.kaifu.com/picturebooklet.php?action=getList&type=3&tag=0&page=1";s:10:"pageparent";s:0:"";s:7:"maxpage";s:1:"1";s:4:"step";s:1:"1";s:7:"filters";s:0:"";s:10:"contenturl";s:3:"url";s:7:"urltype";s:9:"inputLink";s:4:"zero";s:1:"0";s:13:"contentparent";s:21:"div[class="box-list"]";s:10:"listparent";s:0:"";s:9:"startpage";s:1:"1";s:11:"entryparent";s:0:"";}', 3600, 30, 5, 1357884365, 1358131168, 1358133467, 1358133475);
 
 -- --------------------------------------------------------
 
@@ -246,7 +246,29 @@ CREATE TABLE IF NOT EXISTS `seed_logs` (
   `status` tinyint(2) NOT NULL,
   `message` text NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=17 ;
+
+--
+-- 转存表中的数据 `seed_logs`
+--
+
+INSERT INTO `seed_logs` (`id`, `sid`, `start_time`, `finish_time`, `status`, `message`) VALUES
+(1, 2, 1358131081, 1358131506, 1, '采集成功'),
+(2, 20, 1358131715, 1358131717, 1, '采集成功'),
+(3, 21, 1358131717, 1358131724, 1, '采集成功'),
+(4, 8, 1358131724, 1358131750, 1, '采集成功'),
+(5, 7, 1358131750, 1358131936, 1, '采集成功'),
+(6, 22, 1358131936, 1358132206, 1, '采集成功'),
+(7, 23, 1358132206, 1358132214, 1, '采集成功'),
+(8, 2, 1358132468, 1358132898, 1, '采集成功'),
+(9, 20, 1358132898, 1358132901, 1, '采集成功'),
+(10, 21, 1358132901, 1358132908, 1, '采集成功'),
+(11, 8, 1358132908, 1358132930, 1, '采集成功'),
+(12, 7, 1358132930, 1358133126, 1, '采集成功'),
+(13, 22, 1358133126, 1358133467, 1, '采集成功'),
+(14, 23, 1358133467, 1358133475, 1, '采集成功'),
+(15, 20, 1358136512, 1358136520, 1, '采集成功'),
+(16, 21, 1358136520, 1358136528, 1, '采集成功');
 
 -- --------------------------------------------------------
 
@@ -323,8 +345,8 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 
 INSERT INTO `users` (`uid`, `username`, `passwd`, `email`, `permissions`, `salt`, `createtime`, `lastlogintime`) VALUES
-(10, 'admin', '13dbcde8ab9b640d6d725b57750ab3d6', 'admin@admin.com', 'administrator', 'gWT3', 0, 1357820075),
-(11, 'fireyy', '793d2dd8ac95f086666650518c69665d', 'fireyy@admin.com', 'administrator', 'at2Y', 1356060783, 1357882879);
+(10, 'admin', '13dbcde8ab9b640d6d725b57750ab3d6', 'admin@admin.com', 'administrator', 'gWT3', 0, 1358134681),
+(11, 'fireyy', '793d2dd8ac95f086666650518c69665d', 'fireyy@admin.com', 'administrator', 'at2Y', 1356060783, 1358130133);
 
 -- --------------------------------------------------------
 
@@ -348,7 +370,7 @@ CREATE TABLE IF NOT EXISTS `websites` (
 --
 
 INSERT INTO `websites` (`id`, `name`, `descript`, `url`, `sync_type`, `sync_profile`, `status`) VALUES
-(1, 'CMDP', 'CMDP站点的入库配置', 'http://www.dbplay.com', 'mysql', 'a:16:{s:14:"mysql_password";s:0:"";s:10:"ftp_server";s:13:"58.222.24.174";s:8:"ftp_port";s:4:"2012";s:12:"ftp_username";s:4:"cmdp";s:12:"mysql_dbname";s:7:"cmdp2.0";s:10:"staticType";s:6:"aliyun";s:12:"mysql_prefix";s:0:"";s:9:"access_id";s:40:"wwcO42sOUjCFm7qVQId6a6dAHSglHIG4wgs_JErW";s:8:"ftp_path";s:1:"/";s:12:"ftp_password";s:9:"il@veCMDP";s:9:"staticUrl";s:26:"http://cdn.img.qiniudn.com";s:14:"mysql_username";s:4:"root";s:12:"mysql_server";s:12:"192.168.1.67";s:17:"secret_access_key";s:40:"62Be9PyMh6bAPvIHQkIr1-FOGku8t84NI3zkUf9E";s:9:"hook_func";s:5:"kaifu";s:7:"api_url";s:0:"";}', 0);
+(1, 'CMDP', 'CMDP站点的入库配置', 'http://cmdp.58apps.com', 'mysql', 'a:16:{s:14:"mysql_password";s:16:"CTCBxwJNHusBC4f6";s:10:"ftp_server";s:13:"58.222.24.174";s:8:"ftp_port";s:4:"2012";s:12:"ftp_username";s:4:"cmdp";s:12:"mysql_dbname";s:4:"cmdp";s:10:"staticType";s:6:"aliyun";s:12:"mysql_prefix";s:0:"";s:9:"access_id";s:40:"wwcO42sOUjCFm7qVQId6a6dAHSglHIG4wgs_JErW";s:8:"ftp_path";s:1:"/";s:12:"ftp_password";s:9:"il@veCMDP";s:9:"staticUrl";s:26:"http://cdn.img.qiniudn.com";s:14:"mysql_username";s:6:"spyder";s:12:"mysql_server";s:13:"58.222.24.171";s:17:"secret_access_key";s:40:"62Be9PyMh6bAPvIHQkIr1-FOGku8t84NI3zkUf9E";s:9:"hook_func";s:5:"kaifu";s:7:"api_url";s:0:"";}', 0);
 
 -- --------------------------------------------------------
 

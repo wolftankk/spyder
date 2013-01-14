@@ -2,7 +2,7 @@
 from flask import Module, url_for, g, session, current_app, request, redirect, make_response
 from flask import render_template
 from libs import phpserialize
-from web.helpers import auth, getSeedFieldsBySid, checkboxVal
+from web.helpers import auth, getSeedFieldsBySid, checkboxVal, getFeildIdByTitle, getFeildTitleById
 from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
 import time
 
@@ -42,11 +42,13 @@ def add():
             "update_time": time1,
             "rule": phpserialize.dumps(list1)
         }
+        fields = field.list(save["type"])
+        guid_rule_datas = request.form.get("guid_rule")
+        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,fields)
         seed = Seed(current_app)
         sid = seed.add(**save)
         if sid:
             seed_field = Seed_fields(current_app)
-            fields = field.list(save["type"])
             #page_types = request.form.getlist("page_type[]")
             for field in fields:
                 seed_value = {}
@@ -158,10 +160,12 @@ def edit(seed_id):
             "update_time": time1,
             "rule": phpserialize.dumps(list1)
         }
-        seed = Seed(current_app)
-        msg = seed.edit(sid, **save)
         field = Field(current_app)
         fields = field.list(save["type"])
+        guid_rule_datas = request.form.get("guid_rule")
+        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,fields)
+        seed = Seed(current_app)
+        msg = seed.edit(sid, **save)
         seed_field = Seed_fields(current_app)
         for field in fields:
             field_data = seed_field.view(sid, field.id).list()
@@ -213,6 +217,11 @@ def edit(seed_id):
         seed_data["frequency"] = float(seed_data["frequency"])/float(3600)
         if seed_data["rule"]:
             seed_data["rule"] = phpserialize.loads(seed_data["rule"])
+        #获取GUID规则
+        print seed_data["guid_rule"]
+        if seed_data["guid_rule"]:
+            seed_data["guid_rule"] = getFeildTitleById(seed_data["guid_rule"],seed_field)
+        print seed_data["guid_rule"]
         #取出标签
         seed_tag = Seed_tag(current_app)
         tags_model = Tags(current_app)

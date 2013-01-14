@@ -12,16 +12,16 @@
         <label for="seed_name" class="typecho-label">名称</label>
         <p><input type="text" id="seed_name" name="seed_name" value="{{ seed_data.seed_name|default('',true) }}" class="text" /></p>
         <label for="base_url" class="typecho-label">链接 (<a href="#">?</a>)</label>
-        <p><textarea style="width:700px;height: 45px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
+        <p><textarea style="width:700px;height: {{ size }}px" autocomplete="off" id="urlformat" name="urlformat">{{ seed_data.rule.urlformat|default('',true) }}</textarea></p>
         <p class="description"><a href="javascript:openWin('/seed/addlink/');">添加链接</a></p>
         <label for="base_url" class="typecho-label">GUID 规则 (<a href="#">?</a>)</label>
         <p>
           可用标签：
           {% for field in fields %}
-          <a href="javascript:;" rel="{{ field.name }}">[{{ field.title }}]</a>
+          <a href="javascript:;" rel="field_tags">{{ field.title }}</a>, 
           {% endfor %}
         </p>
-        <p><textarea style="width:700px;height: {{ size }}px" autocomplete="off" id="guid_rule" name="guid_rule">{{ seed_data.guid_rule|default('',true) }}</textarea></p>
+        <p><input type="text" id="guid_rule" name="guid_rule" value="{{ seed_data.guid_rule|default('',true) }}" class="text" /></p>
         <div id="forHTML">
           <label for="" class="typecho-label">列表页父节点</label>
           <p><input type="text" name="listparent" value="{{ seed_data.rule.listparent|default('',true) }}" class="text" /></p>
@@ -138,7 +138,21 @@
 </div>
 <script type="text/javascript">
 (function () {
+    var textEditor = new Typecho.textarea('#urlformat', {
+        resizeAble: true,
+        autoSave: false,
+        resizeUrl: '{{ url_for("seed.autosave") }}'
+    });
+    var insertTagToEditor = function (title) {
+        var ta = $(document).getElement('#guid_rule');
+        ta.focus();
+        ta.set("value", ta.get("value")+title+",");
+    };
     window.addEvent('domready', function() {
+
+        $$("[rel=field_tags]").addEvent("click", function(){
+          if($(this).get("text")) insertTagToEditor($(this).get("text"));
+        })
         /** 标签自动完成 */
         var _tags = [];
         if($("alltags")){
@@ -149,11 +163,5 @@
         Typecho.autoComplete('#tags', _tags);
     });
 })();
-
-var textEditor = new Typecho.textarea('#guid_rule', {
-    resizeAble: true,
-    autoSave: false,
-    resizeUrl: '{{ url_for("seed.autosave") }}'
-});
 </script>
 {% endblock %}
