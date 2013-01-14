@@ -5,8 +5,8 @@ import base64
 import hmac
 import time
 from hashlib import sha1 as sha
+import hashlib
 import os
-import md5
 import StringIO
 from oss_xml_handler import *
 
@@ -659,7 +659,7 @@ def split_large_file(file_path, object_prefix = "", max_part_num = 1000, part_si
         for i in range(0, part_num):
             left_len = part_size
             real_part_size = 0 
-            m = md5.new()
+            m = hashlib.md5()
             offset = part_size * i
             while True:
                 read_size = 0
@@ -698,7 +698,7 @@ def split_large_file(file_path, object_prefix = "", max_part_num = 1000, part_si
 
 def sumfile(fobj):
     '''Returns an md5 hash for an object with read() method.'''
-    m = md5.new()
+    m = hashlib.md5()
     while True:
         d = fobj.read(8096)
         if not d:
@@ -720,7 +720,7 @@ def md5sum(fname):
     return ret
 
 def md5sum2(filename, offset = 0, partsize = 0):
-    m = md5.new()
+    m = hashlib.md5()
     fp = open(filename, 'rb')
     if offset > os.path.getsize(filename):
         fp.seek(os.SEEK_SET, os.SEEK_END)

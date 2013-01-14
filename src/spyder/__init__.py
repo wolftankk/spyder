@@ -48,6 +48,7 @@ def run():
 	else:
 	    next_time = min(next_queue) - now()
 
+	print "进入Idle状态, 下次启动需要等待:", next_time
 	time.sleep(next_time)
 
 	run()
