@@ -13,7 +13,7 @@ from web.config import DefaultConfig
 from web import model
 from web import helpers
 from libs.daemon import Daemon
-from datetime import date
+from datetime import datetime
 
 app_dir = os.path.dirname(os.path.abspath(__file__))
 
@@ -69,7 +69,7 @@ class spyder_web:
 
 	@self.app.template_filter()
 	def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
-		return date.fromtimestamp(value).strftime(format)
+		return datetime.fromtimestamp(value).strftime(format)
 
 	@self.app.context_processor
 	def utility_processor():

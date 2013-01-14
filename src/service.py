@@ -22,12 +22,9 @@ def help():
 actions = ["start", "stop", "restart"]
 
 class WebServer(Daemon):
-    pass
-    """
     def run(self):
 	app = application.spyder_web();
 	app = app.run(host="0.0.0.0");
-    """
 
 class SpiderServer(Daemon):
     def run(self):

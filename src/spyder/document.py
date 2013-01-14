@@ -171,6 +171,11 @@ class Grab(object):
 	    rule = seed.getRule();
 	    listtype = seed["listtype"]
 
+	    if seed.guid_rule is None:
+		self.guid_rule = "url"
+	    else:
+		self.guid_rule = seed.guid_rule
+
 	    if listtype == "feed":
 		self.parseFeed();
 	    elif listtype == "html" or listtype == "json":
@@ -465,9 +470,9 @@ if __name__ == "__main__":
     #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
 
     #游戏开服
-    #r = db.view(8);
-    #seed = Seed(r.list()[0])
-    #kaifus = Grab(seed)
+    r = db.view(8);
+    seed = Seed(r.list()[0])
+    kaifus = Grab(seed)
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
@@ -491,7 +496,7 @@ if __name__ == "__main__":
     #c.push()
 
     #图库
-    r = db.view(23)
-    seed = Seed(r.list()[0])
+    #r = db.view(23)
+    #seed = Seed(r.list()[0])
     #gas = Grab(seed)
     #gas.push()
