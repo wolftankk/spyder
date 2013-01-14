@@ -34,7 +34,7 @@
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
           <p>
-            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 480px;" />
+            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 450px;" />
             {% if page_types %}
             &nbsp;&nbsp;页面：
             <select class="typecho-charset" name="page_type_{{ field.name }}">
@@ -44,6 +44,7 @@
             </select>
             {% endif %}
             <label><input type="checkbox" name="fetch_all_{{ field.name }}" value="1"{% if field.fetch_all == 1 %} checked="true"{% endif %}> 匹配所有</label>
+            <a href="javascript:;" class="filter_button" data-fid="{{ field.id }}">高级&gt;&gt;</a>
           </p>
           {% endfor %}
         </div>
@@ -148,11 +149,17 @@
         ta.focus();
         ta.set("value", ta.get("value")+title+",");
     };
+    function filter_config(fid){
+      openWin('/seed/set_filter/'+fid+"/");
+    }
     window.addEvent('domready', function() {
 
         $$("[rel=field_tags]").addEvent("click", function(){
           if($(this).get("text")) insertTagToEditor($(this).get("text"));
-        })
+        });
+        $$(".filter_button").addEvent("click", function(){
+          filter_config($(this).get("data-fid"));
+        });
         /** 标签自动完成 */
         var _tags = [];
         if($("alltags")){

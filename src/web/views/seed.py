@@ -238,3 +238,8 @@ def edit(seed_id):
 @auth
 def delete(seed_id):
     return seed_id
+
+@seed.route("/set_filter/<int:field_id>/")
+@auth
+def set_filter(field_id):
+    return render_template("seed/filter.html");
