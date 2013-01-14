@@ -37,11 +37,11 @@
         <col width="25">
         <col width="50">
         <col width="30">
-        <col width="230">
+        <col width="180">
         <col width="30">
         <col width="110">
         <col width="205">
-        <col width="150">
+        <col width="200">
         <col width="50">
       </colgroup>
       <thead>
@@ -53,7 +53,7 @@
           <th> </th>
           <th>采集量</th>
           <th>标签</th>
-          <th>日期</th>
+          <th>采集状态</th>
           <th class="typecho-radius-topright"> </th>
         </tr>
       </thead>
@@ -76,7 +76,7 @@
             <a href="#{{ tag['id'] }}">{{ tag["name"] }}</a>
             {% endfor %}
           </td>
-          <td>{{ seed.update_time|timesince }}</td>
+          <td>上次采集：{{ seed.start_time|timesince }}<br />下次采集：{{ (seed.finish_time+seed.frequency)|datetimeformat("%Y-%m-%d %H:%I") }}</td>
           <td><a href="/seed/copynew/{{ seed.sid }}">复制</a></td>
         </tr>
         {% endfor %}
