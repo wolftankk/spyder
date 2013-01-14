@@ -158,7 +158,7 @@ g[guid]
 """
 class Grab(object):
     dont_craw_content = [
-	'kaifu', 'kaice', "gift"    
+	'kaifu', 'kaice', "gift"
     ]
 
     def __init__(self, seed):
