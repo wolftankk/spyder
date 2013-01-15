@@ -463,16 +463,16 @@ if __name__ == "__main__":
     #articles.push()
 
     #游戏测试
-    #r = db.view(7);
-    #seed = Seed(r.list()[0])
-    #games= Grab(seed)
+    r = db.view(7);
+    seed = Seed(r.list()[0])
+    games= Grab(seed)
     #games.push()
-    #print games[md5("http://www.kaifu.com/gameinfo-longj.html").hexdigest()]
+    print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
 
     #游戏开服
-    r = db.view(8);
-    seed = Seed(r.list()[0])
-    kaifus = Grab(seed)
+    #r = db.view(8);
+    #seed = Seed(r.list()[0])
+    #kaifus = Grab(seed)
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
@@ -496,7 +496,8 @@ if __name__ == "__main__":
     #c.push()
 
     #图库
-    #r = db.view(23)
-    #seed = Seed(r.list()[0])
-    #gas = Grab(seed)
+    r = db.view(23)
+    seed = Seed(r.list()[0])
+    gas = Grab(seed)
+    print gas.__class__
     #gas.push()

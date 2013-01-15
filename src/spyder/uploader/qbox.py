@@ -35,15 +35,9 @@ class qbox():
 	    self.init_tokent()
 
     def upload(self, file_path, path):
-	'''
-	    文件存放路径
-	    path 上传的路径
-	'''
-	print "enter upload ", path
 	resp = rscli.UploadFile(self.bucket, path, '', file_path, '', '', self.uploadToken)
-	print resp
-	if resp:
-	    print "%s upload success!" % path
+	if resp and "hash" in resp:
 	    os.unlink(file_path)
+	    return True
 	else:
-	    print path, "failed"
+	    return False
