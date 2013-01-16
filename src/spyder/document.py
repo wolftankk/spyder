@@ -463,11 +463,11 @@ if __name__ == "__main__":
     #articles.push()
 
     #游戏测试
-    r = db.view(7);
-    seed = Seed(r.list()[0])
-    games= Grab(seed)
-    #games.push()
-    print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
+    #r = db.view(7);
+    #seed = Seed(r.list()[0])
+    #games= Grab(seed)
+    ##games.push()
+    #print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
 
     #游戏开服
     #r = db.view(8);
@@ -499,5 +499,4 @@ if __name__ == "__main__":
     r = db.view(23)
     seed = Seed(r.list()[0])
     gas = Grab(seed)
-    print gas.__class__
-    #gas.push()
+    gas.push()

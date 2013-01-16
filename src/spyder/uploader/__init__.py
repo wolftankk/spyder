@@ -5,9 +5,6 @@ from multiprocessing import Pool, TimeoutError
 from .qbox import qbox
 from .aliyun import aliyun
 from .ftp import ftp
-#from collections import deque
-
-#upload_queue = deque()
 
 class UnknownUploader(Exception):
     pass

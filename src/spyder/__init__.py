@@ -52,6 +52,8 @@ def run():
 	    next_time = 600
 	else:
 	    next_time = min(next_queue) - now()
+	    if next_time <= 0:
+		next_time = 600
 
 	print "进入Idle状态, 下次启动需要等待:", next_time
 	time.sleep(next_time)
