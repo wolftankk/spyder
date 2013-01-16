@@ -5,21 +5,26 @@
   <title>种子测试</title>
   <style type="text/css">
   div { margin: 0 0 10px; }
-  .name { color: #000;font-weight:bold;background: #aaa;line-height: 24px;text-indent: 5px; }
+  li { margin: 5px 0;}
   .value { max-height: 200px; overflow-y: auto; }
   </style>
 </head>
 <body>
   {% if items %}
-  <h2>以下列出来源页面的一条数据：</h2>
-    {% for item in items.fields %}
-    <div class="name">{{ fields[item] }}: </div>
-    <div class="value">
-      {% autoescape false %}
-      {{ items.fields[item].value }}
-      {% endautoescape %}
-    </div>
+    <h2>共采集到链接 {{ num }} 条：</h2>
+    <ul>
+    {% for item in items %}
+    {% if seed_type in dont_craw_content %}
+      <li>
+      {% for data in items[item] %}
+      {{ items[item][data] }}   
+      {% endfor %}
+      </li>
+    {% else %}
+    <li><a href="/test_seed/view/{{ seed_id }}/{{ item }}">{{ items[item]["url"] }}</a> <a href="{{ items[item]["url"] }}" target="_blank">查看原文</a></li>
+    {% endif %}
     {% endfor %}
+    </ul>
   {% endif %}
 </body>
 </html>

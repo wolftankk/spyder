@@ -2,7 +2,7 @@
 from flask import Module, url_for, g, session, current_app, request, redirect, make_response
 from flask import render_template
 from libs import phpserialize
-from web.helpers import auth, getSeedFieldsBySid, checkboxVal, getFeildIdByTitle, getFeildTitleById
+from web.helpers import *
 from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
 import time
 
@@ -74,9 +74,12 @@ def add():
                     ishere = seed_tag.view(sid,tid).list() 
                     if len(ishere) == 0:
                         seed_tag.add(sid=sid, tid=tid)
-        return redirect(url_for("seeds.index"));
+        url = getReferer()
+        url = url and url or url_for("seeds.index")
+        return redirect(url);
     fields = field.getSeedType()
     if request.method == "GET" and request.args.get("type"):
+        setReferer()
         size = request.cookies.get("editorSize")
         if not size:
             size = 50
@@ -117,7 +120,8 @@ def copynew(seed_id):
         if sid:
             seed_fields = Seed_fields(current_app)
             seed_fields.copynew(seed_id,sid)
-    return redirect(url_for('seeds.index'))
+    url = request.referrer and request.referrer or url_for('seeds.index')
+    return redirect(url)
 
 @seed.route("/addlink/")
 @auth
@@ -203,8 +207,11 @@ def edit(seed_id):
                     seed_tag.add(sid=sid, tid=tid)
         for k in del_tags_data:
             seed_tag.remove(del_tags_data[k]["sid"],del_tags_data[k]["tid"])
-        return redirect(url_for("seeds.index"))
+        url = getReferer()
+        url = url and url or url_for("seeds.index")
+        return redirect(url)
     if request.method == "GET" and seed_id > 0:
+        setReferer()
         size = request.cookies.get("editorSize")
         if not size:
             size = 50

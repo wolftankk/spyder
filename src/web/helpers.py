@@ -3,7 +3,7 @@
 import re, urlparse, random
 from datetime import datetime
 
-from flask import current_app, g, session, redirect, url_for, request
+from flask import current_app, g, session, redirect, url_for, request, make_response
 import functools
 from web.models import Field, Seed_fields, Seed_tag, Tags
 #from flaskext.themes import static_file_url, render_theme_template
@@ -23,6 +23,24 @@ from web.models import Field, Seed_fields, Seed_tag, Tags
 #    if rv.startswith("www."):
 #        rv = rv[4:]
 #    return rv
+
+__all__ = [
+    'auth', 
+    "getSiteStatus", 
+    "getPageTypeText",
+    "getSeedTypeText",
+    "timesince",
+    "getSeedFieldsBySid",
+    "getSeedFieldsByType",
+    "checkboxVal",
+    "createSalt",
+    "getTagsBySeedId",
+    "getFeildIdByTitle",
+    "getFeildTitleById",
+    "setReferer",
+    "getReferer",
+    "clearReferer",
+]
 
 def auth(func):
     @functools.wraps(func)
@@ -187,3 +205,13 @@ def getFeildTitleById(fid,fields):
             if field["id"] == int(guid_rule_data):
                 guid_rule.append(field["title"])
     return  ",".join(guid_rule)
+
+def setReferer():
+    session["myreferer"] = request.referrer
+    return session["myreferer"]
+
+def getReferer():
+    return session["myreferer"]
+
+def clearReferer():
+    return session.pop("myreferer", None)
