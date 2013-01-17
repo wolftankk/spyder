@@ -10,6 +10,7 @@ from libs.db import MySQLDB, sqlquote, sqlwhere, SQLQuery
 from flask import g, current_app
 from hashlib import md5
 
+dbs = {}
 class Model(object):
     """
     custom user model
@@ -28,11 +29,16 @@ class Model(object):
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name
 
-	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'], connect_timeout=30)
+	guid = md5(config['db']+config['host']).hexdigest()
+	if guid not in dbs:
+	    self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'], connect_timeout=30)
+	    dbs[guid] = self.db
+	else:
+	    self.db = dbs[guid]
+	    if not self.db.ctx.db.open:
+		#update stat
+		self.db.ctx.db = self.db._connect(self.db.keywords)
 
-    def __del__(self):
-	if self.db and self.db.ctx and self.db.ctx.get('db'):
-	    self.db.ctx.db.close()
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
 	'''
@@ -171,9 +177,9 @@ if __name__ == "__main__":
     from time import sleep
 
     for i in range(1000000):
-	sleep(1)
 	t = Test()
 	l = t.get_primary()
+	t.db.ctx.db.close()
 
     #a = t.count('1')
     #print a
