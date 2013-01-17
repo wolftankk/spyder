@@ -35,23 +35,19 @@
     <table class="typecho-list-table">
       <colgroup>
         <col width="25">
-        <col width="50">
-        <col width="30">
-        <col width="180">
-        <col width="30">
+        <col width="80">
+        <col width="210">
         <col width="110">
-        <col width="205">
-        <col width="200">
+        <col width="180">
+        <col width="225">
         <col width="50">
       </colgroup>
       <thead>
         <tr>
           <th class="typecho-radius-topleft"> </th>
           <th>状态</th>
-          <th></th>
           <th>标题</th>
-          <th> </th>
-          <th>采集量</th>
+          <th>测试采集</th>
           <th>标签</th>
           <th>采集状态</th>
           <th class="typecho-radius-topright"> </th>
@@ -61,7 +57,7 @@
         {% for seed in seeds %}
   	    <tr class="even " id="post-1">
           <td><input type="checkbox" value="{{ seed.sid }}" name="sid[]"></td>
-          <td colspan="2">
+          <td>
             {% if seed.enabled %}
             <span class="balloon st0">启用</span>
             {% else %}
@@ -69,8 +65,7 @@
             {% endif %}
           </td>
           <td><a href="/seed/edit/{{ seed.sid }}">{{ seed.seed_name }}</a></td>
-          <td><a class="right hidden-by-mouse" href="/test_seed/list/{{ seed.sid }}" target="_blank"><img src="/static/images/view.gif" title="测试采集" width="16" height="16" alt="view"></a></td>
-          <td><a href="#" class="balloon-button size-10" title="查看最近采集的数据">0</a></td>
+          <td><a href="/test_seed/list/{{ seed.sid }}" target="_blank" class="balloon-button size-10">测试采集</a></td>
           <td>
             {% for tag in seed["tags"] %}
             <a href="#{{ tag['id'] }}">{{ tag["name"] }}</a>

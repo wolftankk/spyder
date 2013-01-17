@@ -27,7 +27,8 @@ def index(page=1):
                     if sid:
                         seed.remove(sid)
                         seed_fields.remove(sid)
-                return redirect(url_for('seeds.index'))
+                url = request.referrer and request.referrer or url_for('seeds.index')
+                return redirect(url)
             else:
                 error = "请选择要删除的数据"
         if action == "enable" or action == "disable":
@@ -38,7 +39,8 @@ def index(page=1):
                     if sid:
                         save = {"enabled":edid}
                         seed.edit(sid,**save)
-                return redirect(url_for('seeds.index'))
+                url = request.referrer and request.referrer or url_for('seeds.index')
+                return redirect(url)
             else:
                 error = "请选择要启用的数据"
         return error
@@ -54,7 +56,7 @@ def index(page=1):
     for seed_item in seeds1:
         seed_item["tags"] = getTagsBySeedId(seed_item["sid"])
         seeds.append(seed_item)
-    count = seed.totalcount()
+    count = seed.totalcount(filte)
     pagination = Pagination(page, PER_PAGE, count)
     fields = field.getSeedType()
     return render_template("seed/list.html", pagination=pagination, seeds=seeds, fields=fields, seed_type=seed_type)

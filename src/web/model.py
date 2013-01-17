@@ -91,11 +91,15 @@ class Model(object):
 
 
     def count(self, where=None):
-	query = self.get_one(where, what="COUNT(*) AS NUM");
-	if query:
-	    return query["NUM"];
-	else:
-	    return 0;
+        if (isinstance(where, dict)):
+            where = sqlwhere(where)
+        if not where:
+            where = None
+    	query = self.get_one(where, what="COUNT(*) AS NUM");
+    	if query:
+    	    return query["NUM"];
+    	else:
+    	    return 0;
 
     def affected_rows():
 	'''

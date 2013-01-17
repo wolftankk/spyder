@@ -57,5 +57,5 @@ class Seed(Model):
         end = per_page
 	return self.select(where=filte, limit=str(end), offset=start)
     
-    def totalcount(self):
-	return self.count()
+    def totalcount(self, filte=None):
+	return self.count(filte)
