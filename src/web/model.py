@@ -10,7 +10,6 @@ from libs.db import MySQLDB, sqlquote, sqlwhere, SQLQuery
 from flask import g, current_app
 from hashlib import md5
 
-dbs = {}
 class Model(object):
     """
     custom user model
@@ -29,11 +28,11 @@ class Model(object):
 	self.table_prefix = config['table_prefix']
 	self._table_name = self.table_prefix + self._table_name
 
-	guid = md5(config['db']+config['host']).hexdigest()
-	if guid not in dbs:
-	    dbs[guid] = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'], connect_timeout=30)
+	self.db = MySQLDB(db = config['db'], user=config['user'], passwd=config['passwd'], host=config['host'], connect_timeout=30)
 
-	self.db = dbs[guid]
+    def __del__(self):
+	if self.db and self.db.ctx and self.db.ctx.get('db'):
+	    self.db.ctx.db.close()
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
 	'''
@@ -154,7 +153,7 @@ if __name__ == "__main__":
 		"db" : "spyder",
 		'user' : "root",
 		"passwd" : "",
-		"host" : "192.168.1.136"
+		"host" : "127.0.0.1"
 	    }	    
 	}
 
@@ -164,9 +163,14 @@ if __name__ == "__main__":
 	    Model.__init__(self)
 
 
-    t = Test()
-    l = t.get_primary()
-    print l
+
+    from time import sleep
+
+    for i in range(1000000):
+	sleep(1)
+	t = Test()
+	l = t.get_primary()
+
     #a = t.count('1')
     #print a
     #l = a.list()
