@@ -12,3 +12,11 @@ class Seed_log(Model):
 	self.db_setting = 'default'
 	self._table_name = 'seed_logs'
 	Model.__init__(self)
+
+    def list(self, page, per_page, filte, order):
+     	start = (page - 1) * per_page
+        end = per_page
+        return self.select(where=filte, limit=str(end), order=order, offset=start)
+    
+    def totalcount(self, filte=None):
+        return self.count(filte)

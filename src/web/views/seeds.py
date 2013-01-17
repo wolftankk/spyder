@@ -4,7 +4,7 @@ from flask import render_template
 from web.helpers import auth, getTagsBySeedId
 from web.models import Seed, Pagination, Field, Seed_fields
 
-PER_PAGE = 10
+PER_PAGE = 20
 
 seeds = Module(__name__)
 

@@ -64,7 +64,7 @@
             <span class="balloon st3">禁用</span>
             {% endif %}
           </td>
-          <td><a href="/seed/edit/{{ seed.sid }}">{{ seed.seed_name }}</a></td>
+          <td><a href="/seed/edit/{{ seed.sid }}">{{ seed.seed_name }}</a><a class="right hidden-by-mouse" href="{{ url_for('home.seed_logs', seed_id=seed.sid) }}" target="_blank"><img src="/static/images/view.gif" title="查看采集日志" width="16" height="16" alt="view" /></a></td>
           <td><a href="/test_seed/list/{{ seed.sid }}" target="_blank" class="balloon-button size-10">测试采集</a></td>
           <td>
             {% for tag in seed["tags"] %}
