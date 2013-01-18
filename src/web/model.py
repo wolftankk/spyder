@@ -36,7 +36,8 @@ class Model(object):
 	else:
 	    self.db = dbs[guid]
 	    if not self.db.ctx.db.open:
-		#update stat
+		self.db.ctx.db = self.db._connect(self.db.keywords)
+	    elif self.db.ctx.db.errno == 2006:
 		self.db.ctx.db = self.db._connect(self.db.keywords)
 
 
