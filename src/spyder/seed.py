@@ -227,7 +227,7 @@ class RuleList(object):
 
 	    urlformat = string.Template(urlformat);
 
-	    for i in range(startpage, maxpage+1):
+	    for i in range(startpage, maxpage + startpage):
 	        url = urlformat.substitute(page=(i*step));
 	        listUrls.append(url)
 	    
