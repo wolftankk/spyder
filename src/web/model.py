@@ -40,7 +40,7 @@ class Model(object):
     def _reconnection(self):
 	if not self.db.ctx.db.open:
 	    self.db.ctx.db = self.db._connect(self.db.keywords)
-	elif self.db.ctx.db.errno == 2006:
+	elif self.db.ctx.db.errno() == 2006:
 	    self.db.ctx.db = self.db._connect(self.db.keywords)
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
