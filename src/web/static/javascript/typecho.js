@@ -92,6 +92,7 @@ Typecho.Table = {
             .each(function(b) {
             Typecho.Table.table = b;
             Typecho.Table.draggable = b.hasClass("draggable");
+            b._reflow = false;
             Typecho.Table.bindButtons();
             Typecho.Table.reset()
         })
@@ -99,7 +100,7 @@ Typecho.Table = {
     reset: function() {
         var c = Typecho.Table.table;
         Typecho.Table.draggedEl = null;
-        if ("undefined" == typeof(c._childTag)) {
+        if ("undefined" == typeof(c._childTag) || c._reflow) {
             switch (c.get("tag")) {
             case "ul":
                 c._childTag = "li";
@@ -113,15 +114,17 @@ Typecho.Table = {
             var b = c.getElements(c._childTag + " input[type=checkbox]")
                 .each(function(d) {
                 d._parent = d.getParent(Typecho.Table.table._childTag);
+                d.removeEvent("click", Typecho.Table.checkBoxClick);
                 d.addEvent("click", Typecho.Table.checkBoxClick)
             })
         }
+        //console.log(c._childTag);
         var a = c.getElements(c._childTag + ".even")
             .length > 0;
         c.getElements(c._childTag)
             .filter(function(e, d) {
-            return "tr" != e.get("tag") || 0 == e.getChildren("th")
-                .length
+            return 0 == e.getChildren("th").length
+            //return "tr" != e.get("tag") || 0 == e.getChildren("th").length
         })
             .each(function(e, d) {
             if (a) {
@@ -183,10 +186,16 @@ Typecho.Table = {
         }
     },
     itemMouseDown: function(a) {
-        if (!Typecho.Table.draggedEl) {
-            Typecho.Table.draggedEl = this;
-            Typecho.Table.draggedFired = false;
-            return false
+        if (!Typecho.Table.draggedEl && "undefined" != typeof(a)) {
+            var c = $(this)
+                .getElement("input[type=checkbox]"),
+                b = $(a.target);
+            /* fix input type can not foucs and input text */
+            if (c && ("a" != b.get("tag") && ("input" != b.get("tag") || ("text" != b.get("type") && "button" != b.get("type") && "submit" != b.get("type"))) && "textarea" != b.get("tag") && "label" != b.get("tag") && "img" != b.get("tag") && "button" != b.get("tag"))) {
+                Typecho.Table.draggedEl = this;
+                Typecho.Table.draggedFired = false;
+                return false
+            }
         }
     },
     itemMouseMove: function(a) {
