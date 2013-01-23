@@ -47,7 +47,8 @@ def auth(func):
         
     def wrap(*args, **kwargs):
         error = None
-        if ("uid" in session and not isinstance(session["uid"], int) and session["uid"] <= 0) or ("uid" not in session):
+        #if ("uid" in session and not isinstance(session["uid"], int) and session["uid"] <= 0) or ("uid" not in session):
+        if not session.get('uid'):
             error = u'请登录'
             return redirect(url_for('user.login', error=error))
         return func(*args, **kwargs)
@@ -188,7 +189,9 @@ def getTagsBySeedId(seed_id):
             tags.append(ishere)
     return tags
 
-def getFeildIdByTitle(title,fields):
+def getFeildIdByTitle(title,seed_type):
+    field = Field(current_app)
+    fields = field.list(seed_type)
     guid_rule_datas = title.split(",")
     guid_rule = []
     for field in fields:
@@ -197,7 +200,9 @@ def getFeildIdByTitle(title,fields):
                 guid_rule.append(str(field.id))
     return  ",".join(guid_rule)
 
-def getFeildTitleById(fid,fields):
+def getFeildTitleById(fid,seed_type):
+    field = Field(current_app)
+    fields = field.list(seed_type)
     guid_rule_datas = fid.split(",")
     guid_rule = []
     for field in fields:

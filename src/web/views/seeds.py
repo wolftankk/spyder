@@ -2,7 +2,7 @@
 from flask import Module, url_for, g, session, current_app, request, redirect
 from flask import render_template
 from web.helpers import auth, getTagsBySeedId
-from web.models import Seed, Pagination, Field, Seed_fields
+from web.models import Seed, Pagination, Field, Seed_fields, Seed_filter
 
 PER_PAGE = 20
 
@@ -21,12 +21,14 @@ def index(page=1):
         error = None
         action = request.form.get("do")
         if action == "delete":
+            seed_filter_model = Seed_filter(current_app)
             sids = request.form.getlist("sid[]")
             if len(sids) > 0:
                 for sid in sids:
                     if sid:
                         seed.remove(sid)
                         seed_fields.remove(sid)
+                        seed_filter_model.remove(sid)
                 url = request.referrer and request.referrer or url_for('seeds.index')
                 return redirect(url)
             else:

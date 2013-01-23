@@ -3,7 +3,7 @@ from flask import Module, url_for, g, session, current_app, request, redirect, m
 from flask import render_template
 from libs import phpserialize
 from web.helpers import *
-from web.models import Seed, Field, Seed_fields, Tags, Seed_tag
+from web.models import Seed, Field, Seed_fields, Tags, Seed_tag, Filter, Seed_filter
 import time
 
 seed = Module(__name__)
@@ -44,7 +44,7 @@ def add():
         }
         fields = field.list(save["type"])
         guid_rule_datas = request.form.get("guid_rule")
-        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,fields)
+        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,save["type"])
         seed = Seed(current_app)
         sid = seed.add(**save)
         if sid:
@@ -120,6 +120,8 @@ def copynew(seed_id):
         if sid:
             seed_fields = Seed_fields(current_app)
             seed_fields.copynew(seed_id,sid)
+            seed_filter = Seed_filter(current_app)
+            seed_filter.copynew(seed_id,sid)
     url = request.referrer and request.referrer or url_for('seeds.index')
     return redirect(url)
 
@@ -167,10 +169,16 @@ def edit(seed_id):
         field = Field(current_app)
         fields = field.list(save["type"])
         guid_rule_datas = request.form.get("guid_rule")
-        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,fields)
+        save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,save["type"])
         seed = Seed(current_app)
         msg = seed.edit(sid, **save)
         seed_field = Seed_fields(current_app)
+        # filter_model = Filter(current_app)
+        # filters_org_data = filter_model.list()
+        seed_filter_model = Seed_filter(current_app)
+        # filters_data = {}
+        # for filter_item in filters_org_data:
+        #     filters_data[str(filter_item["id"])] = filter_item
         for field in fields:
             field_data = seed_field.view(sid, field.id).list()
             if len(field_data) > 0:
@@ -183,6 +191,31 @@ def edit(seed_id):
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
                 seed_value["fetch_all"] = request.form.get("fetch_all_"+field.name)
                 seed_field.add(**seed_value)
+            #更改过滤规则
+            filter_ids = request.form.getlist("filter"+str(field.id)+"[]")
+            print filter_ids
+            order_ct = 0
+            if len(filter_ids) > 0 and filter_ids[0] != "none":
+                seed_filter_model.remove(sid, field.id)
+                for filter_id in filter_ids:
+                    filter_item = request.form.getlist("profile_"+str(field.id)+"_"+str(filter_id)+"[]")
+                    tmp = {}
+                    ct = 0
+                    for config in filter_item:
+                        v = request.form.get(config+"_"+str(field.id)+"_"+filter_id)
+                        if not v:
+                            ct = ct + 1
+                        tmp[config] = v
+                    if ct != len(filter_item):
+                        order_ct = order_ct + 1
+                        filter_save = {
+                            "sid": int(sid),
+                            "field_id": int(field.id),
+                            "filter_id": int(filter_id),
+                            "profile": phpserialize.dumps(tmp),
+                            "rank": int(order_ct)
+                        }
+                        seed_filter_model.add(**filter_save)
         #更改标签
         tags_data = request.form.get("tags")
         tags_data = tags_data.split(",")
@@ -227,7 +260,7 @@ def edit(seed_id):
         #获取GUID规则
         print seed_data["guid_rule"]
         if seed_data["guid_rule"]:
-            seed_data["guid_rule"] = getFeildTitleById(seed_data["guid_rule"],seed_field)
+            seed_data["guid_rule"] = getFeildTitleById(seed_data["guid_rule"],seed_type)
         print seed_data["guid_rule"]
         #取出标签
         seed_tag = Seed_tag(current_app)
@@ -246,7 +279,31 @@ def edit(seed_id):
 def delete(seed_id):
     return seed_id
 
-@seed.route("/set_filter/<int:field_id>/")
+@seed.route("/set_filter/<int:seed_id>/<int:field_id>/")
 @auth
-def set_filter(field_id):
-    return render_template("seed/filter.html");
+def set_filter(seed_id, field_id):
+    filter_model = Filter(current_app)
+    filters_list = filter_model.list()
+    seed_filter_model = Seed_filter(current_app)
+    tmps = seed_filter_model.list(seed_id, field_id, order="rank ASC")
+    all_filters = []
+    filters_data = {}
+    tmps = tmps.list()
+    for filter_item in tmps:
+        filters_data[str(filter_item["filter_id"])] = filter_item
+    for filter_item in filters_list:
+        filter_id = str(filter_item["id"])
+        if filters_data.get(filter_id):
+            filters_data[filter_id]["title"] = filter_item["title"]
+            filters_data[filter_id]["description"] = filter_item["description"]
+            filters_data[filter_id]["profile"] = filters_data[filter_id]["profile"].encode("utf-8");
+            filters_data[filter_id]["profile"] = phpserialize.loads(filters_data[filter_id]["profile"], decode_strings=True)
+        if filter_item["config"]:
+            filter_item["config"] = phpserialize.loads(filter_item["config"])
+            filter_item["config"] = filter_item["config"].items()
+            filter_item["config"].sort()
+        all_filters.append(filter_item)
+    filters_sort_data = {}
+    for filters_item in filters_data:
+        filters_sort_data[filters_data[filters_item]["rank"]] = filters_data[filters_item]
+    return render_template("seed/filter.html", filters=filters_sort_data, all_filters=all_filters, field_id=field_id);

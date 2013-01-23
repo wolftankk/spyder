@@ -16,3 +16,9 @@
 
 .select_type { float: none; display: block; }
 .select_type a { float: none; display: block; padding: 10px 0; margin: 5px 0; text-indent: 20px; }
+.typecho-list-notable .td1, .typecho-list-notable .td2, .typecho-list-notable .td3 {
+    display: inline-block;*zoom:1;*display: inline;color: #333;
+}
+.typecho-list-notable .td1 { width: 25px; }
+.typecho-list-notable .td2 { width: 125px; }
+.typecho-list-notable .td3 { width: 550px; }

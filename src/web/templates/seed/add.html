@@ -3,10 +3,28 @@
 {% block title %}添加种子{% endblock %}
 {% set current_page="seed" %}
 {% set current_action="seed_add" %}
+{% block meta %}
+<script type="text/javascript" src="/static/javascript/ejs.min.js?v=0.1"></script>
+<script id="filters_temp" type="text/template">
+  <em class="td1">
+    <input type="checkbox" name="filter<%= field_id %>[]" checked="true" value="<%= filter['id'] %>">
+  </em>
+  <em class="td2"><%= filter['title'] %></em>
+  <em class="td3">
+    <% if (filter["config"].length) { %>
+    <% filter["config"].forEach(function(config){ %>
+    <input type="hidden" name="profile_<%= field_id %>_<%= filter['id'] %>[]" value="<%= config[0] %>">
+    <%= config[0] %>：<input type="text" name="<%= config[0] %>_<%= field_id %>_<%= filter['id'] %>" value="<%= config[1]  %>">
+    <% }) %>
+    <% } %>
+    <span class="description"><%= filter['description'] %></span>
+  </em>
+</script>
+{% endblock %}
 
 {% block body %}
 <div class="container typecho-page-main typecho-post-option typecho-post-area">
-  <form action="." method="post" name="add_seed">
+  <form action="." method="post" name="add_seed" id="add_seed_form">
     <div class="column-18 suffix" id="test">
       <div class="column-18">
         <label for="seed_name" class="typecho-label">名称</label>
@@ -34,7 +52,7 @@
           {% for field in fields %}
           <label for="field_{{ field.name }}" class="typecho-label">{{ field.title }}</label>
           <p>
-            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 450px;" />
+            <input type="text" id="field_{{ field.name }}" name="{{ field.name }}" value="{{ field.value|default('',true) }}" style="width: 380px;" />
             {% if page_types %}
             &nbsp;&nbsp;页面：
             <select class="typecho-charset" name="page_type_{{ field.name }}">
@@ -44,8 +62,9 @@
             </select>
             {% endif %}
             <label><input type="checkbox" name="fetch_all_{{ field.name }}" value="1"{% if field.fetch_all == 1 %} checked="true"{% endif %}> 匹配所有</label>
-            <a href="javascript:;" class="filter_button" data-fid="{{ field.id }}">高级&gt;&gt;</a>
+            <span class="advance close" data-fid="{{ field.id }}">展开内容处理</a>
           </p>
+          <div id="filter-panel-{{ field.id }}" style="display: none;"><input type="hidden" name="filter{{ field.id }}[]" value="none"></div>
           {% endfor %}
         </div>
         <div id="forArticle">
@@ -65,7 +84,7 @@
             <input type="hidden" id="step" name="step" value="{{ seed_data.rule.step|default('',true) }}" />
             <input type="hidden" id="zero" name="zero" value="{{ seed_data.rule.zero|default(0,true) }}" />
             <input type="hidden" name="do" value="publish" />
-            <button type="submit" id="btn-submit">保存种子 &raquo;</button>
+            <button type="button" id="btn-submit">保存种子 &raquo;</button>
           </span>
         </p>
       </div>
@@ -149,16 +168,48 @@
         ta.focus();
         ta.set("value", ta.get("value")+title+",");
     };
-    function filter_config(fid){
-      openWin('/seed/set_filter/'+fid+"/");
+    window.onbeforeunload = function(e) {
+      return "你确定要离开此页面吗？";
+    };
+    var filters_temp = document.getElementById('filters_temp').innerHTML;
+    function addFilter(fid){
+      var key = document.getElementById("filters-select-"+fid).selectedIndex;
+      var filter = all_filters[key];
+      var html = ejs.render(filters_temp, { filter: filter, field_id: fid });
+      $("filter-list-"+fid).grab(new Element('li',{'class': 'even checked', 'html': html}));
+      if("undefined" == typeof($('filter-list-'+fid)._childTag)) {
+        Typecho.Table.init('#filter-list-'+fid);
+      } else {
+        $('filter-list-'+fid)._reflow = true;
+        Typecho.Table.reset();
+      }
     }
     window.addEvent('domready', function() {
 
         $$("[rel=field_tags]").addEvent("click", function(){
           if($(this).get("text")) insertTagToEditor($(this).get("text"));
         });
-        $$(".filter_button").addEvent("click", function(){
-          filter_config($(this).get("data-fid"));
+        $(document).getElements('.advance').addEvent('click', function () {
+            var fid = $(this).get("data-fid"), url = '/seed/set_filter/{{ sid }}/'+fid+"/";
+            //openWin(url,700);
+            Typecho.toggle('#filter-panel-'+fid, this, '收起内容处理', '展开内容处理');
+            if(!$('filter-panel-'+fid).contains($('filter-list-'+fid))) {
+              $('filter-panel-'+fid).set("html","加载内容处理中...");
+              //$('filter-panel-'+fid).load(url);
+              new Request.HTML({
+                "update": $('filter-panel-'+fid),
+                "onSuccess": function(){
+                  $('filter-panel-'+fid).getElement(".add_filter").addEvent("click", function(){
+                    addFilter(fid);
+                  });
+                  Typecho.Table.init('#filter-list-'+fid);
+                }
+              }).get(url);
+            }
+        });
+        $("btn-submit").addEvent("click", function(){
+          window.onbeforeunload = null;
+          $("add_seed_form").submit();
         });
         /** 标签自动完成 */
         var _tags = [];
