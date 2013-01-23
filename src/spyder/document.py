@@ -15,7 +15,7 @@ from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
 import json
-from spyder.field import Field, Item
+from spyder.field import Field, Item, get_field_from_cache
 from spyder.publish import publish_server
 
 __all__ = [
@@ -171,10 +171,7 @@ class Grab(object):
 	    rule = seed.getRule();
 	    listtype = seed["listtype"]
 
-	    if seed.guid_rule is None:
-		self.guid_rule = "url"
-	    else:
-		self.guid_rule = seed.guid_rule
+	    self.guid_rule = seed.getGUID()
 
 	    if listtype == "feed":
 		self.parseFeed();
@@ -186,6 +183,26 @@ class Grab(object):
 	else:
 	    print "You must give `Seed` instance"
 
+    def getItemGUID(self, data):
+	guid_rule = self.guid_rule
+	s = "";
+
+	if isinstance(guid_rule, list):
+	    for field_id in guid_rule:
+		field = get_field_from_cache(field_id)
+		if field:
+		    field_name = field["name"]
+		    if field_name and data[field_name]:
+			if "value" in data[field_name] and data[field_name].value:
+			    s += safestr(data[field_name].value)
+			elif data[field_name] and isinstance(data[field_name], unicode) and isinstance(data[field_name], str):
+			    s += safestr(data[field_name])
+
+	elif isinstance(guid_rule, str) or isinstance(guid_rule, unicode):
+	    s = data[guid_rule]
+
+	return md5(s).hexdigest()
+
     def parseFeed(self):
         print "Start to fetch and parse Feed list"
         seed = self.seed
@@ -195,29 +212,33 @@ class Grab(object):
 	    items = feed["entries"]
 	    if len(items) > 0:
 		for item in items:
-		    link = item["link"]
-		    guid = md5(link).hexdigest()
-
 		    _item = Item({
-			"url" : link,
+			"url" : item["link"],
 			"type" : self.seed_type
 		    })
+
+		    if self.guid_rule is None:
+			self.guid_rule = "url"
+
+		    guid = self.getItemGUID(item)
 		    self.items[guid] = _item
+
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def fetchListPages(self, listtype="html"):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
-	#这里需要采用多线程方式
         for url in urls:
 	    print "Fetching list page：", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
             f = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if f.isReady():
 		doc = f.read()
+
 		if listtype == "html":
 		    self.parseListPage(f, doc, url)
 		elif listtype == "json":
 		    self.parseJsonPage(f, doc, url)
+
         print "List has finished parsing. It has %s docs." % ansicolor.red(self.__len__())
 
     def parseListPage(self, site, doc, listurl):
@@ -242,7 +263,6 @@ class Grab(object):
 		    link = getElementData(e, urlParent)
 
                 link = urlparse.urljoin(listurl, link);
-		guid = md5(link).hexdigest()
 
 		_item = Item({
 		    "type" : self.seed_type,
@@ -252,19 +272,28 @@ class Grab(object):
 		for field_id, _rule, fetch_all in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
+		    
+		    #TODO:
+		    # filter HOOK
 		    field.value = value
 		    _item[field["name"]] = field
 
-		if self.seed_type in self.dont_craw_content:
-		    s = ""
+		# get item guid
+		if self.guid_rule:
+		    guid = self.getItemGUID(_item)
+		elif self.seed_type in self.dont_craw_content:
+		    self.guid_rule = []
 		    for f in _item.fields:
-			if _item[f] is not None:
-			    s += safestr(_item[f].value)
-		    guid = md5(s).hexdigest()
-		    self.items[guid] = _item
+			self.guid_rule.append(_item[f]["id"])
+		    guid = self.getItemGUID(_item)
+		    self.guid_rule = None
 		else:
 		    _item["url"] = link
-		    self.items[guid] = _item
+		    self.guid_rule = "url"
+		    guid = self.getItemGUID(_item)
+		    self.guid_rule = None
+		
+		self.items[guid] = _item
 
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
@@ -304,18 +333,22 @@ class Grab(object):
 				    field.value = value
 				    _item[field["name"]] = field
 			
-			#将数据保存到总分支上
-			if self.seed_type in self.dont_craw_content:
-			    s = ""
+			# get item guid
+			if self.guid_rule:
+			    guid = self.getItemGUID(_item)
+			elif self.seed_type in self.dont_craw_content:
+			    self.guid_rule = []
 			    for f in _item.fields:
-				if _item[f] is not None:
-				    s += safestr(_item[f].value)
-			    guid = md5(s).hexdigest()
-			    self.items[guid] = _item
+				self.guid_rule.append(_item[f]["id"])
+			    guid = self.getItemGUID(_item)
+			    self.guid_rule = None
 			else:
 			    _item["url"] = link
-			    self.items[guid] = _item
-
+			    self.guid_rule = "url"
+			    guid = self.getItemGUID(_item)
+			    self.guid_rule = None
+			
+			self.items[guid] = _item
 	except:
 	    raise "Cant parse json file"
 
@@ -499,4 +532,4 @@ if __name__ == "__main__":
     r = db.view(23)
     seed = Seed(r.list()[0])
     gas = Grab(seed)
-    gas.push()
+    #gas.push()

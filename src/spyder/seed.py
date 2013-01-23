@@ -73,8 +73,8 @@ class Seed(object):
     def getGUID(self):
 	#how defines the item's guid?
 	if self.__seed["guid_rule"]:
-	    guid_rule = seed["guid_rule"].split(",")
-	    guid_rule = map(lambda x: int(x), self.guid_rule)
+	    guid_rule = self.__seed["guid_rule"].split(",")
+	    guid_rule = map(lambda x: int(x), guid_rule)
 	    return guid_rule
 	return None
 
@@ -118,17 +118,16 @@ class Rule(object):
 	    raise RuleEmpty
 
 	self.seed = seed;
-	if self.db is None:
-	    self.db = Seed_fields()
-	
-	r = self.db.list(seed["sid"])
 
 	'''
 	extrarules 额外规则表
 	这些额外的规则是动态的， 每个都有一个field id
 	'''
+	field_db = Seed_fields()
+	r = field_db.list(seed["sid"])
 	if len(r) > 0:
 	    self.extrarules = r.list();
+	
 
         rule = unserialize(rule)
 	self.rule = rule;
@@ -273,15 +272,13 @@ class RuleList(object):
 class RuleArticle(object):
     def __init__(self, parent):
 	self.parent = parent
-	'''
-	contentparent //文章大致区域
-	pageparent
-	filters
-	'''
+
 	self.pageparent = parent.rule["pageparent"]
 	self.wrapparent = parent.rule["contentparent"]
 
 	self.extrarules = []
+	self.filters = []
+
 	extrarules = self.parent.extrarules
 	for i, rule in enumerate(extrarules):
 	    if rule and rule["page_type"] == "content":
