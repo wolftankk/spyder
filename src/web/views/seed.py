@@ -56,7 +56,7 @@ def add():
                 seed_value["field_id"] = field.id
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
-                seed_value["fetch_all"] = request.form.get("fetch_all_"+field.name)
+                seed_value["fetch_all"] = (request.form.get("fetch_all_"+field.name) and request.form.get("fetch_all_"+field.name) or 0)
                 seed_field.add(**seed_value)
             #插入标签
             tags_data = request.form.get("tags")
@@ -189,7 +189,7 @@ def edit(seed_id):
                 seed_value["field_id"] = field.id
                 seed_value["value"] = request.form.get(field.name)
                 seed_value["page_type"] = request.form.get("page_type_"+field.name)
-                seed_value["fetch_all"] = request.form.get("fetch_all_"+field.name)
+                seed_value["fetch_all"] = (request.form.get("fetch_all_"+field.name) and request.form.get("fetch_all_"+field.name) or 0)
                 seed_field.add(**seed_value)
             #更改过滤规则
             filter_ids = request.form.getlist("filter"+str(field.id)+"[]")
