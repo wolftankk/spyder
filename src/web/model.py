@@ -35,13 +35,16 @@ class Model(object):
 	    dbs[guid] = self.db
 	else:
 	    self.db = dbs[guid]
-	    if not self.db.ctx.db.open:
-		self.db.ctx.db = self.db._connect(self.db.keywords)
-	    elif self.db.ctx.db.errno == 2006:
-		self.db.ctx.db = self.db._connect(self.db.keywords)
+	    self._reconnection();
 
+    def _reconnection(self):
+	if not self.db.ctx.db.open:
+	    self.db.ctx.db = self.db._connect(self.db.keywords)
+	elif self.db.ctx.db.errno() == 2006:
+	    self.db.ctx.db = self.db._connect(self.db.keywords)
 
     def select(self, where=None, vars = None, what='*', limit = None, order = None, group = None, offset=None):
+	self._reconnection()
 	'''
 	Selects `what` from `tables` with clauses `where`, `order`,
 	`group`, `limit`, and `offset`. Uses vars to interpolate.
@@ -59,6 +62,7 @@ class Model(object):
 	return self.db.select(self._table_name, where=where, vars=vars, what=what, limit=limit, order=order, group=group, offset=offset, _test=False)
 
     def get_one(self, where=None, vars=None, what='*', limit=None, order=None, group=None, offset=None):
+	self._reconnection()
 	if (isinstance(where, dict)):
 	    where = sqlwhere(where)
 	query = self.db.select(self._table_name, where=where, vars=vars, what=what, limit=1, order=order, group=group, offset=0);
@@ -68,13 +72,16 @@ class Model(object):
 	    return None
 
     def query(self, sql):
+	self._reconnection()
 	query = SQLQuery(sql)
 	return self.db.query(query, processed=True);
 
     def insert(self, seqname=None, _test=False, **values):
+	self._reconnection()
 	return self.db.insert(self._table_name, seqname=seqname, _test=_test, **values);
 
     def update(self, where, vars=None, _test=False, **values):
+	self._reconnection()
         """
 	>>> name = 'Joseph'
 	>>> q = db.update('foo', where='name = $name', name='bob', age=2,
@@ -89,13 +96,13 @@ class Model(object):
 	return self.db.update(self._table_name, where=where, vars=vars, _test=_test, **values)
 
     def delete(self, where, using=None, vars=None, _test=False):
+	self._reconnection()
         """
 	>>> name = 'Joe'
 	>>> db.delete('foo', where='name = $name', vars=locals(), _test=True)
 	<sql: "DELETE FROM foo WHERE name = 'Joe'">
 	"""
 	return self.db.delete(self._table_name, where=where, vars=vars, _test=_test)
-
 
     def count(self, where=None):
         if (isinstance(where, dict)):
@@ -113,6 +120,8 @@ class Model(object):
 	'''
 
     def get_primary(self, table_name=None):
+	self._reconnection()
+
 	if table_name is None:
 	    table_name = self._table_name
 	else:
@@ -125,6 +134,8 @@ class Model(object):
 		return r['Field']
 
     def get_fields(self, table_name = None):
+	self._reconnection()
+
 	if table_name is None:
 	    table_name = self._table_name
 	else:
@@ -134,6 +145,7 @@ class Model(object):
 	return out.fields
 
     def get_field_list(self, field, table_name=None):
+	self._reconnection()
 	if table_name is None:
 	    table_name = self._table_name
 	else:

@@ -116,7 +116,7 @@ def process_kaice(db, insert_data, data):
     if r:
 	return None;
     
-    if safestr(data['kaice_type'].value) == "网页游戏":
+    if data["kaice_type"] and safestr(data['kaice_type'].value) == "网页游戏":
 	if "test_date" in insert_data:
 	    insert_data["test_date"] = safestr(insert_data["test_date"]).replace("今日", str(time.strftime("%Y-%m-%d")))
 

@@ -58,16 +58,9 @@ class Seed(object):
 		raise SeedEmpty
 
 	    self.__seed = seed;
-	    '''
-	    tags
-	    '''
+
 	    self.get_tags()
 	    self.name = self.__seed["seed_name"].encode("utf-8")
-
-	    self.guid_rule = None
-	    if seed["guid_rule"]:
-		self.guid_rule = seed["guid_rule"].split(",")
-		self.guid_rule = map(lambda x: int(x), self.guid_rule)
 	else:
 	    raise SeedError("Seed instance error.")
 
@@ -77,13 +70,20 @@ class Seed(object):
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
 
+    def getGUID(self):
+	#how defines the item's guid?
+	if self.__seed["guid_rule"]:
+	    guid_rule = self.__seed["guid_rule"].split(",")
+	    guid_rule = map(lambda x: int(x), guid_rule)
+	    return guid_rule
+	return None
+
     def get_tags(self):
 	self.tags = [];
 	st_db = Seed_tag()
 	tag_db = Tags()
 
 	query = st_db.select(where={"sid" :self["sid"]}, what="tid")
-	tag_num = len(query)
 	r = query.list()
 	for t in r:
 	    if t and "tid" in t:
@@ -118,16 +118,16 @@ class Rule(object):
 	    raise RuleEmpty
 
 	self.seed = seed;
-	if self.db is None:
-	    self.db = Seed_fields()
-	
-	r = self.db.list(seed["sid"])
+
 	'''
 	extrarules 额外规则表
 	这些额外的规则是动态的， 每个都有一个field id
 	'''
+	field_db = Seed_fields()
+	r = field_db.list(seed["sid"])
 	if len(r) > 0:
 	    self.extrarules = r.list();
+	
 
         rule = unserialize(rule)
 	self.rule = rule;
@@ -142,60 +142,51 @@ class Rule(object):
 	return '<%s 的规则>' % str(self.seed)
 
 r'''
-List一共有两种类型：feed, html
+List一共有三种类型：feed, html, json
 当设定为feed时候， 将会自动分析出url等相关信息
 当设定为html时，将会根据设定的规则分析出信息
+当设定为json时，你只要填写字段即可
 '''
 class RuleList(object):
     def __init__(self, parent):
         self.parent = parent
+	
+	#Rule type
+	# kaifu, kaice, article, gallery...
         self.type = parent.seed["listtype"];
-	'''
-	列表额外配置
-	'''
+	
+	#need parse and get field
 	self.extrarules = []
+
+	#filter hook
+	self.filters = []
 
 	extrarules = self.parent.extrarules
 	for i, rule in enumerate(extrarules):
 	    if rule and rule["page_type"] == "list":
+		# field id
 		field_id = rule["field_id"]
+		# rule
 		value = rule["value"]
+		# need fetch all data
 		fetch_all = rule["fetch_all"]
+
 		self.extrarules.append((field_id, value, fetch_all))
 
 
     def getListParent(self):
-	'''
-	获得列表集
-	DOM
-	'''
-        #exp: div[class=cont_list]ul
-        #exp: div[id=xx]ol
-        #exp: div[id=class]div
 	rule = self.parent.rule;
         return rule["listparent"]
 
     def getEntryItem(self):
-	'''
-	获得列表中每个元素
-	DOM
-	'''
-        #exp: <li></li>
-        #@TODO: td 部分考虑
 	rule = self.parent.rule;
         return rule["entryparent"]
 
     def getContentUrl(self):
-	'''
-	    获取文章URL链接
-	'''
 	rule = self.parent.rule
 	return rule["contenturl"]
 
     def getListUrls(self):
-	r'''
-	获得需要采集的url列表
-	'''
         listUrls = [];
 	rule = self.parent.rule;
 
@@ -232,7 +223,6 @@ class RuleList(object):
 	        listUrls.append(url)
 	    
 	elif urltype == "dateLink":
-	    #import datetime
 	    try:
 		datetime	
 	    except:
@@ -282,15 +272,13 @@ class RuleList(object):
 class RuleArticle(object):
     def __init__(self, parent):
 	self.parent = parent
-	'''
-	contentparent //文章大致区域
-	pageparent
-	filters
-	'''
+
 	self.pageparent = parent.rule["pageparent"]
 	self.wrapparent = parent.rule["contentparent"]
 
 	self.extrarules = []
+	self.filters = []
+
 	extrarules = self.parent.extrarules
 	for i, rule in enumerate(extrarules):
 	    if rule and rule["page_type"] == "content":
