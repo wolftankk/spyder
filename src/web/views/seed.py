@@ -42,7 +42,7 @@ def add():
             "update_time": time1,
             "rule": phpserialize.dumps(list1)
         }
-        fields = field.list(save["type"])
+        fields = field.list(save["type"]).list()
         guid_rule_datas = request.form.get("guid_rule")
         save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,save["type"])
         seed = Seed(current_app)
@@ -86,7 +86,7 @@ def add():
         seed_data = {}
         seed_data["rule"] = {}
         seed_type = request.args.get("type");
-        fields = field.list(seed_type)
+        fields = field.list(seed_type).list()
         seed_field = Seed_fields(current_app)
         page_types = seed_field.getpageType()
         alltags = []
@@ -167,7 +167,7 @@ def edit(seed_id):
             "rule": phpserialize.dumps(list1)
         }
         field = Field(current_app)
-        fields = field.list(save["type"])
+        fields = field.list(save["type"]).list()
         guid_rule_datas = request.form.get("guid_rule")
         save["guid_rule"] = getFeildIdByTitle(guid_rule_datas,save["type"])
         seed = Seed(current_app)
