@@ -258,10 +258,8 @@ def edit(seed_id):
         if seed_data["rule"]:
             seed_data["rule"] = phpserialize.loads(seed_data["rule"])
         #获取GUID规则
-        print seed_data["guid_rule"]
         if seed_data["guid_rule"]:
             seed_data["guid_rule"] = getFeildTitleById(seed_data["guid_rule"],seed_type)
-        print seed_data["guid_rule"]
         #取出标签
         seed_tag = Seed_tag(current_app)
         tags_model = Tags(current_app)
