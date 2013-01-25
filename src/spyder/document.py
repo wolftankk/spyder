@@ -272,11 +272,13 @@ class Grab(object):
 		for field_id, _rule, fetch_all in extrarules:
 		    field = Field(field_id = field_id, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
-		    
 		    #TODO:
 		    # filter HOOK
 		    field.value = value
 		    _item[field["name"]] = field
+
+		if (link is not None):
+		    _item['url'] = link
 
 		# get item guid
 		if self.guid_rule:
@@ -288,7 +290,6 @@ class Grab(object):
 		    guid = self.getItemGUID(_item)
 		    self.guid_rule = None
 		else:
-		    _item["url"] = link
 		    self.guid_rule = "url"
 		    guid = self.getItemGUID(_item)
 		    self.guid_rule = None
@@ -333,6 +334,9 @@ class Grab(object):
 				    field.value = value
 				    _item[field["name"]] = field
 			
+			if (link is not None):
+			    _item['url'] = link
+
 			# get item guid
 			if self.guid_rule:
 			    guid = self.getItemGUID(_item)
@@ -343,7 +347,6 @@ class Grab(object):
 			    guid = self.getItemGUID(_item)
 			    self.guid_rule = None
 			else:
-			    _item["url"] = link
 			    self.guid_rule = "url"
 			    guid = self.getItemGUID(_item)
 			    self.guid_rule = None
@@ -503,9 +506,11 @@ if __name__ == "__main__":
     #print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
 
     #游戏开服
-    #r = db.view(8);
-    #seed = Seed(r.list()[0])
-    #kaifus = Grab(seed)
+    r = db.view(8);
+    seed = Seed(r.list()[0])
+    kaifus = Grab(seed)
+    for k in kaifus.keys():
+	print kaifus[k]
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
@@ -529,7 +534,7 @@ if __name__ == "__main__":
     #c.push()
 
     #图库
-    r = db.view(23)
-    seed = Seed(r.list()[0])
-    gas = Grab(seed)
+    #r = db.view(23)
+    #seed = Seed(r.list()[0])
+    #gas = Grab(seed)
     #gas.push()
