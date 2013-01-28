@@ -38,8 +38,8 @@ def upload_image(handler, image_path, upload_path):
 		except:
 		    raise UploadError, "Upload image faile! image_path: %s, upload_path: %s" % (image_path, upload_path)
 	except:
-	    raise UnknowUploader
+	    raise UnknownUploader
     else:
-	raise UnknowUploader, "Uploader `%s` has not upload method" % handler.__class__
+	raise UnknownUploader, "Uploader `%s` has not upload method" % handler.__class__
 
 #async.pool = Pool(1)
