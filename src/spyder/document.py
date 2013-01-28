@@ -262,7 +262,8 @@ class Grab(object):
 		else:
 		    link = getElementData(e, urlParent)
 
-                link = urlparse.urljoin(listurl, link);
+		if link is not None:
+		    link = urlparse.urljoin(listurl, link);
 
 		_item = Item({
 		    "type" : self.seed_type,
@@ -513,9 +514,11 @@ if __name__ == "__main__":
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
     #游戏开测
-    #r = db.view(20);
-    #seed = Seed(r.list()[0])
-    #kaices = Grab(seed)
+    r = db.view(20);
+    seed = Seed(r.list()[0])
+    kaices = Grab(seed)
+    for k in kaices.keys():
+	print kaices[k]
     #kaices.push()
     ##print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
