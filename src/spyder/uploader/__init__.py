@@ -27,18 +27,19 @@ def upload_image(handler, image_path, upload_path):
     if handler and "upload" in dir(handler):
 	try:
 	    method = getattr(handler, "upload");
-	    if method:
-		call = method(image_path, upload_path)
-		try:
-		    r = call.get(timeout=10)
-		    if not r:
-			upload_image(handler, image_path, upload_path)
-		except TimeoutError, e:
-		    upload_image(handler, image_path, upload_path)
-		except:
-		    raise UploadError, "Upload image faile! image_path: %s, upload_path: %s" % (image_path, upload_path)
 	except:
 	    raise UnknownUploader
+
+	if method:
+	    call = method(image_path, upload_path)
+	    try:
+		r = call.get(timeout=10)
+		if not r:
+		    upload_image(handler, image_path, upload_path)
+	    except TimeoutError, e:
+		upload_image(handler, image_path, upload_path)
+	    except:
+		raise UploadError, "Upload image faile! image_path: %s, upload_path: %s" % (image_path, upload_path)
     else:
 	raise UnknownUploader, "Uploader `%s` has not upload method" % handler.__class__
 
