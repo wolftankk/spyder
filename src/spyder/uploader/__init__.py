@@ -38,8 +38,8 @@ def upload_image(handler, image_path, upload_path):
 		    upload_image(handler, image_path, upload_path)
 	    except TimeoutError, e:
 		upload_image(handler, image_path, upload_path)
-	    except:
-		raise UploadError, "Upload image faile! image_path: %s, upload_path: %s" % (image_path, upload_path)
+	    except Exception, e:
+		raise UploadError, "Upload image faile! image_path: %s, upload_path: %s, errorInfo: %s" % (image_path, upload_path, str(e))
     else:
 	raise UnknownUploader, "Uploader `%s` has not upload method" % handler.__class__
 
