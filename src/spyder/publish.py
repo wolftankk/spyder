@@ -184,10 +184,11 @@ class Site(object):
 			if insert_data[field] == "None" or insert_data[field] is None:
 			    insert_data[field] = ""
 	    
+		#处理数据， 看数据中的图片是否需要上传
+		insert_data = self.upload_media(insert_data, data)
+
 		try:
 		    db.insert(**insert_data)
-		    #处理数据， 看数据中的图片是否需要上传
-		    insert_data = self.upload_media(insert_data, data)
 		except:
 		    pass;
 

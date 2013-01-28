@@ -12,17 +12,17 @@ class UnknownUploader(Exception):
 class UploadError(Exception):
     pass
 
-def async(decorated):
-    module = getmodule(decorated)
-    decorated.__name__ += '_original'
-    setattr(module, decorated.__name__, decorated)
+#def async(decorated):
+#    module = getmodule(decorated)
+#    decorated.__name__ += '_original'
+#    setattr(module, decorated.__name__, decorated)
+#
+#    def send(*args, **opts):
+#	return async.pool.apply_async(decorated, args, opts)
+#
+#    return send
 
-    def send(*args, **opts):
-	return async.pool.apply_async(decorated, args, opts)
-
-    return send
-
-@async
+#@async
 def upload_image(handler, image_path, upload_path):
     if handler and "upload" in dir(handler):
 	try:
@@ -42,4 +42,4 @@ def upload_image(handler, image_path, upload_path):
     else:
 	raise UnknowUploader, "Uploader `%s` has not upload method" % handler.__class__
 
-async.pool = Pool(1)
+#async.pool = Pool(1)
