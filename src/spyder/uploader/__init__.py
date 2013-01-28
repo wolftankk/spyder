@@ -31,13 +31,14 @@ def upload_image(handler, image_path, upload_path):
 	    raise UnknownUploader
 
 	if method:
-	    call = method(image_path, upload_path)
 	    try:
-		r = call.get(timeout=10)
+		#call = method(image_path, upload_path)
+		#r = call.get(timeout=10)
+		r = method(image_path, upload_path)
 		if not r:
 		    upload_image(handler, image_path, upload_path)
-	    except TimeoutError, e:
-		upload_image(handler, image_path, upload_path)
+	    #except TimeoutError, e:
+	    #	upload_image(handler, image_path, upload_path)
 	    except Exception, e:
 		raise UploadError, "Upload image faile! image_path: %s, upload_path: %s, errorInfo: %s" % (image_path, upload_path, str(e))
     else:
