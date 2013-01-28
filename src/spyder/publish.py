@@ -174,7 +174,7 @@ class Site(object):
 		    pass
 
 	    #对insert_data进行修正。 如果返回了None表示 此数据不符合 将不会插入进去
-	    if insert_data and isinstance(insert_data, dict):
+	    if insert_data and (insert_data is not None) and isinstance(insert_data, dict):
 		test_insert_data = insert_data;
 		insert_data = {}
 
@@ -184,11 +184,10 @@ class Site(object):
 			if insert_data[field] == "None" or insert_data[field] is None:
 			    insert_data[field] = ""
 	    
-		#处理数据， 看数据中的图片是否需要上传
-		insert_data = self.upload_media(insert_data, data)
-
 		try:
 		    db.insert(**insert_data)
+		    #处理数据， 看数据中的图片是否需要上传
+		    insert_data = self.upload_media(insert_data, data)
 		except:
 		    pass;
 

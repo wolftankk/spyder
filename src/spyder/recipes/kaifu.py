@@ -36,7 +36,6 @@ def process_article(db, insert_data, data):
 	return None;
 
     #验证数据如果title content不存在的话 就直接返回None
-
     if insert_data["title"] is None or insert_data["title"] == "None" or insert_data["title"] == "":
 	return None
 

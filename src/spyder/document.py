@@ -506,11 +506,9 @@ if __name__ == "__main__":
     #print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
 
     #游戏开服
-    r = db.view(8);
-    seed = Seed(r.list()[0])
-    kaifus = Grab(seed)
-    for k in kaifus.keys():
-	print kaifus[k]
+    #r = db.view(8);
+    #seed = Seed(r.list()[0])
+    #kaifus = Grab(seed)
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
