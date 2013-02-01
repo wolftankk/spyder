@@ -514,11 +514,11 @@ if __name__ == "__main__":
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
     #游戏开测
-    r = db.view(20);
-    seed = Seed(r.list()[0])
-    kaices = Grab(seed)
-    for k in kaices.keys():
-	print kaices[k]
+    #r = db.view(20);
+    #seed = Seed(r.list()[0])
+    #kaices = Grab(seed)
+    #for k in kaices.keys():
+    #    print kaices[k]
     #kaices.push()
     ##print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
@@ -539,3 +539,9 @@ if __name__ == "__main__":
     #seed = Seed(r.list()[0])
     #gas = Grab(seed)
     #gas.push()
+
+    r = db.view(24)
+    seed = Seed(r.list()[0])
+    gas = Grab(seed)
+    for k in gas.keys():
+	print gas[k]

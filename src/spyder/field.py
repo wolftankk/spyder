@@ -41,7 +41,7 @@ class Field(dict):
 	self['value'] = ''
     
     def is_article_content(self):
-	if (self['name'] == 'content' and self['type'] == 'article'):
+	if (self['name'] == 'content' and (self['type'] == 'article' or self['type'] == 'gallery')):
 	    return True
 
 	return False
