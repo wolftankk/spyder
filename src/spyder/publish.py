@@ -160,7 +160,6 @@ class Site(object):
 		field = map[k]
 		insert_data[k] = data[field["name"]].value
 
-
 	    hook_name = self.sync_profile["hook_func"]
 	    hook_method = None;
 	    if hook_name in dir(recipes):

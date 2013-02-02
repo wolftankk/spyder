@@ -448,6 +448,10 @@ class Document(object):
 		if field.is_article_content():
 		    content_re = field.get("rule")
 		    content = value
+		elif field.is_gallery_content():
+		    content_re = field.get("rule")
+		    content = []
+		    content.append(value)
 		else:
 		    field.value = value
 
@@ -458,14 +462,21 @@ class Document(object):
 		if next_page is not None:
 		    next_page = self._getContent(next_page, wrapparent, content_re);
 		    if next_page:
-			content += next_page
+			if isinstance(content, list):
+			    content.append(next_page)
+			else:
+			    content += next_page
 
 	if content and content_re:
-	    content = Readability(content, self.url)
-	    images = content.getImages();
+	    if isinstance(content, list):
+		self.data['content'].value = content
+		self.data['images'] += content
+	    else:
+		content = Readability(content, self.url)
+		images = content.getImages();
 
-	    self.data['content'].value = content.getContent();
-	    self.data['images'] += images
+		self.data['content'].value = content.getContent();
+		self.data['images'] += images
 
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
@@ -543,5 +554,4 @@ if __name__ == "__main__":
     r = db.view(24)
     seed = Seed(r.list()[0])
     gas = Grab(seed)
-    for k in gas.keys():
-	print gas[k]
+    gas.push()

@@ -12,17 +12,17 @@ class UnknownUploader(Exception):
 class UploadError(Exception):
     pass
 
-#def async(decorated):
-#    module = getmodule(decorated)
-#    decorated.__name__ += '_original'
-#    setattr(module, decorated.__name__, decorated)
-#
-#    def send(*args, **opts):
-#	return async.pool.apply_async(decorated, args, opts)
-#
-#    return send
+def async(decorated):
+    module = getmodule(decorated)
+    decorated.__name__ += '_original'
+    setattr(module, decorated.__name__, decorated)
 
-#@async
+    def send(*args, **opts):
+	return async.pool.apply_async(decorated, args, opts)
+
+    return send
+
+@async
 def upload_image(handler, image_path, upload_path):
     if handler and "upload" in dir(handler):
 	try:
@@ -32,16 +32,16 @@ def upload_image(handler, image_path, upload_path):
 
 	if method:
 	    try:
-		#call = method(image_path, upload_path)
-		#r = call.get(timeout=10)
-		r = method(image_path, upload_path)
+		call = method(image_path, upload_path)
+		r = call.get(timeout=10)
+		#r = method(image_path, upload_path)
 		if not r:
 		    upload_image(handler, image_path, upload_path)
-	    #except TimeoutError, e:
-	    #	upload_image(handler, image_path, upload_path)
+	    except TimeoutError, e:
+	    	upload_image(handler, image_path, upload_path)
 	    except Exception, e:
 		raise UploadError, "Upload image faile! image_path: %s, upload_path: %s, errorInfo: %s" % (image_path, upload_path, str(e))
     else:
 	raise UnknownUploader, "Uploader `%s` has not upload method" % handler.__class__
 
-#async.pool = Pool(1)
+async.pool = Pool(1)
