@@ -451,7 +451,8 @@ class Document(object):
 		elif field.is_gallery_content():
 		    content_re = field.get("rule")
 		    content = []
-		    content.append(value)
+		    if (isinstance(value, list)):
+			content += value
 		else:
 		    field.value = value
 
@@ -546,12 +547,14 @@ if __name__ == "__main__":
     #c.push()
 
     #图库
-    #r = db.view(23)
+    r = db.view(23)
+    seed = Seed(r.list()[0])
+    gas = Grab(seed)
+    for k in gas.keys():
+	print gas[k]
+    #gas.push()
+
+    #r = db.view(24)
     #seed = Seed(r.list()[0])
     #gas = Grab(seed)
     #gas.push()
-
-    r = db.view(24)
-    seed = Seed(r.list()[0])
-    gas = Grab(seed)
-    gas.push()

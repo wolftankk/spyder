@@ -44,4 +44,4 @@ def upload_image(handler, image_path, upload_path):
     else:
 	raise UnknownUploader, "Uploader `%s` has not upload method" % handler.__class__
 
-async.pool = Pool(1)
+async.pool = Pool(4)
