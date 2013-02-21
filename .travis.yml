@@ -1,0 +1,7 @@
+# https://travis-ci.org/wolftankk/spyder
+language: python
+python:
+  - "2.7"
+  - "2.6"
+  - "pypy"
+script: make test
