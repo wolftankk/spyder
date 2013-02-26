@@ -485,10 +485,10 @@ class Document(object):
 
         if len(pages) > 0:
             for link in pages:
-		if link is not None and link.tag == "a" and hasattr(link, "get"):
+		if link is not None and link.tag == "a" and hasattr(link, "get") and ('href' in link.keys()):
 		    url = link.get("href");
 		    '过滤掉是javascript的链接'
-                    if re.match(r"javascript", url) == None:
+                    if not url and re.match(r"javascript", url) == None:
                         url = urlparse.urljoin(self.url, url)
 			if url not in urls:
 			    urls.append(url)
