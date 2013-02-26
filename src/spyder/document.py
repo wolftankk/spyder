@@ -488,7 +488,7 @@ class Document(object):
 		if link is not None and link.tag == "a" and hasattr(link, "get") and ('href' in link.keys()):
 		    url = link.get("href");
 		    '过滤掉是javascript的链接'
-                    if not url and re.match(r"javascript", url) == None:
+                    if url and re.match(r"javascript", url) == None:
                         url = urlparse.urljoin(self.url, url)
 			if url not in urls:
 			    urls.append(url)
