@@ -26,8 +26,8 @@ class Seed_filter(Model):
                 self.insert(**save)
         return True
     
-    def edit(self, sid, fid, filter_id, profile, order):
-        return self.update(where="seed_id="+sid+" and field_id="+str(fid), filter_id=filter_id, profile=profile, order=order)
+    def edit(self, sid, fid, filter_id, profile, list_order):
+        return self.update(where="seed_id="+sid+" and field_id="+str(fid), filter_id=filter_id, profile=profile, list_order=list_order)
     
     def remove(self, sid, fid=None):
         if fid:

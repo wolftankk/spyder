@@ -193,7 +193,6 @@ def edit(seed_id):
                 seed_field.add(**seed_value)
             #更改过滤规则
             filter_ids = request.form.getlist("filter"+str(field.id)+"[]")
-            print filter_ids
             order_ct = 0
             if len(filter_ids) > 0 and filter_ids[0] != "none":
                 seed_filter_model.remove(sid, field.id)
@@ -213,7 +212,7 @@ def edit(seed_id):
                             "field_id": int(field.id),
                             "filter_id": int(filter_id),
                             "profile": phpserialize.dumps(tmp),
-                            "order": int(order_ct)
+                            "list_order": int(order_ct)
                         }
                         seed_filter_model.add(**filter_save)
         #更改标签
@@ -283,7 +282,7 @@ def set_filter(seed_id, field_id):
     filter_model = Filter(current_app)
     filters_list = filter_model.list()
     seed_filter_model = Seed_filter(current_app)
-    tmps = seed_filter_model.list(seed_id, field_id, order="order ASC")
+    tmps = seed_filter_model.list(seed_id, field_id, order="list_order ASC")
     all_filters = []
     filters_data = {}
     tmps = tmps.list()
@@ -303,5 +302,5 @@ def set_filter(seed_id, field_id):
         all_filters.append(filter_item)
     filters_sort_data = {}
     for filters_item in filters_data:
-        filters_sort_data[filters_data[filters_item]["order"]] = filters_data[filters_item]
+        filters_sort_data[filters_data[filters_item]["list_order"]] = filters_data[filters_item]
     return render_template("seed/filter.html", filters=filters_sort_data, all_filters=all_filters, field_id=field_id);
