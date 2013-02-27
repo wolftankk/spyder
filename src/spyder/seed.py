@@ -128,8 +128,8 @@ class Rule(object):
 	if len(r) > 0:
 	    self.extrarules = r.list();
 	
-
-        rule = unserialize(rule)
+        rule = rule.encode("utf-8");
+        rule = unserialize(rule, decode_strings=True)
 	self.rule = rule;
 
     def getListRule(self):
@@ -289,8 +289,10 @@ class RuleArticle(object):
 
         if "filters" in parent.rule:
 	    self.filters = []
-	    for f in parent.rule["filters"]:
-		self.filters.append(parent.rule["filters"][f])
+            if parent.rule["filters"]:
+                parent.rule["filters"] = parent.rule["filters"].split("|");
+	        for f in parent.rule["filters"]:
+		      self.filters.append(f)
         else:
             self.filters = []
 

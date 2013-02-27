@@ -255,7 +255,8 @@ def edit(seed_id):
         page_types = seed_fields.getpageType()
         seed_data["frequency"] = float(seed_data["frequency"])/float(3600)
         if seed_data["rule"]:
-            seed_data["rule"] = phpserialize.loads(seed_data["rule"])
+            seed_data["rule"] = seed_data["rule"].encode("utf-8");
+            seed_data["rule"] = phpserialize.loads(seed_data["rule"], decode_strings=True)
         #获取GUID规则
         if seed_data["guid_rule"]:
             seed_data["guid_rule"] = getFeildTitleById(seed_data["guid_rule"],seed_type)

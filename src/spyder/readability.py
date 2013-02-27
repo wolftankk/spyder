@@ -9,6 +9,7 @@ import re
 import lxml
 from spyder.pyquery import PyQuery as pq
 from urlparse import urljoin
+from libs.utils import safestr, safeunicode
 
 __all__ = [
     'Readability'
@@ -47,14 +48,18 @@ class Readability:
     '''
     image_attr = ["src", "alt", "width", "height"]
 
-    def __init__(self, content, baseurl):
+    def __init__(self, content, baseurl, filters):
 	self.content = content;
 
 	self.baseurl = baseurl
+
+	self.filters = filters
 	
 	self.replaceBrs();
 	self.replaceFonts();
 	self.replace_spp();
+
+	self.specialFilter();
 
 	self.getHtml();
 
@@ -75,8 +80,6 @@ class Readability:
 
 	for e in self.tags(self.html, "img"):
 	    self.processingImage(e)
-
-	#self.specialFilter(content)
 
     def getContent(self):
 	content = self.html.html();
@@ -162,6 +165,17 @@ class Readability:
 
     def getImages(self):
 	return self.images;
+
+    def specialFilter(self):
+        if len(self.filters) > 0:
+            for filter in self.filters:
+                rule = filter;
+                rule = rule.replace('(*)', '(.+)?')
+                if isinstance(self.content, unicode):
+                        rule = safeunicode(rule)
+                else:
+                        rule = safestr(rule)
+                self.content = re.compile(rule, re.I).sub("", self.content);
 
     def processingImage(self, image):
 	#首先处理图片层

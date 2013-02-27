@@ -473,7 +473,7 @@ class Document(object):
 		self.data['content'].value = content
 		self.data['images'] += content
 	    else:
-		content = Readability(content, self.url)
+		content = Readability(content, self.url, self.articleRule.filters)
 		images = content.getImages();
 
 		self.data['content'].value = content.getContent();
@@ -504,11 +504,11 @@ if __name__ == "__main__":
     db = Seed_Model();
 
     #文章测试
-    #r = db.view(2);
+    #r = db.view(34);
     #seed = Seed(r.list()[0])
     #articles = Grab(seed)
-    ##articles[md5("http://www.kaifu.com/articlecontent-40764-0.html").hexdigest()]
-    ##Document("http://www.kaifu.com/articlecontent-40389-0.html", seed)
+    #print articles[md5("http://www.265g.com/news/gamenews/321219.html").hexdigest()]
+    #Document("http://www.265g.com/newgame/abroad/320618.html", seed)
     #articles.push()
 
     #游戏测试
@@ -547,11 +547,11 @@ if __name__ == "__main__":
     #c.push()
 
     #图库
-    r = db.view(23)
-    seed = Seed(r.list()[0])
-    gas = Grab(seed)
-    for k in gas.keys():
-	print gas[k]
+    #r = db.view(23)
+    #seed = Seed(r.list()[0])
+    #gas = Grab(seed)
+    #for k in gas.keys():
+	#print gas[k]
     #gas.push()
 
     #r = db.view(24)
