@@ -102,9 +102,9 @@
           <label for="listtype" class="typecho-label">采集链接格式</label>
           <p>
             <select class="typecho-charset" name="listtype" id="listtype">
-              {% set listtypes = {"html":"普通 HTML 格式", "feed":"标准 RSS Feed 格式", "json":"JSON 格式"} %}
+              {% set listtypes = [("html","普通 HTML 格式"), ("feed","标准 RSS Feed 格式"), ("json","JSON 格式")] %}
               {% for listtype in listtypes %}
-              <option value="{{ listtype }}"{% if listtype == seed_data.listtype %} selected="true"{% endif %}>{{ listtypes[listtype] }}</option>
+              <option value="{{ listtype[0] }}"{% if listtype[0] == seed_data.listtype %} selected="true"{% endif %}>{{ listtype[1] }}</option>
               {% endfor %}
             </select>
           </p>

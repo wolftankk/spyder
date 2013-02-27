@@ -75,6 +75,7 @@ class Readability:
 	try:
 	    for e in self.tags(self.html, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
 		self.clean_attributes(e)
+		self.removeEmptyEl(e)
 	except:
 	    pass
 
@@ -133,6 +134,11 @@ class Readability:
 
     def removeLink(self):
 	self.html.remove("link");
+
+    def removeEmptyEl(self, element):
+        innerText = element.text
+        if innerText is None:
+        	element.getparent().remove(element)
 
     def clean_comments(self):
 	def clean_comment(i, element):
