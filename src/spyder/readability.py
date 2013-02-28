@@ -75,7 +75,7 @@ class Readability:
 	try:
 	    for e in self.tags(self.html, "hr", "font", "p", "span", "div", "ul", "li", "from", "iframe", "center"):
 		self.clean_attributes(e)
-		self.removeEmptyEl(e)
+		#self.removeEmptyEl(e)
 	except:
 	    pass
 
@@ -83,7 +83,7 @@ class Readability:
 	    self.processingImage(e)
 
     def getContent(self):
-	content = self.html.html();
+	content = self.html.html(method='html');
 
 	content = content.replace("<body>", "");
 	content = content.replace("</body>", "");
@@ -136,7 +136,7 @@ class Readability:
 	self.html.remove("link");
 
     def removeEmptyEl(self, element):
-        innerText = element.text
+        innerText = element.html
         if innerText is None:
         	element.getparent().remove(element)
 
