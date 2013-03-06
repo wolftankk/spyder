@@ -490,7 +490,7 @@ class Document(object):
 		    '过滤掉是javascript的链接'
                     if url and re.match(r"javascript", url) == None:
                         url = urlparse.urljoin(self.url, url)
-			if url not in urls:
+			if url != self.url and url not in urls:
 			    urls.append(url)
 		else:
 		    continue;
