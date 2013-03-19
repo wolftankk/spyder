@@ -229,7 +229,7 @@ class Grab(object):
         print "Start to fetch and parse List"
 	urls = self.listRule.getListUrls()
         for url in urls:
-	    print "Fetching list page：", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
+	    print "Fetching list page: ", url, "charset:", safestr(self.seed["charset"]), "timeout:", safestr(self.seed["timeout"])
             f = Fetch(url, charset = self.seed["charset"], timeout = self.seed["timeout"])
 	    if f.isReady():
 		doc = f.read()

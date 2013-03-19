@@ -17,10 +17,30 @@ import time
 
 seed_db = Seed_Model()
 log_db = Seed_log()
+next_queue = []
+
+def scrapy(seed):
+    sid = seed["sid"]
+    frequency = seed["frequency"]
+    starttime = seed["start_time"]
+    finishtime = seed["finish_time"]
+    starttime = now()
+    s = Seed(seed)
+    try:
+	g = Grab(s)
+	g.push()
+	finishtime = now()
+	next_queue.append(finishtime + frequency)
+
+	seed_db.edit(sid, **{"start_time":starttime, "finish_time":finishtime})
+	log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : finishtime, "`status`" : 1, "message" : "采集成功"})
+	return True
+    except Exception, e:
+	log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : now(), "`status`" : 0, "message" : "采集失败, 原因:" + str(e)})
+	return False
 
 def run():
     r = seed_db.select()
-    next_queue = []
     if (len(r)):
 	seedList = r.list()
 	for seed in seedList:
@@ -32,18 +52,8 @@ def run():
 	    if seed["enabled"] == 1:
 		if (frequency + finishtime) <= now():
 
-		    starttime = now()
-		    s = Seed(seed)
-		    try:
-			g = Grab(s)
-			g.push()
-			finishtime = now()
-			next_queue.append(finishtime + frequency)
-
-			seed_db.edit(sid, **{"start_time":starttime, "finish_time":finishtime})
-			log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : finishtime, "`status`" : 1, "message" : "采集成功"})
-		    except Exception, e:
-			log_db.insert(**{"sid" : sid, "start_time" : starttime, "finish_time" : now(), "`status`" : 0, "message" : "采集失败, 原因:" + str(e)})
+		    if not scrapy(seed):
+		    	scrapy(seed)
 
 		else:
 		    next_queue.append(finishtime + frequency)
@@ -55,7 +65,7 @@ def run():
 	    if next_time <= 0:
 		next_time = 1
 
-	print "进入Idle状态, 下次启动需要等待:", next_time
+	print "Idle status, waitting for ", next_time
 	time.sleep(next_time)
 
 	run()
