@@ -33,7 +33,7 @@ class article_template(Model):
     '''
     用于快速创建一个插入到外部数据库的model模板类
     '''
-    def __init__(self, db_config, table_name):	
+    def __init__(self, db_config, table_name):
 	self.db_config = db_config
 	self.db_setting = 'default'
 	self._table_name = table_name
@@ -107,7 +107,7 @@ class Site(object):
 		image_abs_path = os.path.join(abs_path, image_name)
 		image.save(image_abs_path)
 
-		#print image_abs_path, image_relative_path
+		#async upload
 		uploader.upload_image(self.upload_handler, image_abs_path, image_relative_path)
 
 		for field in insert_data:
@@ -185,7 +185,7 @@ class Site(object):
 	    
 		#处理数据， 看数据中的图片是否需要上传
 		insert_data = self.upload_media(insert_data, data)
-
+		
 		try:
 		    db.insert(**insert_data)
 		except:

@@ -522,6 +522,8 @@ if __name__ == "__main__":
     #r = db.view(8);
     #seed = Seed(r.list()[0])
     #kaifus = Grab(seed)
+    #for k in kaifus.keys():
+    #	kaifus[k]
     #kaifus.push()
     #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
 
