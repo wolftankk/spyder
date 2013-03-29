@@ -36,10 +36,9 @@ class scrapy(Thread):
 	self.starttime = now();
 	
 	try:
-	    if not self.g:
-	        self.g = Grab(self.seed)
+	    g = Grab(self.seed)
 	    #发布到外网
-	    self.g.push()
+	    g.push()
 	    self.finishtime = now()
 	    seed_db.edit(self.sid, **{"start_time": self.starttime, "finish_time": self.finishtime})
 	    log_db.insert(**{"sid" : self.sid, "start_time" : self.starttime, "finish_time" : self.finishtime, "`status`" : 1, "message" : "采集成功"})
