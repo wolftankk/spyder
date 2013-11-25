@@ -1,4 +1,11 @@
 #coding: utf-8
+'''
+Local variables:
+tab-width: 4
+c-basic-offset: 4
+End:
+vim600: sw=4 ts=8
+'''
 import os, sys
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if parentdir not in sys.path:
