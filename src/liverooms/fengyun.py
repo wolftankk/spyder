@@ -39,11 +39,11 @@ def fengyun(url, roomid):
 			isLiving = "false"
 		    else:
 			isLiving = "true"
-
 		    r = Tga(roomid, url, broadCastTitle, isLiving)
 		    r.publishTgaRoom();
 
 	gameChannelList.find('li').children().map(entry)
+
 
 if __name__ == '__main__':
     fengyun('http://www.fengyunzhibo.com/tv/plusc2.htm', '15962')
