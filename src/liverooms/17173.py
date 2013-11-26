@@ -13,23 +13,33 @@ if parentdir not in sys.path:
 专门抓17173的房间直播状态
 '''
 
-from libs.utils import now
 from spyder.fetch import Fetch
-from hashlib import md5
+from liverooms.tga import Tga
+import re
 import json
 import time
 
-def publishTgaRoom():
-    '''publish'''
-    
+def v17173(url, roomid):
+    partten = re.compile('http:\/\/v\.17173\.com\/live\/(\d+)\/(\d+)')
+    jsonurl_tpl = "http://v.17173.com/live/l_jsonData.action?liveRoomId=%s"
 
+    results = partten.match(url);
+    if not results is None:
+	lroomid = results.group(2)
+	if lroomid > 0:
+	    jsonurl = jsonurl_tpl % lroomid
+	    content = Fetch(jsonurl, charset = 'utf-8', timeout = 300).read()
+	    if (content):
+		data = json.loads(content)
+		liveInfo = data['obj']['liveInfo']['live']
+		if "liveStatus" in liveInfo:
+		    broadCastTitle = liveInfo['liveTitle']
+		    isLiving = "true"
+		else:
+		    broadCastTitle = "stop"
+		    isLiving = "false"
 
-def checkLiveStatus(roomid):
-    roomid = int(roomid);
-    url = "http://v.17173.com/live/l_jsonData.action?liveRoomId=%d" % roomid
-    content = Fetch(url, charset = 'utf-8', timeout = 300).read()
-    if (content):
-        data = json.loads(content)
-        liveInfo = data['obj']['liveInfo']['live']
+		r = Tga(roomid, url, broadCastTitle, isLiving)
+		r.publishTgaRoom();
 
-checkLiveStatus(2173011702)
+v17173('http://v.17173.com/live/17322102/2173011702', '14168');
