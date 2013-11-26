@@ -42,4 +42,7 @@ def v17173(url, roomid):
 		r = Tga(roomid, url, broadCastTitle, isLiving)
 		r.publishTgaRoom();
 
-v17173('http://v.17173.com/live/17322102/2173011702', '14168');
+
+if __name__ == "__main__":
+    #test
+    v17173('http://v.17173.com/live/17322102/2173011702', '14168');
