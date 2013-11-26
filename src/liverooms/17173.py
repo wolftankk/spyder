@@ -17,7 +17,6 @@ from spyder.fetch import Fetch
 from liverooms.tga import Tga
 import re
 import json
-import time
 
 def v17173(url, roomid):
     partten = re.compile('http:\/\/v\.17173\.com\/live\/(\d+)\/(\d+)')
