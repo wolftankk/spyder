@@ -38,6 +38,7 @@ def v17173(url, roomid):
 		    broadCastTitle = "stop"
 		    isLiving = "false"
 
+                broadCastTitle = broadCastTitle.encode('utf-8')
 		r = Tga(roomid, url, broadCastTitle, isLiving)
 		r.publishTgaRoom();
 
