@@ -18,6 +18,7 @@ from liverooms.tga import Tga
 import re
 import json
 
+_cids = {}
 def v17173(url, roomid):
     partten = re.compile('http:\/\/v\.17173\.com\/live\/(\d+)\/(\d+)')
     jsonurl_tpl = "http://v.17173.com/live/l_jsonData.action?liveRoomId=%s"
@@ -34,6 +35,11 @@ def v17173(url, roomid):
 		if "liveStatus" in liveInfo:
 		    broadCastTitle = liveInfo['liveTitle']
 		    isLiving = "true"
+                    if (roomid not in _cids) or (_cids[roomid] != liveInfo['cId']):
+                        #stop
+                        r = Tga(roomid, url, "stop", 'false')
+                        r.publishTgaRoom();
+                    _cids[roomid] = liveInfo['cId']
 		else:
 		    broadCastTitle = "stop"
 		    isLiving = "false"
@@ -45,5 +51,6 @@ def v17173(url, roomid):
 
 if __name__ == "__main__":
     #test
-    v17173('http://v.17173.com/live/17322102/2173011702', '14168')
-    v17173('http://v.17173.com/live/17320204/2173009804', '21')
+    #v17173('http://v.17173.com/live/17322102/2173011702', '14168')
+    #v17173('http://v.17173.com/live/17320204/2173009804', '21')
+    v17173('http://v.17173.com/live/17374105/2173065405', '14168')

@@ -5,6 +5,7 @@ from multiprocessing import Pool, TimeoutError
 from .qbox import qbox
 from .aliyun import aliyun
 from .ftp import ftp
+from .http import http
 
 class UnknownUploader(Exception):
     pass

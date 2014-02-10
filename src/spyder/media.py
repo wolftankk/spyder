@@ -22,9 +22,8 @@ __all__ = [
 ]
 
 class Image(object):
-    def __init__(self, url):
-        self.mediaUrl = url
-
+    def __init__(self, path, isRemote = True):
+        self.mediaUrl = path
 	if isinstance(self.mediaUrl, unicode):
 	    self.mediaUrl = self.mediaUrl.replace(u"。", ".")
 	    self.mediaUrl = self.mediaUrl.encode("ascii", "ignore")
@@ -32,7 +31,12 @@ class Image(object):
 	#新的图片名称
 	self.filename = None
 	self.fetched = False
-        self.fetchMedia()
+
+        if isRemote:
+            self.fetchMedia()
+        else:
+            #local
+            self.loadMediaFromLocale();
 
     def getMediaUrl(self):
         return self.mediaUrl
@@ -44,6 +48,11 @@ class Image(object):
 	    self.mediaData = self.media.read()
 	    self.urlinfo = self.media.info()
 	    self.fetched = True
+
+    def loadMediaFromLocale(self):
+        '''
+
+        '''
 
     def save(self, file_path):
 	if not os.path.exists(file_path):

@@ -24,17 +24,22 @@ def twitch(url, roomid):
         api_url = api_url % channel
         content = Fetch(api_url).read()
         data = json.loads(content)
-        broadCastTitle = "";
+        broadCastTitle = "close";
         broadCastAddress = url
         isLiving = "false"
+        preview = '';
         if data['stream'] is not None:
             broadCastTitle = data['stream']['channel']['status']
             broadCastAddress = data['stream']['channel']['url']
             isLiving = "true"
+            if data['stream']['preview'] is not None:
+                preview = data['stream']['preview']['medium'];
 
-        r = Tga(roomid, broadCastAddress, broadCastTitle, isLiving)
+        r = Tga(roomid, broadCastAddress, broadCastTitle, isLiving, preview)
         r.publishTgaRoom()
 
 if __name__ == "__main__":
-    twitch('http://www.twitch.tv/tsm_theoddone/profile', '14168');
-    #twitch('http://www.twitch.tv/kaceytron/profile', '14168');
+    #twitch('http://www.twitch.tv/tsm_theoddone/profile', '14168');
+    #twitch('http://www.twitch.tv/charleet/profile', '14168');
+    #twitch('http://www.twitch.tv/riotgames/profile', '14168');
+    twitch('http://www.twitch.tv/kaceytron/profile', '14168');
