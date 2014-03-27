@@ -74,19 +74,19 @@ class Seed(object):
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
 
-    #def getGUID(self):
-    #    #how defines the item's guid?
-    #    if self.__seed["guid_rule"]:
-    #        guid_rule = self.__seed["guid_rule"].split(",")
-    #        guid_rule = map(lambda x: int(x), guid_rule)
-    #        return guid_rule
-    #    return None
+    def getGUID(self):
+        #how defines the item's guid?
+        if self["guid_rule"]:
+            guid_rule = self.__seed["guid_rule"].split(",")
+            guid_rule = map(lambda x: int(x), guid_rule)
+            return guid_rule
+        return None
 
     def set_tags(self, tags):
         self.tags = tags
 
     def get_tags(self):
-        return self.tags
+        self.tags = []
 	#st_db = Seed_tag()
 	#tag_db = Tags()
 
@@ -132,18 +132,13 @@ class RuleList(object):
 	#filter hook
 	self.filters = []
 
-	extrarules = self.parent.extrarules
-	for i, rule in enumerate(extrarules):
-	    if rule and rule["page_type"] == "list":
-		# field id
-		field_id = rule["field_id"]
-		# rule
-		value = rule["value"]
-		# need fetch all data
-		fetch_all = rule["fetch_all"]
-
-		self.extrarules.append((field_id, value, fetch_all))
-
+        if "extrarules" in self.parent.rule:
+            extrarules = self.parent.rule["extrarules"]
+            for i, field in enumerate(extrarules):
+                if field:
+                    title, value, fetch_all, page_type = field
+                    if page_type == "list":
+                	self.extrarules.append(field)
 
     def getListParent(self):
 	rule = self.parent.rule;
@@ -280,13 +275,7 @@ class Rule(object):
 	extrarules 额外规则表
 	这些额外的规则是动态的， 每个都有一个field id
 	'''
-	#field_db = Seed_fields()
-	#r = field_db.list(seed["sid"])
-	#if len(r) > 0:
-	#    self.extrarules = r.list();
-	#
-        self.extrarules = []
-	self.rule = config;
+        self.rule = config;
         self.seed = seed
 
     def getListRule(self):
@@ -300,40 +289,5 @@ class Rule(object):
 
 
 if __name__ == "__main__":
+    print "seed"
     #配置
-    config = {
-        'listtype': u'html',
-        'tries': 5L,
-        'frequency': 7200L,
-        'lang': u'zhCN',
-        'seed_name': u'测试抓取',
-        'enabled': 1L,
-        'timeout': 5L,
-        'sid': 1000L
-    }
-
-    rule_config = {
-        'urlformat': 'http://www.douyu.tv/directory/all?offset=$page&limit=30',
-        'pageparent': '',
-        'maxpage': 10,
-        'step': 30,
-        'startpage': 0,
-        'contenturl': '',
-        'listparent': '',
-        'urltype': 'createLink',#链接模式
-        'contentparent': '',
-        'zero': 1,
-        'entryparent': '',
-        'filters': [
-            #filterid, value, fetch_all, type(content/list)
-            (1, "div[class='newsinfo'] h1.text()", '1', 'content')    
-        ]
-    }
-
-    config['rule'] = rule_config;
-
-    t = Seed(config);
-
-    r = t.getRule();
-    a = r.getListRule();
-    print a.getListUrls();

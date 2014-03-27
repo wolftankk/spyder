@@ -29,14 +29,16 @@ _fields_cache = defaultdict(weakref.WeakKeyDictionary)
 
 class Field(dict):
     def __init__(self, **kwargs):
-	if kwargs['field_id']:
-	    field_id = kwargs['field_id']
-	    data = get_field_from_cache(field_id)
+	#if kwargs['field_id']:
+	#    field_id = kwargs['field_id']
+	#    data = get_field_from_cache(field_id)
 
-	    #直接赋值到self中
-	    if data is not None:
-		for k in data:
-		    self[k] = data[k]
+	#    #直接赋值到self中
+	#    if data is not None:
+	#	for k in data:
+	#	    self[k] = data[k]
+        if kwargs['field_name']:
+            self['name'] = kwargs['field_name']
 		    
 	if kwargs['rule']:
 	    self["rule"] = kwargs['rule']

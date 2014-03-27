@@ -261,7 +261,7 @@ class Grab(object):
             def entry(i, e):
                 #link
                 urlParent = self.listRule.getContentUrl()
-		 
+
 		if e.tag == "a":
 		    link = e.get("href")
 		else:
@@ -275,8 +275,8 @@ class Grab(object):
 		    "images" : []
 		})
 
-		for field_id, _rule, fetch_all in extrarules:
-		    field = Field(field_id = field_id, rule=_rule)
+		for field_name, _rule, fetch_all, page_type in extrarules:
+		    field = Field(field_name = field_name, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
 		    #TODO:
 		    # filter HOOK
@@ -311,6 +311,7 @@ class Grab(object):
 	try:
 	    doc = json.loads(doc, encoding=site.getCharset())
 	    item = self.listRule.getEntryItem()
+
 	    if item and item in doc:
 		data = doc[item]
 	    else:
@@ -358,6 +359,8 @@ class Grab(object):
 			    self.guid_rule = None
 			
 			self.items[guid] = _item
+            else:
+                self.items = data
 	except:
 	    raise "Cant parse json file"
 
@@ -365,7 +368,12 @@ class Grab(object):
 	'''
 	    获取列表中有多少数据量
 	'''
-	return len(self.items.items())
+        if isinstance(self.items, list):
+            return len(self.items)
+        elif isinstance(self.items, dict):
+            return len(self.items.items())
+        else:
+            return 0
 
     def keys(self):
 	return self.items.keys()
@@ -505,9 +513,7 @@ class Document(object):
 
 
 if __name__ == "__main__":
-    from web.models import Seed as Seed_Model
-    db = Seed_Model();
-
+    print "test"
     #文章测试
     #r = db.view(34);
     #seed = Seed(r.list()[0])
