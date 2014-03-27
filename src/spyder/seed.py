@@ -13,9 +13,9 @@ import re, string, urlparse
 from libs.phpserialize import unserialize
 from libs.utils import Storage
 
-from web.models import Seed_fields
-from web.models import Seed_tag
-from web.models import Tags
+#from web.models import Seed_fields
+#from web.models import Seed_tag
+#from web.models import Tags
 
 __all__ = [
     'SeedEmpty', 'Seed', 'Rule',
@@ -53,17 +53,17 @@ class RuleEmpty(Exception):
 '''
 种子管理类
 分析种子， 将种子中的Rule分析出来
+种子管理器是与数据库分开的
+每个sid都需要一个sid和name
 '''
 class Seed(object):
-    def __init__(self, seed={}):
-	if isinstance(seed, Storage) or isinstance(seed, object):
-	    if ("sid" not in seed) or ("sid" in seed and int(seed["sid"]) <= 0):
+    def __init__(self, config={}):
+	if isinstance(config, Storage) or isinstance(config, object):
+	    if ("sid" not in config) or ("sid" in config and int(config["sid"]) <= 0):
 		raise SeedEmpty
 
-	    self.__seed = seed;
-
-	    self.get_tags()
-	    self.name = self.__seed["seed_name"].encode("utf-8")
+	    self.__seed = config;
+	    self.name = config["seed_name"].encode("utf-8")
 	else:
 	    raise SeedError("Seed instance error.")
 
@@ -81,16 +81,19 @@ class Seed(object):
 	    return guid_rule
 	return None
 
-    def get_tags(self):
-	self.tags = [];
-	st_db = Seed_tag()
-	tag_db = Tags()
+    def set_tags(self, tags):
+        self.tags = tags
 
-	query = st_db.select(where={"sid" :self["sid"]}, what="tid")
-	r = query.list()
-	for t in r:
-	    if t and "tid" in t:
-		self.tags.append(tag_db.view(t["tid"]).list()[0]["name"])
+    def get_tags(self):
+        return self.tags
+	#st_db = Seed_tag()
+	#tag_db = Tags()
+
+	#query = st_db.select(where={"sid" :self["sid"]}, what="tid")
+	#r = query.list()
+	#for t in r:
+	#    if t and "tid" in t:
+	#	self.tags.append(tag_db.view(t["tid"]).list()[0]["name"])
 
     def __getitem__(self, k):
 	if k in self.__seed:
@@ -301,14 +304,29 @@ class RuleArticle(object):
 
 
 if __name__ == "__main__":
-    from web.models import Seed as Seed_Model
-    db = Seed_Model();
-    r = db.view(8);
-    t = Seed(r.list()[0])
-    
-    # test Seed info
-    rule = t.getRule();
-    #test rule
-    rule.getListRule();
-    #test article
-    rule.getArticleRule();
+    config = {
+        'listtype': u'html',
+        'tries': 5L,
+        'frequency': 7200L,
+        'lang': u'zhCN',
+        'seed_name': u'测试抓取',
+        'enabled': 1L,
+        'timeout': 5L,
+        'sid': 1000L
+    }
+
+    t = Seed(config);
+
+    print t
+
+    #from web.models import Seed as Seed_Model
+    #db = Seed_Model();
+    #r = db.view(8);
+    #t = Seed(r.list()[0])
+    #
+    ## test Seed info
+    #rule = t.getRule();
+    ##test rule
+    #rule.getListRule();
+    ##test article
+    #rule.getArticleRule();
