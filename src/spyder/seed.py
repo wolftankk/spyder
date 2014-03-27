@@ -50,6 +50,7 @@ class RuleError(Exception):
 class RuleEmpty(Exception):
     pass
 
+
 '''
 种子管理类
 分析种子， 将种子中的Rule分析出来
@@ -73,13 +74,13 @@ class Seed(object):
     def __repr__(self):
 	return '<seed: %s>' % repr(str(self))
 
-    def getGUID(self):
-	#how defines the item's guid?
-	if self.__seed["guid_rule"]:
-	    guid_rule = self.__seed["guid_rule"].split(",")
-	    guid_rule = map(lambda x: int(x), guid_rule)
-	    return guid_rule
-	return None
+    #def getGUID(self):
+    #    #how defines the item's guid?
+    #    if self.__seed["guid_rule"]:
+    #        guid_rule = self.__seed["guid_rule"].split(",")
+    #        guid_rule = map(lambda x: int(x), guid_rule)
+    #        return guid_rule
+    #    return None
 
     def set_tags(self, tags):
         self.tags = tags
@@ -110,42 +111,9 @@ class Seed(object):
 
     def getRule(self):
 	rule = Rule(self["rule"], self)
-	return rule
+        return rule
 
 
-'''
-采集规则表
-Base Rule
-'''
-class Rule(object):
-    db = None
-    def __init__(self, rule, seed):
-	if not rule:
-	    raise RuleEmpty
-
-	self.seed = seed;
-
-	'''
-	extrarules 额外规则表
-	这些额外的规则是动态的， 每个都有一个field id
-	'''
-	field_db = Seed_fields()
-	r = field_db.list(seed["sid"])
-	if len(r) > 0:
-	    self.extrarules = r.list();
-	
-        rule = rule.encode("utf-8");
-        rule = unserialize(rule, decode_strings=True)
-	self.rule = rule;
-
-    def getListRule(self):
-        return RuleList(self)
-
-    def getArticleRule(self):
-        return RuleArticle(self)
-
-    def __str__(self):
-	return '<%s 的规则>' % str(self.seed)
 
 r'''
 List一共有三种类型：feed, html, json
@@ -156,14 +124,11 @@ List一共有三种类型：feed, html, json
 class RuleList(object):
     def __init__(self, parent):
         self.parent = parent
-	
 	#Rule type
 	# kaifu, kaice, article, gallery...
         self.type = parent.seed["listtype"];
-	
 	#need parse and get field
 	self.extrarules = []
-
 	#filter hook
 	self.filters = []
 
@@ -269,7 +234,6 @@ class RuleList(object):
 	        listUrls.append(url)
 	else:
 	    raise RuleError("URL类型无效");
-
         return listUrls
 
 '''
@@ -303,7 +267,40 @@ class RuleArticle(object):
             self.filters = []
 
 
+'''
+采集规则表
+Base Rule
+'''
+class Rule(object):
+    def __init__(self, config, seed):
+	if not config:
+	    raise RuleEmpty
+
+	'''
+	extrarules 额外规则表
+	这些额外的规则是动态的， 每个都有一个field id
+	'''
+	#field_db = Seed_fields()
+	#r = field_db.list(seed["sid"])
+	#if len(r) > 0:
+	#    self.extrarules = r.list();
+	#
+        self.extrarules = []
+	self.rule = config;
+        self.seed = seed
+
+    def getListRule(self):
+        return RuleList(self)
+
+    def getArticleRule(self):
+        return RuleArticle(self)
+
+    def __str__(self):
+	return '<%s 的规则>' % str(self.seed)
+
+
 if __name__ == "__main__":
+    #配置
     config = {
         'listtype': u'html',
         'tries': 5L,
@@ -315,18 +312,28 @@ if __name__ == "__main__":
         'sid': 1000L
     }
 
+    rule_config = {
+        'urlformat': 'http://www.douyu.tv/directory/all?offset=$page&limit=30',
+        'pageparent': '',
+        'maxpage': 10,
+        'step': 30,
+        'startpage': 0,
+        'contenturl': '',
+        'listparent': '',
+        'urltype': 'createLink',#链接模式
+        'contentparent': '',
+        'zero': 1,
+        'entryparent': '',
+        'filters': [
+            #filterid, value, fetch_all, type(content/list)
+            (1, "div[class='newsinfo'] h1.text()", '1', 'content')    
+        ]
+    }
+
+    config['rule'] = rule_config;
+
     t = Seed(config);
 
-    print t
-
-    #from web.models import Seed as Seed_Model
-    #db = Seed_Model();
-    #r = db.view(8);
-    #t = Seed(r.list()[0])
-    #
-    ## test Seed info
-    #rule = t.getRule();
-    ##test rule
-    #rule.getListRule();
-    ##test article
-    #rule.getArticleRule();
+    r = t.getRule();
+    a = r.getListRule();
+    print a.getListUrls();
