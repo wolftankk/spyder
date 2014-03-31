@@ -360,7 +360,10 @@ class Grab(object):
 			
 			self.items[guid] = _item
             else:
-                self.items = data
+                if isinstance(self.items, dict):
+                    self.items = [];
+
+                self.items.append(data)
 	except:
 	    raise "Cant parse json file"
 
