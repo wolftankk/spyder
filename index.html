@@ -28,18 +28,72 @@
 
     <div class="container">
       <section id="main_content">
-        <h1>Spyder</h1>
+        <h1>
+<a name="spyder" class="anchor" href="#spyder"><span class="octicon octicon-link"></span></a>Spyder</h1>
 
-<p>Another website spiders</p>
+<p>Spyder, Python开发的一套爬虫程序。使用灵活，通过dom选择器，可以灵活获取页面所需要的内容。同时配合filters、recipes让你抓取的内容更符合你的心里所需。</p>
 
-<h2>Require</h2>
+<h2>
+<a name="build-status" class="anchor" href="#build-status"><span class="octicon octicon-link"></span></a>Build Status</h2>
+
+<p><a href="https://travis-ci.org/wolftankk/spyder"><img src="https://travis-ci.org/wolftankk/spyder.png?branch=master" alt="Build Status"></a></p>
+
+<h2>
+<a name="%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85" class="anchor" href="#%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85"><span class="octicon octicon-link"></span></a>如何安装</h2>
 
 <ul>
-<li>Flask</li>
-<li>Jinja2</li>
-<li>lxml</li>
-<li>mysql-python</li>
-</ul>
+<li>Python 2.7</li>
+<li>pip &gt; 1.3</li>
+<li><code>pip install -r requirements.txt</code></li>
+</ul><h2>
+<a name="%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8" class="anchor" href="#%E7%AC%AC%E4%B8%80%E6%AC%A1%E4%BD%BF%E7%94%A8"><span class="octicon octicon-link"></span></a>第一次使用？</h2>
+
+<p>Spyder提供了Web和CLI两种模式。使用起来非常简单。</p>
+
+<div class="highlight highlight-python"><pre><span class="kn">from</span> <span class="nn">spyder.seed</span> <span class="kn">import</span> <span class="n">Seed</span>
+<span class="kn">from</span> <span class="nn">spyder.document</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">config</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s">'listtype'</span><span class="p">:</span> <span class="s">u'html'</span><span class="p">,</span>
+    <span class="s">'tries'</span><span class="p">:</span> <span class="il">5L</span><span class="p">,</span>
+    <span class="s">'frequency'</span><span class="p">:</span> <span class="il">7200L</span><span class="p">,</span>
+    <span class="s">'lang'</span><span class="p">:</span> <span class="s">u'zhCN'</span><span class="p">,</span>
+    <span class="s">'name'</span><span class="p">:</span> <span class="s">u'163新闻'</span><span class="p">,</span>
+    <span class="s">'enabled'</span><span class="p">:</span> <span class="il">1L</span><span class="p">,</span>
+    <span class="s">'type'</span> <span class="p">:</span> <span class="s">'news'</span><span class="p">,</span>
+    <span class="s">'charset'</span><span class="p">:</span> <span class="s">'gb2312'</span><span class="p">,</span>
+    <span class="s">'rule'</span><span class="p">:</span> <span class="p">{</span>
+        <span class="s">'urlformat'</span><span class="p">:</span> <span class="s">'http://news.163.com'</span><span class="p">,</span>
+        <span class="s">'pageparent'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="c">#文章翻页模板</span>
+            <span class="s">'maxpage'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s">'step'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s">'startpage'</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+        <span class="s">'contenturl'</span><span class="p">:</span> <span class="s">''</span><span class="p">,</span> <span class="c">#指定需要抓取的url链接，默认情况下是不需要的</span>
+            <span class="s">'listparent'</span><span class="p">:</span> <span class="s">'div[class="ent-sports mod"]'</span><span class="p">,</span><span class="c">#列表</span>
+            <span class="s">'urltype'</span><span class="p">:</span> <span class="s">'inputLink'</span><span class="p">,</span><span class="c">#链接模式</span>
+            <span class="s">'contentparent'</span><span class="p">:</span> <span class="s">'div[id="epContentLeft"]'</span><span class="p">,</span>
+        <span class="s">'entryparent'</span><span class="p">:</span> <span class="s">'ul[class="mod-list main-list"] li a'</span><span class="p">,</span> <span class="c">#进一步列表过滤</span>
+            <span class="s">'filters'</span><span class="p">:</span> <span class="p">[</span> <span class="c">#过滤器，用于对文本内容的格式化</span>
+            <span class="p">],</span>
+        <span class="s">'extrarules'</span><span class="p">:[</span>
+            <span class="p">(</span><span class="s">'title'</span><span class="p">,</span> <span class="s">'h1[id="h1title"].text()'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'content'</span><span class="p">),</span>
+        <span class="p">(</span><span class="s">'content'</span><span class="p">,</span> <span class="s">'div[id="endText"].html()'</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="s">'content'</span><span class="p">)</span>
+            <span class="p">]</span>
+    <span class="p">},</span>
+    <span class="s">'timeout'</span><span class="p">:</span> <span class="il">5L</span><span class="p">,</span>
+    <span class="s">'sid'</span><span class="p">:</span> <span class="il">1000L</span>
+<span class="p">}</span>
+<span class="n">seed</span> <span class="o">=</span> <span class="n">Seed</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">seed</span><span class="o">.</span><span class="n">set_tags</span><span class="p">(</span><span class="s">'国内新闻'</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">seed</span><span class="o">.</span><span class="n">tags</span>
+<span class="n">items</span> <span class="o">=</span> <span class="n">Grab</span><span class="p">(</span><span class="n">seed</span><span class="p">)</span>
+<span class="k">print</span> <span class="n">items</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+</pre></div>
+
+<h2>
+<a name="%E5%8D%8F%E5%8A%A9" class="anchor" href="#%E5%8D%8F%E5%8A%A9"><span class="octicon octicon-link"></span></a>协助</h2>
+
+<p>如果你对此项目有兴趣，欢迎一些参与进来。</p>
       </section>
     </div>
 
