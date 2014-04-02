@@ -4,24 +4,18 @@
 vim: ts=8
 '''
 
-import os, sys
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parentdir not in sys.path:
-    sys.path.insert(0,parentdir) 
-
 import re, urlparse
 from hashlib import md5
-
-import spyder.feedparser as feedparser
-from spyder.pyquery import PyQuery as pq
-from spyder.pybits import ansicolor
-from libs.utils import safestr, safeunicode
-from spyder.fetch import Fetch
-from spyder.readability import Readability
-from spyder.seed import Seed
 import json
-from spyder.field import Field, Item
-from spyder.publish import publish_server
+
+import feedparser as feedparser
+from pyquery import PyQuery as pq
+from pybits import ansicolor
+from utils import safestr, safeunicode
+from fetch import Fetch
+from readability import Readability
+from seed import Seed
+from field import Field, Item
 
 __all__ = [
     "getElementData",
@@ -162,10 +156,6 @@ g = Grab(seed)
 g[guid]
 """
 class Grab(object):
-    dont_craw_content = [
-	'kaifu', 'kaice', "gift"
-    ]
-
     def __init__(self, seed):
 	if isinstance(seed, Seed):
 	    self.items = {}

@@ -2,20 +2,13 @@
 #vim: set ts=8
 #Author: wolftankk@gmail.com
 
-import os, sys
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parentdir not in sys.path:
-    sys.path.insert(0,parentdir) 
-
-from spyder.pybits import ansicolor
+from pybits import ansicolor
 import re, string, urlparse
-from libs.phpserialize import unserialize
-from libs.utils import Storage
+from utils import Storage
 
 __all__ = [
     'SeedEmpty', 'Seed', 'Rule',
-    'RuleCantParse', 'RuleEmpty'
-    'SeedError'
+    'RuleEmpty', 'SeedError'
 ]
 
 '''
@@ -61,7 +54,7 @@ class Seed(object):
 		raise SeedEmpty
 
 	    self.__seed = config;
-	    self.name = config["seed_name"].encode("utf-8")
+	    self.name = config["name"].encode("utf-8")
 	else:
 	    raise SeedError("Seed instance error.")
 
@@ -239,8 +232,7 @@ class RuleArticle(object):
                 	self.extrarules.append(field)
 
         #if "filters" in parent.rule:
-        #    if parent.rule["filters"]:
-        #        parent.rule["filters"] = parent.rule["filters"].split("|");
+        #    print parent.rule["filters"]
 	#        for f in parent.rule["filters"]:
 	#	      self.filters.append(f)
 
@@ -268,8 +260,3 @@ class Rule(object):
 
     def __str__(self):
 	return '<%s 的规则>' % str(self.seed)
-
-
-if __name__ == "__main__":
-    print "seed"
-    #配置
