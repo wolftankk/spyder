@@ -20,7 +20,7 @@ from spyder.fetch import Fetch
 from spyder.readability import Readability
 from spyder.seed import Seed
 import json
-from spyder.field import Field, Item, get_field_from_cache
+from spyder.field import Field, Item
 from spyder.publish import publish_server
 
 __all__ = [
@@ -193,15 +193,18 @@ class Grab(object):
 	s = "";
 
 	if isinstance(guid_rule, list):
-	    for field_id in guid_rule:
-		field = get_field_from_cache(field_id)
-		if field:
-		    field_name = field["name"]
-		    if field_name and data[field_name]:
-			if "value" in data[field_name] and data[field_name].value:
-			    s += safestr(data[field_name].value)
-			elif data[field_name] and isinstance(data[field_name], unicode) and isinstance(data[field_name], str):
-			    s += safestr(data[field_name])
+	    #for field_id in guid_rule:
+	    #    field = get_field_from_cache(field_id)
+	    #    if field:
+	    #        field_name = field["name"]
+	    #        if field_name and data[field_name]:
+	    #    	if "value" in data[field_name] and data[field_name].value:
+	    #    	    s += safestr(data[field_name].value)
+	    #    	elif data[field_name] and isinstance(data[field_name], unicode) and isinstance(data[field_name], str):
+	    #    	    s += safestr(data[field_name])
+            '''
+            TODO
+            '''
 
 	elif isinstance(guid_rule, str) or isinstance(guid_rule, unicode):
 	    s = data[guid_rule]

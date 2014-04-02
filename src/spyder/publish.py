@@ -24,7 +24,6 @@ from web.model import Model
 
 from spyder.pyquery import PyQuery as pq
 from spyder.pybits import ansicolor
-from spyder.field import get_field_from_cache
 import spyder.recipes as recipes
 from spyder.media import Image
 from spyder import uploader
@@ -125,14 +124,14 @@ class Site(object):
 	new_field = {}
 	table_name = None
 
-	for f in field_map:
-	    if f["field_id"] and f["site_field"]:
-		if table_name is None:
-		    table_name = f["table_name"]
+	#for f in field_map:
+	#    if f["field_id"] and f["site_field"]:
+	#	if table_name is None:
+	#	    table_name = f["table_name"]
 
-		new_field[f["site_field"]] = get_field_from_cache(f["field_id"])
-	
-	return table_name, new_field
+	#	new_field[f["site_field"]] = get_field_from_cache(f["field_id"])
+	#
+	#return table_name, new_field
 
     def post_to_mysql(self, guid, data, field_map):
 	seed_type = data["type"]
