@@ -1,20 +1,12 @@
 #coding: utf-8
-
-'''
-vim: ts=8
-'''
-
-import os, sys
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parentdir not in sys.path:
-    sys.path.insert(0,parentdir) 
+#vim: set ts=8
+#Author: wolftankk@gmail.com
 
 import urllib2, urlparse, re, socket, zlib
 from gzip import GzipFile
 from StringIO import StringIO
-
-from spyder.pyquery import PyQuery as pq
-from spyder.pybits import ansicolor
+from pyquery import PyQuery as pq
+from pybits import ansicolor
 
 __all__ = [
     'Fetch', 'opener', "ConnectError"
@@ -128,39 +120,36 @@ class Fetch(object):
     def read(self):
         if self.site:
             doc = self.site.read()
+            content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
             try:
                 doc = doc.decode(self.charset);
                 return doc
             except UnicodeDecodeError, e:
-                #读取里面的metadata
+                #html4
                 content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
                 result = None
                 if content:
                     # html 
                     result = re.match(r'text\/html;\s+?charset=(.+)?', content)
                 else:
-                    # rss
-                    #<?xml version="1.0" encoding="gb2312"?>
-                    result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
+                    #html5
+                    content = pq(doc).find("meta").attr("charset");
+                    if content:
+                        charset = content
+                        self.charset = charset
+                    else:
+                        # rss
+                        #<?xml version="1.0" encoding="gb2312"?>
+                        result = re.match(r'<\?xml\s+?version="1\.0"\s+?encoding="(.+)?"\s+?\?>', doc)
                 
-		if result:
+                if result:
                     charset = result.group(1)
-		    self.charset = charset;
-                    try:
-                        doc = doc.decode(charset)
-                        return doc
-                    except UnicodeDecodeError:
-                        return doc.decode(charset, "ignore")
-                else:
-                    return doc.decode(self.charset, "ignore")
+                    self.charset = charset;
+
+                try:
+                    doc = doc.decode(self.charset)
+                    return doc
+                except UnicodeDecodeError:
+                    return doc.decode(charset, "ignore")
         else:
             return None
-
-
-if __name__ == "__main__":
-    try:
-	f = Fetch("http://www.google.com")
-	if f.connected:
-	    print f.read()
-    except Exception, e:
-	print e
