@@ -269,7 +269,7 @@ class Grab(object):
 		})
 
 		for field_name, _rule, fetch_all, page_type in extrarules:
-		    field = Field(field_name = field_name, rule=_rule)
+		    field = Field(name = field_name, rule=_rule)
 		    value = getElementData(e, _rule, _item["images"])
 		    #TODO:
 		    # filter HOOK
@@ -282,7 +282,7 @@ class Grab(object):
 		# get item guid
 		if self.guid_rule:
 		    guid = self.getItemGUID(_item)
-		elif self.seed_type in self.dont_craw_content:
+                elif self.seed['dont_craw_content'] == True:
 		    self.guid_rule = []
 		    for f in _item.fields:
 			self.guid_rule.append(_item[f]["id"])
@@ -298,7 +298,7 @@ class Grab(object):
 	    if len(self.listRule.getEntryItem()) == 0:
 		list.children().map(entry)
 	    else:	
-		list.find(self.listRule.getEntryItem()).map(entry)
+	        list.find(self.listRule.getEntryItem()).map(entry)
 
     def parseJsonPage(self, site, doc, listurl):
 	try:
@@ -325,8 +325,8 @@ class Grab(object):
 			})
 
 			#取出需要的key数据
-			for field_id, _rule, fetch_all in extrarules:
-			    field = Field(field_id = field_id, rule=_rule)
+			for field_name, _rule, fetch_all, page_type in extrarules:
+			    field = Field(name = field_name, rule=_rule)
 			    if _rule in _data:
 				value = _data[_rule]
 				if is_image(value):
@@ -340,7 +340,7 @@ class Grab(object):
 			# get item guid
 			if self.guid_rule:
 			    guid = self.getItemGUID(_item)
-			elif self.seed_type in self.dont_craw_content:
+			elif self.seed["dont_craw_content"]:
 			    self.guid_rule = []
 			    for f in _item.fields:
 				self.guid_rule.append(_item[f]["id"])
@@ -385,14 +385,6 @@ class Grab(object):
 	        _item["article"] = Document(_item, self.seed);
 	    return _item
 
-    def push(self):
-	'''
-	发布推送
-	'''
-        print ansicolor.cyan("Start fetching these articles", True)
-	for k in self.keys():
-	    publish_server.push(k, self[k])
-
 r"""
     文章数据
     包括抓取， 分析， 提取
@@ -408,7 +400,7 @@ class Document(object):
 
 	self.seed = seed;
 
-	#item["tags"] = ",".join(self.seed.tags)
+	item["tags"] = ",".join(self.seed.tags)
 
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()
@@ -447,17 +439,18 @@ class Document(object):
 	extrarules = self.articleRule.extrarules
 
 	#只有文章是有content
+        #TODO: 这里目前缺失一些特性
 	if len(extrarules):
-	    for key, rule, fetch_all in extrarules:
-		field = Field(field_id=key, rule=rule);
+	    for key, rule, fetch_all, page_type in extrarules:
+		field = Field(name = key, rule=rule);
 		value = getElementData(doc, rule, self.data["images"], fetch_all)
 
 		self.data[field.get('name')] = field
 
-		if field.is_article_content():
+		if self.is_article_content(field):
 		    content_re = field.get("rule")
 		    content = value
-		elif field.is_gallery_content():
+		elif self.is_gallery_content(field):
 		    content_re = field.get("rule")
 		    content = []
 		    if (isinstance(value, list)):
@@ -488,6 +481,18 @@ class Document(object):
 		self.data['content'].value = content.getContent();
 		self.data['images'] += images
 
+    def is_article_content(self, field):
+        #field['type'] == 'article'
+        if (field['name'] == 'content'):
+            return True
+
+        return False
+
+    def is_gallery_content(self, field):
+        if (field['name'] == 'content' and field['type'] == 'gallery'):
+            return True
+        return False
+
     def parsePage(self, doc, pageparent):
         pages = doc.find(pageparent + " a")
 	urls = []
@@ -506,64 +511,3 @@ class Document(object):
 
 	    self.data["pageurls"] = urls
 	return urls
-
-
-if __name__ == "__main__":
-    print "test"
-    #文章测试
-    #r = db.view(34);
-    #seed = Seed(r.list()[0])
-    #articles = Grab(seed)
-    #print articles[md5("http://www.265g.com/news/gamenews/321219.html").hexdigest()]
-    #Document("http://www.265g.com/newgame/abroad/320618.html", seed)
-    #articles.push()
-
-    #游戏测试
-    #r = db.view(7);
-    #seed = Seed(r.list()[0])
-    #games= Grab(seed)
-    ##games.push()
-    #print games[md5("http://www.kaifu.com/gameinfo-long2.html").hexdigest()]
-
-    #游戏开服
-    #r = db.view(8);
-    #seed = Seed(r.list()[0])
-    #kaifus = Grab(seed)
-    #for k in kaifus.keys():
-    #	kaifus[k]
-    #kaifus.push()
-    #print kaifus['43d4eaccab7675ac175c030455d0cbb2']
-
-    #游戏开测
-    #r = db.view(20);
-    #seed = Seed(r.list()[0])
-    #kaices = Grab(seed)
-    #for k in kaices.keys():
-    #    print kaices[k]
-    #kaices.push()
-    ##print kaifus['43d4eaccab7675ac175c030455d0cbb2']
-
-    #礼包
-    #r = db.view(21);
-    #seed = Seed(r.list()[0])
-    #gifts = Grab(seed)
-    #gifts.push()
-
-    #厂商
-    #r = db.view(22);
-    #seed = Seed(r.list()[0])
-    #c = Grab(seed)
-    #c.push()
-
-    #图库
-    #r = db.view(23)
-    #seed = Seed(r.list()[0])
-    #gas = Grab(seed)
-    #for k in gas.keys():
-	#print gas[k]
-    #gas.push()
-
-    #r = db.view(24)
-    #seed = Seed(r.list()[0])
-    #gas = Grab(seed)
-    #gas.push()
