@@ -1,7 +1,6 @@
 #coding: utf-8
-'''
-vim: ts=8
-'''
+#vim: set ts=8
+#Author: wolftankk@gmail.com
 
 import os, sys
 parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -12,10 +11,6 @@ from spyder.pybits import ansicolor
 import re, string, urlparse
 from libs.phpserialize import unserialize
 from libs.utils import Storage
-
-#from web.models import Seed_fields
-#from web.models import Seed_tag
-#from web.models import Tags
 
 __all__ = [
     'SeedEmpty', 'Seed', 'Rule',
@@ -58,6 +53,8 @@ class RuleEmpty(Exception):
 每个sid都需要一个sid和name
 '''
 class Seed(object):
+    tags = []
+
     def __init__(self, config={}):
 	if isinstance(config, Storage) or isinstance(config, object):
 	    if ("sid" not in config) or ("sid" in config and int(config["sid"]) <= 0):
@@ -82,19 +79,9 @@ class Seed(object):
             return guid_rule
         return None
 
-    def set_tags(self, tags):
-        self.tags = tags
-
-    def get_tags(self):
-        self.tags = []
-	#st_db = Seed_tag()
-	#tag_db = Tags()
-
-	#query = st_db.select(where={"sid" :self["sid"]}, what="tid")
-	#r = query.list()
-	#for t in r:
-	#    if t and "tid" in t:
-	#	self.tags.append(tag_db.view(t["tid"]).list()[0]["name"])
+    def set_tags(self, tag):
+        #define seed tag
+        self.tags.append(tag)
 
     def __getitem__(self, k):
 	if k in self.__seed:
@@ -114,7 +101,6 @@ class Seed(object):
         return rule
 
 
-
 r'''
 List一共有三种类型：feed, html, json
 当设定为feed时候， 将会自动分析出url等相关信息
@@ -125,7 +111,7 @@ class RuleList(object):
     def __init__(self, parent):
         self.parent = parent
 	#Rule type
-	# kaifu, kaice, article, gallery...
+        # feed, html, json
         self.type = parent.seed["listtype"];
 	#need parse and get field
 	self.extrarules = []
@@ -244,23 +230,19 @@ class RuleArticle(object):
 	self.extrarules = []
 	self.filters = []
 
-	extrarules = self.parent.extrarules
-	for i, rule in enumerate(extrarules):
-	    if rule and rule["page_type"] == "content":
-		field_id = rule["field_id"]
-		value = rule["value"]
-		fetch_all = rule["fetch_all"]
-		self.extrarules.append((field_id, value, fetch_all))
+        if "extrarules" in self.parent.rule:
+            extrarules = self.parent.rule["extrarules"]
+            for i, field in enumerate(extrarules):
+                if field:
+                    title, value, fetch_all, page_type = field
+                    if page_type == "content":
+                	self.extrarules.append(field)
 
-        if "filters" in parent.rule:
-	    self.filters = []
-            if parent.rule["filters"]:
-                parent.rule["filters"] = parent.rule["filters"].split("|");
-	        for f in parent.rule["filters"]:
-		      self.filters.append(f)
-        else:
-            self.filters = []
-
+        #if "filters" in parent.rule:
+        #    if parent.rule["filters"]:
+        #        parent.rule["filters"] = parent.rule["filters"].split("|");
+	#        for f in parent.rule["filters"]:
+	#	      self.filters.append(f)
 
 '''
 采集规则表

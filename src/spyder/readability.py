@@ -1,12 +1,10 @@
 #coding: utf-8
-
 '''
 vim: ts=8
 '''
 
 '''
 格式化页面
-
 现在文章图片 这里直接获得
 '''
 import re
@@ -210,16 +208,3 @@ class Readability:
         image_src = urljoin(self.baseurl, image_src)
         image.set("src", image_src)
         self.images.append(image_src)
-
-'''
-def specialFilter( content):
-    if len(self.articleRule.filters) > 0:
-	for filter in self.articleRule.filters:
-	    element = getElementData(content, filter, True)
-	    if element is not None:
-		element.getparent().remove(element);
-'''
-
-
-
-

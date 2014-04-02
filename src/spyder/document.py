@@ -415,7 +415,7 @@ class Document(object):
 
 	self.seed = seed;
 
-	item["tags"] = ",".join(self.seed.tags)
+	#item["tags"] = ",".join(self.seed.tags)
 
 	#文章采集规则
 	self.articleRule = seed.getRule().getArticleRule()

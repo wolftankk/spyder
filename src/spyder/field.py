@@ -11,12 +11,11 @@ from UserDict import DictMixin
 import weakref
 import time
 
-from web.models import Field as Field_Model
 from libs.utils import safestr, now, object_ref
 from collections import defaultdict
 
 __all__ = [
-    'Field', "Item", "get_field_from_cache"
+    'Field', "Item"
 ]
 
 '''
@@ -29,14 +28,6 @@ _fields_cache = defaultdict(weakref.WeakKeyDictionary)
 
 class Field(dict):
     def __init__(self, **kwargs):
-	#if kwargs['field_id']:
-	#    field_id = kwargs['field_id']
-	#    data = get_field_from_cache(field_id)
-
-	#    #直接赋值到self中
-	#    if data is not None:
-	#	for k in data:
-	#	    self[k] = data[k]
         if kwargs['field_name']:
             self['name'] = kwargs['field_name']
 		    
@@ -69,15 +60,15 @@ class Field(dict):
     def __str__(self):
 	return '< Field: %s >' % self['name']
 
-def get_field_from_cache(field_id):
-    db = Field_Model();
-    if _fields_cache[field_id]:
-	data = _fields_cache[field_id]
-    else:
-	data = db.view(field_id).list()[0];
-	_fields_cache[field_id] = data
-
-    return data
+#def get_field_from_cache(field_id):
+#    db = Field_Model();
+#    if _fields_cache[field_id]:
+#	data = _fields_cache[field_id]
+#    else:
+#	data = db.view(field_id).list()[0];
+#	_fields_cache[field_id] = data
+#
+#    return data
 
 class Item(object):
     def __init__(self, *args, **kwargs):
