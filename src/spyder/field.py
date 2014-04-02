@@ -77,14 +77,3 @@ class Item(object):
 
     def __repr__(self):
 	return '<Item Field: ' + repr(self.fields) + " Attrs: " + repr(self.attrs) + " >"
-
-if __name__ == "__main__":
-    #test Item
-    test_item = Item(test="a", ddd="ff")
-    print test_item.keys()
-    print "ddd" in test_item
-    print "adads" in test_item
-    test_item["aaa"] = "c"
-    print test_item["test"]
-    #test_item["a"] = "dad"
-    #print test_item

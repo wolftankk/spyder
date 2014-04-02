@@ -1,18 +1,11 @@
 #coding=utf-8
+#vim: set ts=8
+#Author: wolftankk@gmail.com
 
-'''
-vim: ts=8
-'''
-
-import os, sys
-parentdir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if parentdir not in sys.path:
-    sys.path.insert(0,parentdir) 
-
-import urlparse, io
+import urlparse, io, os
 import hashlib, StringIO, struct
-from spyder.pybits import ansicolor
-from spyder.fetch import Fetch
+from pybits import ansicolor
+from fetch import Fetch
 import images_cache
 
 images_dir = images_cache.__path__.pop()
@@ -169,9 +162,3 @@ class Image(object):
 
     def getSubType(self):
         return self.urlinfo.getsubtype()
-
-if __name__ == "__main__":
-    m = Image('http://res.kaifu.com/isy/upload/ueditor/image/20130108/32a5hpfyu8syexkq.jpg')
-    print m.getSize()
-    print m.getMediaName()
-    print m.getPath();
