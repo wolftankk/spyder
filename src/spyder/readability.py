@@ -9,9 +9,9 @@ vim: ts=8
 '''
 import re
 import lxml
-from spyder.pyquery import PyQuery as pq
+from pyquery import PyQuery as pq
 from urlparse import urljoin
-from libs.utils import safestr, safeunicode
+from utils import safestr, safeunicode
 
 __all__ = [
     'Readability'
