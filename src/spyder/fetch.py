@@ -120,7 +120,6 @@ class Fetch(object):
     def read(self):
         if self.site:
             doc = self.site.read()
-            content = pq(doc).find("meta[http-equiv='Content-Type']").attr("content")
             try:
                 doc = doc.decode(self.charset);
                 return doc

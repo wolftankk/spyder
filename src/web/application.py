@@ -99,4 +99,4 @@ class spyder_web:
 
 if __name__ == "__main__":
     app = spyder_web();
-    app = app.run(host="0.0.0.0");
+    app = app.run(host="0.0.0.0", port=8080);

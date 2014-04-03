@@ -47,5 +47,3 @@ class TestDocument(unittest.TestCase):
         print seed.tags
         items = Grab(seed)
         print items.keys(), items.items
-        article = items['648ffb1b3306d6e3dd08655ca890d553']
-        print article['title'].value
