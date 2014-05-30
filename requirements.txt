@@ -1,3 +1,4 @@
 cssselect>=0.9
 lxml>=3.3.2
 pyquery>=1.2.0
+Pillow>=2.4.0
