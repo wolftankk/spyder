@@ -7,6 +7,7 @@ if parentdir not in sys.path:
 
 import time, unittest
 from spyder.media import Image
+from StringIO import StringIO
 
 class TestMedia(unittest.TestCase):
     def runTest(self):
@@ -15,4 +16,4 @@ class TestMedia(unittest.TestCase):
         print m.getMediaName()
         print m.getPath()
         print m.getFileType()
-        print m.getInfo()
+        print StringIO(m.thumbnail((150,150)))

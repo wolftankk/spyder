@@ -8,6 +8,8 @@ from pybits import ansicolor
 from fetch import Fetch
 import images_cache
 
+from PIL import Image as PImage;
+
 images_dir = images_cache.__path__.pop()
 
 __all__ = [
@@ -28,9 +30,10 @@ class Image(object):
         if isRemote:
             self.fetchMedia()
         else:
-            #local
             self.loadMediaFromLocale();
 
+        self.image = PImage.open(StringIO.StringIO(self.mediaData), "r")
+        
     def getMediaUrl(self):
         return self.mediaUrl
 
@@ -44,7 +47,6 @@ class Image(object):
 
     def loadMediaFromLocale(self):
         '''
-
         '''
 
     def save(self, file_path):
@@ -68,52 +70,58 @@ class Image(object):
         return path, cache_path
 
     def getSize(self):
-	data = self.mediaData
-	data = str(data)
-	size = len(data)
-	height = -1
-	width = -1
+        return self.image.size
 
-	#gif
-	if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
-	    w, h = struct.unpack("<HH", data[6:10])
-	    width = int(w)
-	    height = int(h)
+    #def getSize(self):
+    #    data = self.mediaData
+    #    data = str(data)
+    #    size = len(data)
+    #    height = -1
+    #    width = -1
 
-	#png2
-	elif (size >= 24 and data.startswith('\211PNG\r\n\032\n') and (data[12:16] == 'IHDR')):
-	    w, h = struct.unpack(">LL",data[16:24])
-	    width = int(w)
-	    height = int(h)
+    #    #gif
+    #    if (size >= 10) and data[:6] in ('GIF87a', 'GIF89a'):
+    #        w, h = struct.unpack("<HH", data[6:10])
+    #        width = int(w)
+    #        height = int(h)
 
-	elif (size >= 16) and data.startswith('\211PNG\r\n\032\n'):
-	    w, h = struct.unpack(">LL", data[8:16])
-	    width = int(w)
-	    height = int(h)
-	
-	elif (size >= 2) and data.startswith('\377\330'):
-	    jpeg = StringIO.StringIO(data)
-	    jpeg.read(2)
-	    b = jpeg.read(1)
-	    try:
-		while (b and ord(b) != 0xDA):
-		    while (ord(b) != 0xFF): b = jpeg.read(1)
-		    while (ord(b) == 0xFF): b = jpeg.read(1)
-		    if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
-			jpeg.read(3)
-			h, w = struct.unpack(">HH", jpeg.read(4))
-			break
-		    else:
-			jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
-		    b = jpeg.read(1)
-		width = int(w)
-		height = int(h)
-	    except struct.error:
-		pass
-	    except ValueError:
-		pass
+    #    #png2
+    #    elif (size >= 24 and data.startswith('\211PNG\r\n\032\n') and (data[12:16] == 'IHDR')):
+    #        w, h = struct.unpack(">LL",data[16:24])
+    #        width = int(w)
+    #        height = int(h)
 
-	return width, height
+    #    elif (size >= 16) and data.startswith('\211PNG\r\n\032\n'):
+    #        w, h = struct.unpack(">LL", data[8:16])
+    #        width = int(w)
+    #        height = int(h)
+    #    
+    #    elif (size >= 2) and data.startswith('\377\330'):
+    #        jpeg = StringIO.StringIO(data)
+    #        jpeg.read(2)
+    #        b = jpeg.read(1)
+    #        try:
+    #    	while (b and ord(b) != 0xDA):
+    #    	    while (ord(b) != 0xFF): b = jpeg.read(1)
+    #    	    while (ord(b) == 0xFF): b = jpeg.read(1)
+    #    	    if (ord(b) >= 0xC0 and ord(b) <= 0xC3):
+    #    		jpeg.read(3)
+    #    		h, w = struct.unpack(">HH", jpeg.read(4))
+    #    		break
+    #    	    else:
+    #    		jpeg.read(int(struct.unpack(">H", jpeg.read(2))[0])-2)
+    #    	    b = jpeg.read(1)
+    #    	width = int(w)
+    #    	height = int(h)
+    #        except struct.error:
+    #    	pass
+    #        except ValueError:
+    #    	pass
+
+    #    return width, height
+
+    def thumbnail(self, size):
+        return self.image.resize(size, PImage.ANTIALIAS).tostring()
     
     def getMediaName(self):
 	'''
